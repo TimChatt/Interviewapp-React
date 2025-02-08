@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
 
 // Placeholder pages for now
 const Home = () => <h1>Home</h1>;
