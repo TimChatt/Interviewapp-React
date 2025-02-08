@@ -6,3 +6,6 @@ plan = "nodejs"
 
 [env]
 NODE_ENV = "production"
+
+[install]
+command = "npm install"
