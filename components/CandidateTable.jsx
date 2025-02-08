@@ -28,6 +28,35 @@ const CandidateTable = ({ candidates }) => {
     }
   };
 
+  const CandidateTable = ({ candidates, onRowClick }) => {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Department</th>
+          <th>Interview Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {candidates.map((candidate) => (
+          <tr key={candidate.candidate_id}>
+            <td>{candidate.name}</td>
+            <td>{candidate.department}</td>
+            <td>{new Date(candidate.interview_date).toLocaleDateString()}</td>
+            <td>
+              <button onClick={() => onRowClick(candidate.candidate_id)}>
+                View
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
   return (
     <div className="candidate-table">
       <h2>Candidate List</h2>
