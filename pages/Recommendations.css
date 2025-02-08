@@ -1,0 +1,55 @@
+.recommendations-page {
+  padding: 2rem;
+  background-color: #f8f9fa; /* Light background */
+  color: #1a202c; /* Dark text */
+}
+
+.recommendations-page h1 {
+  text-align: center;
+  color: #f6ad55; /* Orange for main title */
+  margin-bottom: 2rem;
+}
+
+.generate-button {
+  display: block;
+  margin: 0 auto 2rem auto;
+  padding: 0.5rem 1.5rem;
+  background-color: #f6ad55; /* Orange */
+  color: #ffffff; /* White text */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.generate-button:hover {
+  background-color: #dd6b20; /* Darker orange */
+}
+
+.recommendations-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.recommendation-card {
+  background-color: #ffffff; /* White card background */
+  border: 1px solid #e2e8f0; /* Light grey border */
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-card h3 {
+  color: #2d3748; /* Dark grey */
+  margin-bottom: 0.5rem;
+}
+
+.recommendation-card ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.recommendation-card ul li {
+  margin: 0.5rem 0;
+}
