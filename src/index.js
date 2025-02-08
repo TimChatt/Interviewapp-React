@@ -1,22 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Candidate from "./pages/Candidate";
-import Insights from "./pages/Insights";
-import Recommendations from "./pages/Recommendations";
-import Admin from "./pages/Admin";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App"; // Import your App component
+import "./index.css"; // Import your global styles (if any)
 
-const App = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/candidate" element={<Candidate />} />
-        <Route path="/insights" element={<Insights />} />
-        <Route path="/recommendations" element={<Recommendations />} />
-        <Route path="/admin" element={<Admin />} />
-      </Routes>
-    </Router>
-  );
-};
-
-export default App;
+const root = ReactDOM.createRoot(document.getElementById("root")); // Assumes a root div exists in your HTML
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
