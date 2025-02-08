@@ -1,0 +1,60 @@
+.candidate-page {
+  padding: 2rem;
+  background-color: #f8f9fa; /* Light background */
+  color: #1a202c; /* Dark text */
+}
+
+.candidate-page h1 {
+  text-align: center;
+  color: #f6ad55; /* Orange for main title */
+}
+
+.candidate-section {
+  margin-top: 2rem;
+}
+
+.candidate-profile {
+  background-color: #ffffff; /* White background */
+  border: 1px solid #e2e8f0; /* Light grey border */
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-profile h3 {
+  color: #2d3748; /* Dark grey */
+  margin-bottom: 1rem;
+}
+
+.candidate-profile h4 {
+  color: #4a5568; /* Grey */
+  margin-top: 1.5rem;
+}
+
+.candidate-profile p {
+  margin: 0.5rem 0;
+}
+
+.candidate-profile ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.candidate-profile ul li {
+  margin-bottom: 0.5rem;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #f6ad55; /* Orange */
+  color: #ffffff; /* White text */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.back-button:hover {
+  background-color: #dd6b20; /* Darker orange */
+}
