@@ -1,0 +1,33 @@
+.metrics-card {
+  display: flex;
+  align-items: center;
+  background-color: #2d3748; /* Dark grey background */
+  color: #cbd5e0; /* Light grey text */
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metrics-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.metrics-card-icon {
+  font-size: 2.5rem;
+  color: #f6ad55; /* Orange for icon */
+  margin-right: 1rem;
+}
+
+.metrics-card-content h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.metrics-card-content p {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
