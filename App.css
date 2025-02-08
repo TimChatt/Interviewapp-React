@@ -1,0 +1,13 @@
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.content-container {
+  margin-left: 250px; /* Adjust for the sidebar width */
+  padding: 2rem;
+  width: calc(100% - 250px);
+  background-color: #f8f9fa; /* Light background for content */
+  color: #1a202c; /* Dark text */
+  overflow-y: auto;
+}
