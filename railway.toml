@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [nixpacks]
-plan = "nodejs"
+install = "npm install -g serve"
 
 [env]
 NODE_ENV = "production"
