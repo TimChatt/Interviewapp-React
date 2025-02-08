@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
+import Admin from "./pages/Admin";
 
 // Placeholder pages for now
 const Home = () => <h1>Home</h1>;
@@ -37,3 +38,8 @@ function App() {
 
 export default App;
 
+// Add the Admin route
+<Routes>
+  {/* Other routes */}
+  <Route path="/admin" element={<Admin />} />
+</Routes>
