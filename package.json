@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Interview Analysis App",
   "main": "index.js",
-  "scripts": {
-    "start": "serve -s build",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
   },
   "author": "Tim",
   "license": "MIT",
