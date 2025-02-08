@@ -1,0 +1,45 @@
+.insights-page {
+  padding: 2rem;
+  background-color: #f8f9fa; /* Light background */
+  color: #1a202c; /* Dark text */
+}
+
+.insights-page h1 {
+  text-align: center;
+  color: #f6ad55; /* Orange for the main title */
+  margin-bottom: 2rem;
+}
+
+.insights-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #ffffff; /* White card background */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.insights-section h2 {
+  color: #2d3748; /* Dark grey */
+  margin-bottom: 1rem;
+}
+
+.discrepancy-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.discrepancy-controls label {
+  margin-right: 1rem;
+  color: #4a5568; /* Grey for labels */
+}
+
+.discrepancy-controls input[type="range"] {
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.discrepancy-controls span {
+  color: #f6ad55; /* Orange for threshold value */
+  font-weight: bold;
+}
