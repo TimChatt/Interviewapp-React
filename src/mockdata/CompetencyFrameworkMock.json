@@ -1,0 +1,72 @@
+[
+  {
+    "jobFamily": "Frontend Engineer",
+    "levels": [
+      {
+        "levelName": "Junior",
+        "requiredCompetencies": {
+          "technicalSkills": 3,
+          "communication": 3,
+          "problemSolving": 3,
+          "teamFit": 3,
+          "adaptability": 2
+        }
+      },
+      {
+        "levelName": "Mid",
+        "requiredCompetencies": {
+          "technicalSkills": 4,
+          "communication": 3,
+          "problemSolving": 4,
+          "teamFit": 3,
+          "adaptability": 3
+        }
+      },
+      {
+        "levelName": "Senior",
+        "requiredCompetencies": {
+          "technicalSkills": 5,
+          "communication": 4,
+          "problemSolving": 4,
+          "teamFit": 4,
+          "adaptability": 4
+        }
+      }
+    ]
+  },
+  {
+    "jobFamily": "Backend Engineer",
+    "levels": [
+      {
+        "levelName": "Junior",
+        "requiredCompetencies": {
+          "technicalSkills": 3,
+          "communication": 3,
+          "problemSolving": 3,
+          "teamFit": 3,
+          "adaptability": 2
+        }
+      },
+      {
+        "levelName": "Mid",
+        "requiredCompetencies": {
+          "technicalSkills": 4,
+          "communication": 3,
+          "problemSolving": 4,
+          "teamFit": 4,
+          "adaptability": 3
+        }
+      },
+      {
+        "levelName": "Senior",
+        "requiredCompetencies": {
+          "technicalSkills": 5,
+          "communication": 4,
+          "problemSolving": 5,
+          "teamFit": 4,
+          "adaptability": 4
+        }
+      }
+    ]
+  }
+]
