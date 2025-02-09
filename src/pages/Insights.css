@@ -1,45 +1,67 @@
+/* src/pages/Insights.css */
+
 .insights-page {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 2rem;
-  background-color: #f8f9fa; /* Light background */
-  color: #1a202c; /* Dark text */
+  font-family: sans-serif;
+  color: #333;
 }
 
 .insights-page h1 {
-  text-align: center;
-  color: #f6ad55; /* Orange for the main title */
-  margin-bottom: 2rem;
+  color: #444;
 }
 
-.insights-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: #ffffff; /* White card background */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.insights-section h2 {
-  color: #2d3748; /* Dark grey */
-  margin-bottom: 1rem;
-}
-
-.discrepancy-controls {
+/* Card-like boxes for summary stats */
+.stats-overview {
   display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.discrepancy-controls label {
-  margin-right: 1rem;
-  color: #4a5568; /* Grey for labels */
-}
-
-.discrepancy-controls input[type="range"] {
+.stat-card {
   flex: 1;
-  margin: 0 1rem;
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
-.discrepancy-controls span {
-  color: #f6ad55; /* Orange for threshold value */
+.stat-card h2 {
+  margin-top: 0;
+  color: #666;
+}
+
+.stat-card p {
+  font-size: 1.5rem;
   font-weight: bold;
+  margin: 0.5rem 0 0;
+}
+
+/* Chart sections */
+.chart-section {
+  margin-bottom: 2rem;
+}
+
+.chart-section h2 {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 300px; /* Let ResponsiveContainer handle actual sizing */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Simple styling for the job title distribution list */
+.chart-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: disc;
 }
