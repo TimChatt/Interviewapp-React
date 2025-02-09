@@ -1,18 +1,10 @@
-// src/components/NavigationBar.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Button } from "react-berry-ui"; // Import Berry UI components
+import { Button } from "react-berry-ui"; // Still import Button from Berry UI
 
 const NavigationBar = () => {
   return (
-    <Box
-      as="nav"
-      padding="10px"
-      backgroundColor="#333"
-      color="#fff"
-      display="flex"
-      gap="15px"
-    >
+    <div style={{ padding: "10px", backgroundColor: "#333", color: "#fff", display: "flex", gap: "15px" }}>
       <Link to="/" style={{ textDecoration: "none" }}>
         <Button variant="ghost" colorScheme="whiteAlpha">
           Dashboard Overview
@@ -38,8 +30,9 @@ const NavigationBar = () => {
           Admin
         </Button>
       </Link>
-    </Box>
+    </div>
   );
 };
 
 export default NavigationBar;
+
