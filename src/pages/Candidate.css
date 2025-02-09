@@ -1,8 +1,7 @@
 /* src/pages/Candidate.css */
 
-/* Overall page container similar to CandidateProfile */
 .candidate-page {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
   font-family: sans-serif;
@@ -10,81 +9,15 @@
 }
 
 .candidate-page h1 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #444;
 }
 
-/* Container for the table and its controls */
 .candidate-list-container {
-  background-color: #f9f9f9;
-  padding: 1rem 1.5rem;
+  background-color: #fff;
+  padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* If your CandidateTable uses a .candidate-table class or something similar, style it here */
-.candidate-table {
-  margin-top: 1rem;
-}
-
-/* Table controls (search input, etc.) */
-.table-controls {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.table-controls input[type="text"] {
-  flex: 1;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* Table styling */
-.candidate-table table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-.candidate-table th,
-.candidate-table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-/* Make headers clickable for sorting with a little cursor change */
-.candidate-table th {
-  cursor: pointer;
-  background-color: #f0f0f0;
-  color: #555;
-  user-select: none; /* Prevent accidental text selection on repeated clicks */
-}
-
-.candidate-table th:hover {
-  background-color: #e0e0e0;
-}
-
-/* Row hover effect */
-.candidate-table tbody tr:hover {
-  background-color: #f3f3f3;
-}
-
-/* "Actions" button styling */
-.candidate-table button {
-  background-color: #8884d8;
-  border: none;
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.candidate-table button:hover {
-  background-color: #6664d8;
-}
 
