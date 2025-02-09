@@ -1,0 +1,41 @@
+[
+  {
+    "transcriptId": "T-001",
+    "candidateName": "Alice Johnson",
+    "jobTitle": "Frontend Developer",
+    "interviewers": [
+      "John Doe",
+      "Jane Smith"
+    ],
+    "transcript": [
+      {
+        "speaker": "John Doe (Interviewer)",
+        "timestamp": "00:00:00",
+        "question": "Can you tell me about your experience with React?",
+        "candidateAnswer": "Yes, I've worked with React for 3 years, building micro frontends..."
+      },
+      {
+        "speaker": "Jane Smith (Interviewer)",
+        "timestamp": "00:05:00",
+        "question": "How would you optimize performance in a large React application?",
+        "candidateAnswer": "I’d consider using memoization, lazy loading, code splitting, and analyzing dependencies..."
+      }
+    ]
+  },
+  {
+    "transcriptId": "T-002",
+    "candidateName": "Michael Lee",
+    "jobTitle": "Backend Developer",
+    "interviewers": [
+      "Bob Williams"
+    ],
+    "transcript": [
+      {
+        "speaker": "Bob Williams (Interviewer)",
+        "timestamp": "00:00:05",
+        "question": "Tell me about a complex API you built using Node.js.",
+        "candidateAnswer": "I built a high-traffic service handling e-commerce inventory and real-time stock updates..."
+      }
+    ]
+  }
+]
