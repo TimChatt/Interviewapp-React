@@ -1,23 +1,74 @@
 // src/pages/Recommendations.jsx
-import React from "react";
+import React, { useState } from "react";
 import "./Recommendations.css";
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 
-// A helper to capitalize skill keys for nicer display
+// Helper to parse date
+function parseDate(dateString) {
+  if (!dateString) return null;
+  return new Date(dateString);
+}
+
+// Mapping for user-friendly skill names
 function formatSkillName(skillKey) {
   // e.g. "technicalSkills" -> "Technical Skills"
-  // This is a simplistic approach. Adjust as needed.
   return skillKey
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase());
 }
 
+// Example role-specific suggestions
+const roleSuggestions = {
+  "Frontend Developer": {
+    recommendedTopics: [
+      "React Hooks best practices and performance optimization",
+      "State management patterns (Redux, Zustand, etc.)",
+      "Collaboration with designers for UI/UX consistency"
+    ],
+    topSoftSkills: ["Communication with cross-functional teams", "Adaptability to design changes"]
+  },
+  "Backend Developer": {
+    recommendedTopics: [
+      "Database indexing and optimization",
+      "Microservices architecture",
+      "API versioning and documentation"
+    ],
+    topSoftSkills: ["Communicating complex technical topics", "System design trade-offs"]
+  }
+};
+
 function Recommendations() {
-  // 1) Group Candidates by Job Title & Status
-  //    We’ll create a structure like:
-  //    { "Frontend Developer": { hired: [...], archived: [...] }, ... }
+  // --------------------------
+  // 1) Live Filters
+  // --------------------------
+  // Date range + job title filter
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [filterJobTitle, setFilterJobTitle] = useState("");
+
+  const startDateObj = startDate ? new Date(startDate) : null;
+  const endDateObj = endDate ? new Date(endDate) : null;
+
+  // Filter data by date range
+  const dateFiltered = ashbyMockData.filter((candidate) => {
+    const interviewDT = parseDate(candidate.interviewDate);
+    if (!interviewDT) return false; // or true, depending on your needs
+
+    if (startDateObj && interviewDT < startDateObj) return false;
+    if (endDateObj && interviewDT > endDateObj) return false;
+    return true;
+  });
+
+  // If filterJobTitle is specified, only keep candidates matching
+  const filteredData = filterJobTitle
+    ? dateFiltered.filter((c) => (c.jobTitle || "").toLowerCase() === filterJobTitle.toLowerCase())
+    : dateFiltered;
+
+  // --------------------------
+  // 2) Group By Job Title & Status
+  // --------------------------
   const jobMap = {};
-  ashbyMockData.forEach((candidate) => {
+  filteredData.forEach((candidate) => {
     const jt = candidate.jobTitle || "Unknown";
     if (!jobMap[jt]) {
       jobMap[jt] = { hired: [], archived: [] };
@@ -29,124 +80,181 @@ function Recommendations() {
     }
   });
 
-  // 2) For each job title, compare average scores of Hired vs. Archived
-  //    We'll find the "skill gaps" where archived candidates are weaker
-  //    This is a simplistic approach for demonstration.
+  // --------------------------
+  // 3) Multi-Factor Analysis for Recommendations
+  // --------------------------
   const recommendations = [];
 
   Object.entries(jobMap).forEach(([jobTitle, group]) => {
     const { hired, archived } = group;
 
-    // If we have no hired or no archived, skip or show a minimal recommendation
-    if (hired.length === 0) {
-      if (archived.length > 0) {
-        recommendations.push({
-          jobTitle,
-          summary: `All archived candidates for ${jobTitle}, none hired yet. Consider adjusting requirements or evaluating if the candidate pool is adequate.`
-        });
-      }
-      return;
-    }
-    if (archived.length === 0) {
-      // If there's only hired, maybe no recommendation needed
-      // But let's show a quick message
+    // If no hired or no archived, add minimal recommendation
+    if (hired.length === 0 && archived.length > 0) {
       recommendations.push({
         jobTitle,
-        summary: `No archived candidates for ${jobTitle}. The hiring process for this role seems to be going smoothly.`
+        summary: `All candidates for "${jobTitle}" in this date range are archived. Consider reviewing your requirements or interview approach.`,
+        bullets: []
       });
       return;
     }
+    if (archived.length === 0 && hired.length > 0) {
+      recommendations.push({
+        jobTitle,
+        summary: `All candidates for "${jobTitle}" in this date range are hired. The hiring process for this role seems successful.`,
+        bullets: []
+      });
+      return;
+    }
+    if (hired.length === 0 && archived.length === 0) {
+      // No candidates at all for this job in the date range
+      return;
+    }
 
-    // We have both hired & archived. Let's compute average skill for each group.
-    // Gather all possible skill keys.
-    const allSkills = new Set();
-    hired.forEach((c) => c.scores && Object.keys(c.scores).forEach((k) => allSkills.add(k)));
-    archived.forEach((c) => c.scores && Object.keys(c.scores).forEach((k) => allSkills.add(k)));
+    // We have both hired & archived
+    // Gather all possible skills
+    const allSkillsSet = new Set();
+    [...hired, ...archived].forEach((c) => {
+      if (c.scores) {
+        Object.keys(c.scores).forEach((sk) => allSkillsSet.add(sk));
+      }
+    });
+    const allSkills = Array.from(allSkillsSet);
 
-    // Compute average skill for Hired
+    // Compute average skill for each group
     const hiredSkillAverages = {};
+    const archivedSkillAverages = {};
+
     allSkills.forEach((skill) => {
-      let total = 0;
-      let count = 0;
+      let totalH = 0, countH = 0;
+      let totalA = 0, countA = 0;
+
       hired.forEach((c) => {
         if (c.scores && c.scores[skill] !== undefined) {
-          total += c.scores[skill];
-          count++;
+          totalH += c.scores[skill];
+          countH++;
         }
       });
-      hiredSkillAverages[skill] = count > 0 ? total / count : 0;
-    });
 
-    // Compute average skill for Archived
-    const archivedSkillAverages = {};
-    allSkills.forEach((skill) => {
-      let total = 0;
-      let count = 0;
       archived.forEach((c) => {
         if (c.scores && c.scores[skill] !== undefined) {
-          total += c.scores[skill];
-          count++;
+          totalA += c.scores[skill];
+          countA++;
         }
       });
-      archivedSkillAverages[skill] = count > 0 ? total / count : 0;
+
+      hiredSkillAverages[skill] = countH > 0 ? (totalH / countH) : 0;
+      archivedSkillAverages[skill] = countA > 0 ? (totalA / countA) : 0;
     });
 
-    // Identify the largest skill gaps
-    // e.g. "technicalSkills" = hired(4.5) - archived(2.3) = 2.2 => big gap
-    let skillGaps = [];
-    allSkills.forEach((skill) => {
+    // Identify biggest skill gaps
+    let skillGaps = allSkills.map((skill) => {
       const hiredAvg = hiredSkillAverages[skill];
-      const archivedAvg = archivedSkillAverages[skill];
-      const gap = hiredAvg - archivedAvg; // positive => hired is higher
-      skillGaps.push({ skill, gap, hiredAvg, archivedAvg });
+      const archAvg = archivedSkillAverages[skill];
+      const gap = hiredAvg - archAvg; // positive => hired > archived
+      return { skill, gap, hiredAvg, archAvg };
     });
 
     // Sort by gap descending
     skillGaps.sort((a, b) => b.gap - a.gap);
 
-    // We'll pick the top 1 or 2 largest gaps for a bullet list
-    const topGaps = skillGaps.slice(0, 2).filter((g) => g.gap > 0.5); // threshold
+    // We'll pick top 2 largest gaps for demonstration
+    const topGaps = skillGaps.slice(0, 2).filter((g) => g.gap > 0.5); // threshold for a "meaningful" gap
 
-    // Build a textual recommendation
-    // For demonstration, we mention the top gaps
+    // Role-specific weighting example:
+    // If it's a "Backend Developer", weigh "technicalSkills" or "problemSolving" more heavily
+    // (In this example, we just conceptually mention it. You could add logic to reorder skillGaps.)
+    // If jobTitle.includes('Backend'), etc.
+
+    // Build recommendation bullets
+    let bullets = [];
     if (topGaps.length > 0) {
-      let bullets = topGaps.map((g) => {
-        return `The hired candidates averaged ${g.hiredAvg.toFixed(1)} in "${formatSkillName(
-          g.skill
-        )}" while archived averaged ${g.archivedAvg.toFixed(1)}. Consider focusing interview questions or candidate training to improve this area.`;
-      });
-
-      recommendations.push({
-        jobTitle,
-        summary: `We've identified skill differences for ${jobTitle}.`,
-        bullets
-      });
-    } else {
-      // If no significant gap found
-      recommendations.push({
-        jobTitle,
-        summary: `For ${jobTitle}, there isn't a large skill gap between hired and archived candidates. Review other factors like culture fit or communication style.`
+      topGaps.forEach((g) => {
+        const skillName = formatSkillName(g.skill);
+        bullets.push(
+          `The hired candidates averaged ${g.hiredAvg.toFixed(1)} in ${skillName}, while archived averaged ${g.archAvg.toFixed(1)}. Enhancing ${skillName} could improve candidate success.`
+        );
       });
     }
+
+    // Role-specific suggestions
+    if (roleSuggestions[jobTitle]) {
+      bullets.push(
+        `Recommended Topics for ${jobTitle}: ${roleSuggestions[jobTitle].recommendedTopics.join(
+          ", "
+        )}.`
+      );
+      bullets.push(
+        `Key Soft Skills: ${roleSuggestions[jobTitle].topSoftSkills.join(", ")}.`
+      );
+    }
+
+    // Example advanced logic hook for AI/NLP
+    // E.g. if you had transcripts, you could use an NLP model to see if archived
+    // candidates struggled to discuss certain topics. Here we just insert a placeholder
+    // bullet to demonstrate the idea.
+    bullets.push(
+      `Consider analyzing transcripts more deeply for recurring patterns or questions where archived candidates underperformed.`
+    );
+
+    // Summarize
+    let summary = `For "${jobTitle}" within the selected date range, we see ${hired.length} hired and ${archived.length} archived candidates.`;
+
+    recommendations.push({
+      jobTitle,
+      summary,
+      bullets
+    });
   });
 
+  // --------------------------
+  // 4) Render UI
+  // --------------------------
   return (
     <div className="recommendations-page">
       <h1>Recommendations</h1>
       <p className="intro-text">
-        These suggestions are based on comparing archived vs. hired candidates for each job title
-        and identifying areas of improvement or success. Use them to refine your hiring strategy,
-        interview questions, or candidate feedback.
+        These suggestions are derived from comparing archived vs. hired candidates for each job
+        title, factoring in date range and role-specific considerations.
       </p>
 
+      {/* Live Filters */}
+      <div className="recommendation-filters">
+        <label>
+          Start Date:
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </label>
+        <label>
+          End Date:
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </label>
+        <label>
+          Job Title:
+          <input
+            type="text"
+            placeholder="Frontend Developer..."
+            value={filterJobTitle}
+            onChange={(e) => setFilterJobTitle(e.target.value)}
+          />
+        </label>
+      </div>
+
+      {/* Render Recommendations */}
       {recommendations.length === 0 ? (
-        <p>No recommendations found.</p>
+        <p>No recommendations found for the given filters.</p>
       ) : (
         recommendations.map((rec, idx) => (
           <div className="recommendation-card" key={idx}>
             <h2>{rec.jobTitle}</h2>
             <p>{rec.summary}</p>
-            {rec.bullets && (
+            {rec.bullets && rec.bullets.length > 0 && (
               <ul>
                 {rec.bullets.map((b, i) => (
                   <li key={i}>{b}</li>
