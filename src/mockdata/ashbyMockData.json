@@ -26,7 +26,30 @@
       { "stage": "Applied", "date": "2025-01-20" },
       { "stage": "Phone Screen", "date": "2025-01-25" },
       { "stage": "Onsite", "date": "2025-02-01" }
-    ]
+    ],
+    "aiAdvice": {
+      "general": "Alice performed strongly overall. She can continue refining performance optimization techniques and consistent code patterns to align even more with top historic hires.",
+      "didWell": [
+        {
+          "point": "Demonstrated deep React Hooks knowledge",
+          "citation": "Question q1 (Metaview) – historically high correlation with success"
+        },
+        {
+          "point": "Clear communication of state management approaches",
+          "citation": "Feedback from John Doe"
+        }
+      ],
+      "couldImprove": [
+        {
+          "point": "Offer more detailed approach to code splitting and lazy loading",
+          "citation": "Historic data shows top frontend hires elaborate on advanced bundling strategies"
+        },
+        {
+          "point": "Slightly more structured approach to problem-solving questions",
+          "citation": "Question q2 (Metaview) – referencing deeper scenario planning"
+        }
+      ]
+    }
   },
   {
     "candidateName": "Bob Smith",
@@ -47,16 +70,30 @@
       "teamFit": 3,
       "adaptability": 2
     },
-    "aiAdvice": {
-      "general": "Bob should refine his knowledge of advanced React patterns and provide more detailed answers on complex UI challenges.",
-      "improveTechnicalSkills": "Focus on hooks like useMemo/useCallback, and practice debugging performance bottlenecks in React.",
-      "improveProblemSolving": "Walk through coding challenges systematically, discussing trade-offs more explicitly."
-    },
     "timeline": [
       { "stage": "Applied", "date": "2025-01-22" },
       { "stage": "Phone Screen", "date": "2025-01-28" },
       { "stage": "Onsite", "date": "2025-02-07" }
-    ]
+    ],
+    "aiAdvice": {
+      "general": "Bob should refine his knowledge of advanced React patterns and provide more detailed answers on complex UI challenges, as top candidates often demonstrate deeper scenarios.",
+      "didWell": [
+        {
+          "point": "Outlined basic memoization strategies",
+          "citation": "Question q1 (Metaview)"
+        }
+      ],
+      "couldImprove": [
+        {
+          "point": "Discuss more explicit use cases for useCallback/useMemo",
+          "citation": "Question q2 (Metaview) – top hires mention real-world examples"
+        },
+        {
+          "point": "Practice debugging performance bottlenecks thoroughly",
+          "citation": "Historic data: high-scoring frontenders show advanced knowledge in Q1 follow-ups"
+        }
+      ]
+    }
   },
   {
     "candidateName": "Jen Williams",
@@ -80,7 +117,26 @@
     "timeline": [
       { "stage": "Applied", "date": "2025-01-18" },
       { "stage": "Phone Screen", "date": "2025-02-02" }
-    ]
+    ],
+    "aiAdvice": {
+      "general": "Jen performed well. Strengthening system design demos and deepening knowledge in distributed caching can move her closer to best-in-class hires.",
+      "didWell": [
+        {
+          "point": "Explained Node.js scaling fundamentals",
+          "citation": "Question q2 (Metaview) – historically strong correlation with success"
+        }
+      ],
+      "couldImprove": [
+        {
+          "point": "More in-depth discussion of system resiliency (circuit breakers, fallback strategies)",
+          "citation": "Top-tier backend hires often detail fail-safe mechanisms"
+        },
+        {
+          "point": "Refine communication under pressure",
+          "citation": "Feedback suggests slightly scattered explanation in final scenario"
+        }
+      ]
+    }
   },
   {
     "candidateName": "Michael Lee",
@@ -101,15 +157,29 @@
       "teamFit": 4,
       "adaptability": 2
     },
-    "aiAdvice": {
-      "general": "Michael can benefit from deeper knowledge of high-traffic server architecture and clearer communication of design trade-offs.",
-      "improveTechnicalSkills": "Study microservices, caching strategies, and load balancing. Build personal projects showcasing distributed systems.",
-      "improveProblemSolving": "Practice whiteboard sessions on large-scale database schemas and real-time data flows. Focus on clarifying assumptions early."
-    },
     "timeline": [
       { "stage": "Applied", "date": "2025-01-19" },
       { "stage": "Phone Screen", "date": "2025-01-27" },
       { "stage": "Technical Screen", "date": "2025-02-03" }
-    ]
+    ],
+    "aiAdvice": {
+      "general": "Michael can benefit from deeper knowledge of high-traffic server architecture and clearer communication of design trade-offs, aligning with the strongest backend hires historically.",
+      "didWell": [
+        {
+          "point": "Showed understanding of basic queue-based microservices",
+          "citation": "Question q1 (Metaview)"
+        }
+      ],
+      "couldImprove": [
+        {
+          "point": "Offer practical examples of load balancing and sharding",
+          "citation": "Historic data: successful hires thoroughly detail real-time analytics architecture in Q1"
+        },
+        {
+          "point": "Practice discussing trade-offs more succinctly",
+          "citation": "Feedback from Sandra Kim suggests under-explored design reasoning"
+        }
+      ]
+    }
   }
 ]
