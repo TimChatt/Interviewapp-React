@@ -1,40 +1,18 @@
 // src/components/CandidateTable.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./CandidateTable.css";
 
-import ashbyMockData from "../mockdata/ashbyMockData.json";
-import metaviewMockData from "../mockdata/metaviewMockData.json";
-
-const CandidateTable = () => {
-  const navigate = useNavigate();
-
-  // Combine data for the table
-  const combinedCandidates = ashbyMockData.map((ashbyItem, index) => {
-    const matchingMeta = metaviewMockData.find(
-      (metaItem) => metaItem.candidateName === ashbyItem.candidateName
-    );
-
-    return {
-      candidate_id: index + 1,
-      name: ashbyItem.candidateName,
-      department: ashbyItem.jobTitle || "Engineering",
-      interview_date: ashbyItem.interviewDate,
-      ashbyScores: ashbyItem.scores,
-      ashbyFeedback: ashbyItem.feedback,
-      metaviewTranscript: matchingMeta ? matchingMeta.transcript : []
-    };
-  });
-
-  // Existing filter & sort logic
+const CandidateTable = ({ candidates }) => {
   const [filter, setFilter] = useState("");
   const [sortKey, setSortKey] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
 
-  const filteredCandidates = combinedCandidates.filter((candidate) =>
+  // Filter candidates based on name
+  const filteredCandidates = candidates.filter((candidate) =>
     candidate.name.toLowerCase().includes(filter.toLowerCase())
   );
 
+  // Sort candidates based on sortKey and sortOrder
   const sortedCandidates = [...filteredCandidates].sort((a, b) => {
     if (a[sortKey] < b[sortKey]) return sortOrder === "asc" ? -1 : 1;
     if (a[sortKey] > b[sortKey]) return sortOrder === "asc" ? 1 : -1;
@@ -50,14 +28,8 @@ const CandidateTable = () => {
     }
   };
 
-  const handleViewCandidate = (candidateId) => {
-    // Navigate to /candidate/:candidateId
-    navigate(`/candidate/${candidateId}`);
-  };
-
   return (
     <div className="candidate-table">
-      <h2>Candidate List</h2>
       <div className="table-controls">
         <input
           type="text"
@@ -66,20 +38,17 @@ const CandidateTable = () => {
           onChange={(e) => setFilter(e.target.value)}
         />
       </div>
-
       <table>
         <thead>
           <tr>
             <th onClick={() => handleSort("name")}>
-              Name {sortKey === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+              Name {sortKey === "name" && (sortOrder === "asc" ? "▲" : "▼")}
             </th>
             <th onClick={() => handleSort("department")}>
-              Department{" "}
-              {sortKey === "department" && (sortOrder === "asc" ? "↑" : "↓")}
+              Department {sortKey === "department" && (sortOrder === "asc" ? "▲" : "▼")}
             </th>
             <th onClick={() => handleSort("interview_date")}>
-              Interview Date{" "}
-              {sortKey === "interview_date" && (sortOrder === "asc" ? "↑" : "↓")}
+              Interview Date {sortKey === "interview_date" && (sortOrder === "asc" ? "▲" : "▼")}
             </th>
             <th>Actions</th>
           </tr>
@@ -89,13 +58,9 @@ const CandidateTable = () => {
             <tr key={candidate.candidate_id}>
               <td>{candidate.name}</td>
               <td>{candidate.department}</td>
+              <td>{new Date(candidate.interview_date).toLocaleDateString()}</td>
               <td>
-                {candidate.interview_date
-                  ? new Date(candidate.interview_date).toLocaleDateString()
-                  : "N/A"}
-              </td>
-              <td>
-                <button onClick={() => handleViewCandidate(candidate.candidate_id)}>
+                <button onClick={() => alert(`Viewing ${candidate.name}`)}>
                   View
                 </button>
               </td>
@@ -108,4 +73,5 @@ const CandidateTable = () => {
 };
 
 export default CandidateTable;
+
 
