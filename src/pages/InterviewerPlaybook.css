@@ -1,0 +1,35 @@
+/* src/pages/InterviewerPlaybook.css */
+.playbook-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: sans-serif;
+  color: #333;
+}
+
+.job-selector {
+  margin-bottom: 1.5rem;
+}
+
+.job-selector label {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+.playbook-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.playbook-card {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.playbook-card h2 {
+  margin-top: 0;
+  color: #444;
+}
