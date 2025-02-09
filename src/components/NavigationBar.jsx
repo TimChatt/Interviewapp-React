@@ -8,7 +8,6 @@ const NavigationBar = () => {
   return (
     <div className="navbar">
       <div className="navbar-container">
-        <div className="navbar-logo">Your Logo</div>
         <div className="navbar-links">
           <Link to="/" style={{ textDecoration: "none" }}>
             <Button variant="ghost" colorScheme="whiteAlpha" size="lg" className="nav-button">
