@@ -1,15 +1,15 @@
 /* src/pages/CandidateProfile.css */
 
-/* Container for the whole page */
+/* Main container for the candidate profile page */
 .candidate-profile-page {
-  max-width: 1000px;
+  max-width: 1200px;  /* a bit wider if you have two columns */
   margin: 0 auto;
   padding: 2rem;
   font-family: sans-serif;
   color: #333;
 }
 
-/* Back Button */
+/* Back button at the top */
 .back-button {
   background-color: #888;
   border: none;
@@ -24,7 +24,7 @@
   background-color: #666;
 }
 
-/* Header (name, dept, interview date) */
+/* Header section with candidate name, job title, status, etc. */
 .candidate-header {
   display: flex;
   align-items: flex-start;
@@ -39,84 +39,193 @@
   color: #444;
 }
 .candidate-department,
-.candidate-interview-date {
-  margin: 0.2rem 0;
+.candidate-interview-date,
+.candidate-status,
+.candidate-stage {
+  margin: 0.3rem 0;
   font-size: 1rem;
   color: #666;
 }
 
-/* Two-column layout */
+/* Body holds two columns: .profile-left and .profile-right */
 .candidate-body {
   display: flex;
-  gap: 2rem;
+  gap: 2rem; /* spacing between columns */
+  margin-bottom: 2rem;
 }
-.scorecard-section,
-.transcript-section {
+.profile-left,
+.profile-right {
   flex: 1;
   background-color: #f9f9f9;
-  padding: 1rem 1.5rem;
   border-radius: 8px;
+  padding: 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-}
-.scorecard-section h2,
-.transcript-section h2 {
-  margin-top: 0;
 }
 
-/* Score list styling */
+/* TIMELINE SECTION */
+.timeline-section h2 {
+  margin-top: 0;
+}
+.timeline-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.timeline-section li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+.timeline-section li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #8884d8;
+  font-weight: bold;
+}
+
+/* SCORECARD SECTION */
+.scorecard-section h2 {
+  margin-top: 0;
+}
 .score-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-bottom: 1rem;
 }
-.score-skill {
-  text-transform: capitalize; /* e.g., technicalSkills -> Technicalskills */
-  font-weight: 600;
+.score-list li {
+  margin: 0.25rem 0;
 }
-
-/* Radar Chart Wrapper */
 .radar-chart-wrapper {
+  text-align: center;
   margin-top: 1rem;
-  text-align: center; /* center the chart */
 }
 
-/* Feedback cards */
-.feedback-section {
-  margin-top: 1.5rem;
+/* ATTACHMENTS */
+.attachments-section {
+  margin-top: 1rem;
 }
-.feedback-card {
-  background-color: #fff;
-  border-left: 4px solid #8884d8;
-  padding: 1rem;
-  margin-bottom: 1rem;
+.attachments-section h2 {
+  margin-bottom: 0.5rem;
+}
+.attachments-section p {
+  margin: 0.3rem 0;
+}
+
+/* RED FLAGS SECTION */
+.red-flags-section {
+  margin-top: 1rem;
+  background-color: #fff4f4;
+  border-left: 4px solid #d9534f; /* a red border to highlight risk */
+  padding: 0.75rem;
   border-radius: 4px;
 }
+.red-flags-section h3 {
+  margin-top: 0;
+  color: #d9534f;
+}
+.red-flags-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
 
-/* Transcript */
+/* CULTURE / TEAM FIT */
+.culture-fit-section {
+  margin-top: 1rem;
+  background-color: #ffffff;
+  border-left: 4px solid #8884d8; /* a purple border to differentiate */
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+.culture-fit-section h3 {
+  margin-top: 0;
+  color: #555;
+}
+.culture-fit-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* NEXT STEPS */
+.next-steps-section {
+  margin-top: 1rem;
+  background-color: #ffffff;
+  border-left: 4px solid #82ca9d; /* a green border to indicate forward motion */
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+.next-steps-section h3 {
+  margin-top: 0;
+  color: #666;
+}
+.next-steps-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* TRANSCRIPT & ANALYSIS (Right Column) */
+.profile-right h2 {
+  margin-top: 0;
+}
+.transcript-section {
+  margin-top: 1rem;
+}
+.transcript-section h3 {
+  margin-bottom: 0.5rem;
+}
 .transcript-entry {
   margin-bottom: 1rem;
 }
-.transcript-toggle {
-  background-color: #8884d8;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 4px;
+.transcript-entry p {
+  margin: 0.2rem 0;
 }
-.transcript-toggle:hover {
-  background-color: #6664d8;
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 0.5rem 0;
 }
 
-/* MEDIA QUERY: Responsive Layout */
+/* KEYWORD SECTION */
+.keyword-section {
+  margin-top: 1rem;
+  background-color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.keyword-section h4 {
+  margin-top: 0;
+  color: #555;
+}
+.keyword-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* SPEAKING RATIO
+   The text is placed inline in .profile-right, so no special container needed,
+   but you can style it if you want a separate card. */
+
+/* AUTO SUMMARY */
+.auto-summary-section {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.auto-summary-section h2 {
+  margin-top: 0;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+/* MEDIA QUERY: Stacked columns for smaller screens */
 @media (max-width: 768px) {
   .candidate-body {
     flex-direction: column;
   }
-  .scorecard-section,
-  .transcript-section {
+  .profile-left,
+  .profile-right {
     margin-bottom: 1rem;
   }
 }
