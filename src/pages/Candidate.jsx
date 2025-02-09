@@ -1,7 +1,7 @@
 // src/pages/Candidate.jsx
 import React from "react";
 import CandidateTable from "../components/CandidateTable";
-import candidateData from "../mockdata/ashbyMockData.json"; // Import candidate data
+import candidateData from "../mockdata/ashbyMockData.json";  // Import candidate data
 import "./Candidate.css";
 
 const Candidate = () => {
