@@ -1,4 +1,4 @@
-/* NavigationBar.css */
+/* src/components/NavigationBar.css */
 
 /* Main navigation bar container */
 .navbar {
@@ -11,7 +11,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Inner container to center content and constrain width */
+/* Inner container for centering content */
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -42,13 +42,15 @@
 
 /* Custom styling for Berry UI Buttons used in the nav bar */
 .nav-button {
-  background-color: transparent !important; /* Remove any default background */
-  color: #f8f9fa !important; /* Ensure text is light */
+  background-color: transparent !important;
+  color: #f8f9fa !important;
   font-size: 1.2rem !important;
   padding: 0.5rem 1rem !important;
   border: none !important;
   box-shadow: none !important;
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-width: 150px; /* Force a minimum width to display text */
+  white-space: nowrap;
 }
 
 .nav-button:hover {
