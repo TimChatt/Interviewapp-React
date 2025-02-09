@@ -7,12 +7,11 @@ const Candidate = () => {
   return (
     <div className="candidate-page">
       <h1>Candidate Management</h1>
-      {/* Simply render the table. The table itself merges data from ashbyMockData.json and metaviewMockData.json */}
-      <CandidateTable />
+      <div className="candidate-list-container">
+        <CandidateTable />
+      </div>
     </div>
   );
 };
 
 export default Candidate;
-
-
