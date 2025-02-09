@@ -1,31 +1,45 @@
 // src/pages/Recommendations.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Recommendations.css";
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 
-// Helper to parse date
+/**
+ * Helper to parse a date string. Returns a Date object or null.
+ */
 function parseDate(dateString) {
   if (!dateString) return null;
   return new Date(dateString);
 }
 
-// Mapping for user-friendly skill names
+/**
+ * Convert "technicalSkills" -> "Technical Skills", etc.
+ */
 function formatSkillName(skillKey) {
-  // e.g. "technicalSkills" -> "Technical Skills"
   return skillKey
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase());
 }
 
-// Example role-specific suggestions
+/**
+ * Example role-specific suggestions:
+ */
 const roleSuggestions = {
   "Frontend Developer": {
     recommendedTopics: [
       "React Hooks best practices and performance optimization",
-      "State management patterns (Redux, Zustand, etc.)",
-      "Collaboration with designers for UI/UX consistency"
+      "State management patterns (Redux, Zustand, etc.)"
     ],
-    topSoftSkills: ["Communication with cross-functional teams", "Adaptability to design changes"]
+    topSoftSkills: [
+      "Communication with cross-functional teams",
+      "Adaptability to design changes"
+    ],
+    skillWeights: {
+      technicalSkills: 1.0,
+      communication: 0.8,
+      problemSolving: 0.9,
+      teamFit: 0.7,
+      adaptability: 0.8
+    }
   },
   "Backend Developer": {
     recommendedTopics: [
@@ -33,40 +47,76 @@ const roleSuggestions = {
       "Microservices architecture",
       "API versioning and documentation"
     ],
-    topSoftSkills: ["Communicating complex technical topics", "System design trade-offs"]
+    topSoftSkills: [
+      "Communicating complex technical topics",
+      "System design trade-offs"
+    ],
+    skillWeights: {
+      technicalSkills: 1.0,
+      communication: 0.6,
+      problemSolving: 0.9,
+      teamFit: 0.8,
+      adaptability: 0.7
+    }
   }
 };
 
 function Recommendations() {
-  // --------------------------
-  // 1) Live Filters
-  // --------------------------
-  // Date range + job title filter
+  // -----------------------------
+  // 1) Local Storage & Filter State
+  // -----------------------------
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [filterJobTitle, setFilterJobTitle] = useState("");
 
+  useEffect(() => {
+    // On mount, load from localStorage
+    const storedStart = localStorage.getItem("recStartDate");
+    const storedEnd = localStorage.getItem("recEndDate");
+    const storedJob = localStorage.getItem("recJobTitle");
+
+    if (storedStart) setStartDate(storedStart);
+    if (storedEnd) setEndDate(storedEnd);
+    if (storedJob) setFilterJobTitle(storedJob);
+  }, []);
+
+  useEffect(() => {
+    // Save to localStorage whenever filters change
+    localStorage.setItem("recStartDate", startDate);
+    localStorage.setItem("recEndDate", endDate);
+    localStorage.setItem("recJobTitle", filterJobTitle);
+  }, [startDate, endDate, filterJobTitle]);
+
+  // -----------------------------
+  // 2) Build a Job Title Dropdown
+  // -----------------------------
+  // Gather distinct job titles from the mock data
+  const distinctJobTitles = Array.from(
+    new Set(ashbyMockData.map((c) => c.jobTitle || "Unknown"))
+  ).sort();
+
+  // -----------------------------
+  // 3) Filter the Data by Date Range & Job Title
+  // -----------------------------
   const startDateObj = startDate ? new Date(startDate) : null;
   const endDateObj = endDate ? new Date(endDate) : null;
 
-  // Filter data by date range
   const dateFiltered = ashbyMockData.filter((candidate) => {
     const interviewDT = parseDate(candidate.interviewDate);
-    if (!interviewDT) return false; // or true, depending on your needs
-
+    if (!interviewDT) return false;
     if (startDateObj && interviewDT < startDateObj) return false;
     if (endDateObj && interviewDT > endDateObj) return false;
     return true;
   });
 
-  // If filterJobTitle is specified, only keep candidates matching
+  // If user selected a job title (not ""), filter to that
   const filteredData = filterJobTitle
-    ? dateFiltered.filter((c) => (c.jobTitle || "").toLowerCase() === filterJobTitle.toLowerCase())
+    ? dateFiltered.filter((c) => (c.jobTitle || "Unknown") === filterJobTitle)
     : dateFiltered;
 
-  // --------------------------
-  // 2) Group By Job Title & Status
-  // --------------------------
+  // -----------------------------
+  // 4) Group By Job Title & Status
+  // -----------------------------
   const jobMap = {};
   filteredData.forEach((candidate) => {
     const jt = candidate.jobTitle || "Unknown";
@@ -80,15 +130,14 @@ function Recommendations() {
     }
   });
 
-  // --------------------------
-  // 3) Multi-Factor Analysis for Recommendations
-  // --------------------------
+  // -----------------------------
+  // 5) Weighted Skill Analysis
+  // -----------------------------
   const recommendations = [];
 
   Object.entries(jobMap).forEach(([jobTitle, group]) => {
     const { hired, archived } = group;
-
-    // If no hired or no archived, add minimal recommendation
+    // If none hired or none archived, produce minimal recommendation
     if (hired.length === 0 && archived.length > 0) {
       recommendations.push({
         jobTitle,
@@ -110,7 +159,6 @@ function Recommendations() {
       return;
     }
 
-    // We have both hired & archived
     // Gather all possible skills
     const allSkillsSet = new Set();
     [...hired, ...archived].forEach((c) => {
@@ -118,13 +166,19 @@ function Recommendations() {
         Object.keys(c.scores).forEach((sk) => allSkillsSet.add(sk));
       }
     });
-    const allSkills = Array.from(allSkillsSet);
 
-    // Compute average skill for each group
-    const hiredSkillAverages = {};
-    const archivedSkillAverages = {};
+    // Determine if there's a weighting object for this job
+    const jobWeights = roleSuggestions[jobTitle]?.skillWeights || {};
 
-    allSkills.forEach((skill) => {
+    // We'll store average skill for hired & archived
+    let skillGaps = [];
+
+    allSkillsSet.forEach((skill) => {
+      // Weighted logic: If jobWeights[skill] is present, multiply the final gap by that
+      // e.g., if "technicalSkills" has weight 1.0 but "communication" has 0.8, we scale accordingly
+      const weight = jobWeights[skill] || 1;
+
+      // Compute average for hired & archived
       let totalH = 0, countH = 0;
       let totalA = 0, countA = 0;
 
@@ -134,7 +188,6 @@ function Recommendations() {
           countH++;
         }
       });
-
       archived.forEach((c) => {
         if (c.scores && c.scores[skill] !== undefined) {
           totalA += c.scores[skill];
@@ -142,63 +195,43 @@ function Recommendations() {
         }
       });
 
-      hiredSkillAverages[skill] = countH > 0 ? (totalH / countH) : 0;
-      archivedSkillAverages[skill] = countA > 0 ? (totalA / countA) : 0;
+      const hiredAvg = countH > 0 ? (totalH / countH) : 0;
+      const archAvg = countA > 0 ? (totalA / countA) : 0;
+      const gapRaw = hiredAvg - archAvg; // how much higher hired is than archived
+      const gapWeighted = gapRaw * weight;
+
+      skillGaps.push({ skill, hiredAvg, archAvg, gapRaw, gapWeighted });
     });
 
-    // Identify biggest skill gaps
-    let skillGaps = allSkills.map((skill) => {
-      const hiredAvg = hiredSkillAverages[skill];
-      const archAvg = archivedSkillAverages[skill];
-      const gap = hiredAvg - archAvg; // positive => hired > archived
-      return { skill, gap, hiredAvg, archAvg };
-    });
+    // Sort skillGaps by gapWeighted descending
+    skillGaps.sort((a, b) => b.gapWeighted - a.gapWeighted);
 
-    // Sort by gap descending
-    skillGaps.sort((a, b) => b.gap - a.gap);
+    // Pick top 2 "meaningful" gaps
+    const topGaps = skillGaps.slice(0, 2).filter((g) => g.gapRaw > 0.5);
 
-    // We'll pick top 2 largest gaps for demonstration
-    const topGaps = skillGaps.slice(0, 2).filter((g) => g.gap > 0.5); // threshold for a "meaningful" gap
+    // Build a summary
+    const summary = `For "${jobTitle}" in this date range, there are ${hired.length} hired and ${archived.length} archived candidates.`;
 
-    // Role-specific weighting example:
-    // If it's a "Backend Developer", weigh "technicalSkills" or "problemSolving" more heavily
-    // (In this example, we just conceptually mention it. You could add logic to reorder skillGaps.)
-    // If jobTitle.includes('Backend'), etc.
-
-    // Build recommendation bullets
+    // Build bullets
     let bullets = [];
-    if (topGaps.length > 0) {
-      topGaps.forEach((g) => {
-        const skillName = formatSkillName(g.skill);
-        bullets.push(
-          `The hired candidates averaged ${g.hiredAvg.toFixed(1)} in ${skillName}, while archived averaged ${g.archAvg.toFixed(1)}. Enhancing ${skillName} could improve candidate success.`
-        );
-      });
-    }
+    topGaps.forEach((g) => {
+      const skillName = formatSkillName(g.skill);
+      bullets.push(
+        `Hired candidates are higher in ${skillName} (avg ${g.hiredAvg.toFixed(1)}) than archived (avg ${g.archAvg.toFixed(1)}). Weighted gap: ${(g.gapWeighted).toFixed(2)}.`
+      );
+    });
 
     // Role-specific suggestions
     if (roleSuggestions[jobTitle]) {
       bullets.push(
-        `Recommended Topics for ${jobTitle}: ${roleSuggestions[jobTitle].recommendedTopics.join(
-          ", "
-        )}.`
+        `Recommended Topics: ${roleSuggestions[jobTitle].recommendedTopics.join(", ")}`
       );
       bullets.push(
-        `Key Soft Skills: ${roleSuggestions[jobTitle].topSoftSkills.join(", ")}.`
+        `Key Soft Skills: ${roleSuggestions[jobTitle].topSoftSkills.join(", ")}`
       );
     }
 
-    // Example advanced logic hook for AI/NLP
-    // E.g. if you had transcripts, you could use an NLP model to see if archived
-    // candidates struggled to discuss certain topics. Here we just insert a placeholder
-    // bullet to demonstrate the idea.
-    bullets.push(
-      `Consider analyzing transcripts more deeply for recurring patterns or questions where archived candidates underperformed.`
-    );
-
-    // Summarize
-    let summary = `For "${jobTitle}" within the selected date range, we see ${hired.length} hired and ${archived.length} archived candidates.`;
-
+    // Final
     recommendations.push({
       jobTitle,
       summary,
@@ -206,18 +239,15 @@ function Recommendations() {
     });
   });
 
-  // --------------------------
-  // 4) Render UI
-  // --------------------------
   return (
     <div className="recommendations-page">
       <h1>Recommendations</h1>
       <p className="intro-text">
-        These suggestions are derived from comparing archived vs. hired candidates for each job
-        title, factoring in date range and role-specific considerations.
+        These suggestions incorporate a weighted skill gap analysis, date/job filters, and
+        role-specific advice.
       </p>
 
-      {/* Live Filters */}
+      {/* Filter Controls (Date Range & Job Title Dropdown) */}
       <div className="recommendation-filters">
         <label>
           Start Date:
@@ -237,12 +267,17 @@ function Recommendations() {
         </label>
         <label>
           Job Title:
-          <input
-            type="text"
-            placeholder="Frontend Developer..."
+          <select
             value={filterJobTitle}
             onChange={(e) => setFilterJobTitle(e.target.value)}
-          />
+          >
+            <option value="">(All Titles)</option>
+            {distinctJobTitles.map((jt) => (
+              <option key={jt} value={jt}>
+                {jt}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
 
