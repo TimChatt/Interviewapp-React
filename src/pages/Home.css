@@ -1,41 +1,76 @@
+/* src/pages/Home.css */
+
 .home-page {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 2rem;
-  background-color: #f8f9fa; /* Light background */
-  color: #1a202c; /* Dark text */
+  font-family: sans-serif;
+  color: #333;
 }
 
 .home-page h1 {
-  text-align: center;
-  color: #f6ad55; /* Orange for the main title */
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  color: #444;
 }
 
-.metrics-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+.home-intro {
+  margin-bottom: 2rem;
+  color: #555;
+}
+
+/* Stats Grid for total/hired/archived */
+.stats-grid {
+  display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.pipeline-section,
-.trends-section {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background-color: #ffffff; /* White card background */
+.stat-card {
+  flex: 1;
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.pipeline-section h2,
-.trends-section h2 {
-  color: #2d3748; /* Dark grey */
-  margin-bottom: 1rem;
-}
-
-.pipeline-section h2 {
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.trends-section h2 {
-  text-align: center;
+.stat-card h2 {
+  margin-top: 0;
+  color: #666;
+}
+.stat-card p {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 0.5rem 0 0;
+}
+
+/* Links Grid for navigation cards */
+.links-grid {
+  display: flex;
+  flex-wrap: wrap; /* so it can wrap if the screen is small */
+  gap: 1rem;
+}
+
+.link-card {
+  flex: 1 1 220px; /* minimum width of ~220px, grows as needed */
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.2s;
+}
+
+.link-card h3 {
+  margin-top: 0;
+  color: #666;
+}
+
+.link-card p {
+  margin-bottom: 0;
+  color: #555;
+}
+
+.link-card:hover {
+  background-color: #efefef;
 }
