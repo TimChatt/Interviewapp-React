@@ -1,64 +1,29 @@
 // src/components/NavigationBar.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "react-berry-ui"; // Using Berry UI Button
 import "./NavigationBar.css";
 
 const NavigationBar = () => {
   return (
     <div className="navbar">
       <div className="navbar-container">
+        {/* Optionally, remove or update this logo */}
         <div className="navbar-logo">My Company</div>
         <div className="navbar-links">
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <Button
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              size="lg"
-              className="nav-button"
-            >
-              Dashboard Overview
-            </Button>
+          <Link to="/" className="nav-link">
+            Dashboard Overview
           </Link>
-          <Link to="/candidates" style={{ textDecoration: "none" }}>
-            <Button
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              size="lg"
-              className="nav-button"
-            >
-              Candidates
-            </Button>
+          <Link to="/candidates" className="nav-link">
+            Candidates
           </Link>
-          <Link to="/insights" style={{ textDecoration: "none" }}>
-            <Button
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              size="lg"
-              className="nav-button"
-            >
-              Insights
-            </Button>
+          <Link to="/insights" className="nav-link">
+            Insights
           </Link>
-          <Link to="/recommendations" style={{ textDecoration: "none" }}>
-            <Button
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              size="lg"
-              className="nav-button"
-            >
-              Recommendations
-            </Button>
+          <Link to="/recommendations" className="nav-link">
+            Recommendations
           </Link>
-          <Link to="/admin" style={{ textDecoration: "none" }}>
-            <Button
-              variant="ghost"
-              colorScheme="whiteAlpha"
-              size="lg"
-              className="nav-button"
-            >
-              Admin
-            </Button>
+          <Link to="/admin" className="nav-link">
+            Admin
           </Link>
         </div>
       </div>
@@ -67,4 +32,5 @@ const NavigationBar = () => {
 };
 
 export default NavigationBar;
+
 
