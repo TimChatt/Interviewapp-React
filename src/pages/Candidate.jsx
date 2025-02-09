@@ -1,6 +1,7 @@
 // src/pages/Candidate.jsx
 import React from "react";
 import CandidateTable from "../components/CandidateTable";
+import candidateData from "../mockdata/ashbyMockData.json"; // import your candidate mock data
 import "./Candidate.css";
 
 const Candidate = () => {
@@ -8,7 +9,7 @@ const Candidate = () => {
     <div className="candidate-page">
       <h1>Candidate Management</h1>
       <div className="candidate-list-container">
-        <CandidateTable />
+        <CandidateTable candidates={candidateData} />
       </div>
     </div>
   );
