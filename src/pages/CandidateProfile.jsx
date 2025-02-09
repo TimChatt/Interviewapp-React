@@ -12,6 +12,7 @@ import {
 
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
+import competencyFramework from "../mockdata/CompetencyFrameworkMock.json"; // IMPORT FRAMEWORK
 import "./CandidateProfile.css";
 
 // For reference, if you want to map question IDs to categories:
@@ -20,6 +21,36 @@ const QUESTION_BANK = {
   q2: "Data Structures",
   q3: "Behavioral / Team Fit"
 };
+
+// -- Utility Functions --
+
+// Compare candidate's scores to a job family's level requirements
+function doesCandidateMeetRequirements(candidateScores, requiredCompetencies) {
+  for (let compKey in requiredCompetencies) {
+    const needed = requiredCompetencies[compKey];
+    const actual = candidateScores[compKey] || 0;
+    if (actual < needed) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Return all matching job families/levels for a candidate's scores
+function findPotentialMatches(candidateScores, framework) {
+  const matches = [];
+  framework.forEach((jobFamilyObj) => {
+    jobFamilyObj.levels.forEach((levelObj) => {
+      if (doesCandidateMeetRequirements(candidateScores, levelObj.requiredCompetencies)) {
+        matches.push({
+          jobFamily: jobFamilyObj.jobFamily,
+          levelName: levelObj.levelName
+        });
+      }
+    });
+  });
+  return matches;
+}
 
 // Identify top keywords from the transcript (placeholder logic).
 function getTopKeywords(transcriptEntries, limit = 5) {
@@ -64,7 +95,9 @@ function detectRedFlags(candidate) {
 function getCultureFitNotes(candidate) {
   if (!candidate.ashbyFeedback) return [];
   return candidate.ashbyFeedback
-    .filter((f) => f.summary.toLowerCase().includes("team fit") || f.summary.toLowerCase().includes("culture"))
+    .filter((f) =>
+      f.summary.toLowerCase().includes("team fit") || f.summary.toLowerCase().includes("culture")
+    )
     .map((f) => `Interviewer ${f.interviewerName} mentioned: "${f.summary}"`);
 }
 
@@ -144,7 +177,6 @@ function CandidateProfile() {
       });
     }
   }
-
   const { candidateWords, interviewerWords } = getSpeakingRatio(transcript);
   const totalWords = candidateWords + interviewerWords || 1;
   const candidateRatio = ((candidateWords / totalWords) * 100).toFixed(1);
@@ -154,6 +186,10 @@ function CandidateProfile() {
   const cultureNotes = getCultureFitNotes(candidate);
   const nextSteps = getNextSteps(candidate);
   const autoSummary = generateAutoSummary(candidate, transcript);
+
+  // 1) Find potential role matches using your new Competency Framework:
+  const candidateScores = candidate.ashbyScores || {};
+  const potentialRoles = findPotentialMatches(candidateScores, competencyFramework);
 
   return (
     <div className="candidate-profile-page">
@@ -363,6 +399,22 @@ function CandidateProfile() {
         <div className="grid-card auto-summary-section">
           <h2>Auto Summary</h2>
           <p>{autoSummary}</p>
+        </div>
+
+        {/* Potential Roles Card */}
+        <div className="grid-card">
+          <h2>Potential Roles</h2>
+          {potentialRoles.length > 0 ? (
+            <ul>
+              {potentialRoles.map((match, i) => (
+                <li key={i}>
+                  {match.jobFamily} ({match.levelName})
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>This candidate does not qualify for other roles based on their scores.</p>
+          )}
         </div>
       </div>
     </div>
