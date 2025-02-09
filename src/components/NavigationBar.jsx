@@ -1,10 +1,12 @@
+// src/components/NavigationBar.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "react-berry-ui";
+import { Button } from "react-berry-ui"; // Using Berry UI Button
+import "./NavigationBar.css";
 
 const NavigationBar = () => {
   return (
-    <div className="navbar" style={{ display: "flex", alignItems: "center" }}>
+    <div className="navbar">
       <div className="navbar-container">
         <div className="navbar-logo">Your Logo</div>
         <div className="navbar-links">
@@ -40,4 +42,3 @@ const NavigationBar = () => {
 };
 
 export default NavigationBar;
-
