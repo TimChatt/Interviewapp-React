@@ -43,7 +43,7 @@
 /* Custom styling for Berry UI Buttons used in the nav bar */
 .nav-button {
   background-color: transparent !important; /* Remove any default background */
-  color: #f8f9fa !important; /* Light text */
+  color: #f8f9fa !important; /* Ensure text is light */
   font-size: 1.2rem !important;
   padding: 0.5rem 1rem !important;
   border: none !important;
