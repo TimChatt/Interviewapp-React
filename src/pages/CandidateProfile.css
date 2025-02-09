@@ -2,7 +2,7 @@
 
 /* Main container for the candidate profile page */
 .candidate-profile-page {
-  max-width: 1200px;  /* a bit wider if you have two columns */
+  max-width: 1200px; /* a bit wider if you have two columns */
   margin: 0 auto;
   padding: 2rem;
   font-family: sans-serif;
@@ -202,10 +202,6 @@ hr {
   padding-left: 1.2rem;
 }
 
-/* SPEAKING RATIO
-   The text is placed inline in .profile-right, so no special container needed,
-   but you can style it if you want a separate card. */
-
 /* AUTO SUMMARY */
 .auto-summary-section {
   background-color: #f9f9f9;
@@ -217,6 +213,45 @@ hr {
   margin-top: 0;
   color: #444;
   margin-bottom: 0.5rem;
+}
+
+/* AI ADVICE SECTION */
+.ai-advice-section {
+  margin-top: 1rem;
+  background-color: #ffffff;
+  border-left: 4px solid #8884d8; /* a purple border for AI advice */
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+.ai-advice-section h3 {
+  margin-top: 0;
+  color: #666;
+}
+
+/* Did Well / Could Improve */
+.did-well-section,
+.could-improve-section {
+  margin-top: 1rem;
+}
+
+.did-well-section h4,
+.could-improve-section h4 {
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+/* Bullet lists for didWell / couldImprove */
+.did-well-section ul,
+.could-improve-section ul {
+  list-style: disc;
+  margin-left: 1.5rem;
+}
+
+/* Optional style for citation text */
+.citation {
+  color: #888;
+  font-size: 0.9rem;
+  margin-left: 0.25rem;
 }
 
 /* MEDIA QUERY: Stacked columns for smaller screens */
