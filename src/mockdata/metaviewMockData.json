@@ -10,31 +10,89 @@
     "transcript": [
       {
         "speaker": "John Doe (Interviewer)",
-        "timestamp": "00:00:00",
-        "question": "Can you tell me about your experience with React?",
-        "candidateAnswer": "Yes, I've worked with React for 3 years, building micro frontends..."
+        "timestamp": "00:00:05",
+        "questionId": "q1",
+        "question": "Can you describe a challenging React project you've worked on?",
+        "candidateAnswer": "Sure, I built a complex dashboard using React hooks, focusing on performance optimizations..."
       },
       {
         "speaker": "Jane Smith (Interviewer)",
-        "timestamp": "00:05:00",
-        "question": "How would you optimize performance in a large React application?",
-        "candidateAnswer": "I’d consider using memoization, lazy loading, code splitting, and analyzing dependencies..."
+        "timestamp": "00:05:10",
+        "questionId": "q2",
+        "question": "How do you handle state management across large components?",
+        "candidateAnswer": "I typically rely on React context or Redux, depending on complexity..."
       }
     ]
   },
   {
     "transcriptId": "T-002",
-    "candidateName": "Michael Lee",
-    "jobTitle": "Backend Developer",
+    "candidateName": "Bob Smith",
+    "jobTitle": "Frontend Developer",
     "interviewers": [
-      "Bob Williams"
+      "John Doe"
     ],
     "transcript": [
       {
-        "speaker": "Bob Williams (Interviewer)",
-        "timestamp": "00:00:05",
-        "question": "Tell me about a complex API you built using Node.js.",
-        "candidateAnswer": "I built a high-traffic service handling e-commerce inventory and real-time stock updates..."
+        "speaker": "John Doe (Interviewer)",
+        "timestamp": "00:00:15",
+        "questionId": "q1",
+        "question": "Walk me through how you'd optimize a React app with performance issues.",
+        "candidateAnswer": "I might look at the code structure, maybe memoize some components..."
+      },
+      {
+        "speaker": "John Doe (Interviewer)",
+        "timestamp": "00:03:30",
+        "questionId": "q2",
+        "question": "What are advanced use cases for useCallback and useMemo?",
+        "candidateAnswer": "Well, I'd use them to avoid re-renders, though I'm not super familiar with all scenarios..."
+      }
+    ]
+  },
+  {
+    "transcriptId": "T-003",
+    "candidateName": "Jen Williams",
+    "jobTitle": "Backend Developer",
+    "interviewers": [
+      "Sam Green"
+    ],
+    "transcript": [
+      {
+        "speaker": "Sam Green (Interviewer)",
+        "timestamp": "00:01:00",
+        "questionId": "q2",
+        "question": "What's your experience designing APIs for high-volume traffic?",
+        "candidateAnswer": "I focus on horizontal scaling, caching layers, and ensuring database queries are optimized..."
+      },
+      {
+        "speaker": "Sam Green (Interviewer)",
+        "timestamp": "00:05:20",
+        "questionId": "q3",
+        "question": "Could you talk about a time you had to resolve a major production incident?",
+        "candidateAnswer": "Yes, once we had a memory leak that caused downtime. I led the debugging using logs and heap snapshots..."
+      }
+    ]
+  },
+  {
+    "transcriptId": "T-004",
+    "candidateName": "Michael Lee",
+    "jobTitle": "Backend Developer",
+    "interviewers": [
+      "Sandra Kim"
+    ],
+    "transcript": [
+      {
+        "speaker": "Sandra Kim (Interviewer)",
+        "timestamp": "00:02:10",
+        "questionId": "q1",
+        "question": "Explain how you'd design a microservice architecture for real-time analytics.",
+        "candidateAnswer": "I'd start with a message queue, but I'm not entirely sure how I'd partition the data across shards..."
+      },
+      {
+        "speaker": "Sandra Kim (Interviewer)",
+        "timestamp": "00:05:45",
+        "questionId": "q3",
+        "question": "What approach do you take to ensure high availability in your API?",
+        "candidateAnswer": "I'd replicate databases and use load balancing, but I'd need more details to really be sure..."
       }
     ]
   }
