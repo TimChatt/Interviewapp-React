@@ -2,43 +2,96 @@
   {
     "candidateName": "Alice Johnson",
     "jobTitle": "Frontend Developer",
-    "interviewStage": "Technical Screen",
-    "interviewDate": "2025-02-01T10:30:00Z",
+    "interviewStage": "Onsite",
+    "interviewDate": "2025-02-05T10:00:00Z",
+    "status": "Hired", 
     "feedback": [
       {
         "interviewerName": "John Doe",
-        "summary": "Candidate displayed strong React skills but struggled with advanced design patterns."
+        "summary": "Excellent understanding of React and state management. Good communication."
       },
       {
         "interviewerName": "Jane Smith",
-        "summary": "Great communication and problem-solving approach."
+        "summary": "Strong problem-solving skills, code quality and organization were solid."
+      }
+    ],
+    "scores": {
+      "technicalSkills": 5,
+      "communication": 5,
+      "problemSolving": 4,
+      "teamFit": 4,
+      "adaptability": 4
+    }
+  },
+  {
+    "candidateName": "Bob Smith",
+    "jobTitle": "Frontend Developer",
+    "interviewStage": "Onsite",
+    "interviewDate": "2025-02-07T14:00:00Z",
+    "status": "Archived", 
+    "feedback": [
+      {
+        "interviewerName": "John Doe",
+        "summary": "Knowledgeable but had trouble demonstrating deeper React hooks understanding."
+      }
+    ],
+    "scores": {
+      "technicalSkills": 3,
+      "communication": 4,
+      "problemSolving": 3,
+      "teamFit": 3,
+      "adaptability": 2
+    },
+    "aiAdvice": {
+      "general": "Focus on clarifying your thought process and providing detailed, structured answers. Demonstrate familiarity with advanced React patterns and performance optimizations.",
+      "improveTechnicalSkills": "Review advanced React Hooks usage (useMemo, useCallback). Practice coding challenges focusing on modular code and design patterns.",
+      "improveProblemSolving": "Break down problems step-by-step out loud. Use examples or analogies to clarify complex ideas."
+    }
+  },
+  {
+    "candidateName": "Jen Williams",
+    "jobTitle": "Backend Developer",
+    "interviewStage": "Phone Screen",
+    "interviewDate": "2025-02-02T09:15:00Z",
+    "status": "Hired",
+    "feedback": [
+      {
+        "interviewerName": "Sam Green",
+        "summary": "Strong Node.js knowledge with good database design principles."
       }
     ],
     "scores": {
       "technicalSkills": 4,
-      "communication": 5,
-      "teamFit": 3,
+      "communication": 3,
       "problemSolving": 4,
+      "teamFit": 4,
       "adaptability": 3
     }
   },
   {
     "candidateName": "Michael Lee",
     "jobTitle": "Backend Developer",
-    "interviewStage": "Phone Screen",
-    "interviewDate": "2025-02-02T09:15:00Z",
+    "interviewStage": "Technical Screen",
+    "interviewDate": "2025-02-03T09:00:00Z",
+    "status": "Archived",
     "feedback": [
       {
-        "interviewerName": "Bob Williams",
-        "summary": "Demonstrated strong Node.js knowledge but didn't elaborate on database design."
+        "interviewerName": "Sandra Kim",
+        "summary": "Knows Node.js but struggled with complex systems. Communication was okay."
       }
     ],
     "scores": {
       "technicalSkills": 3,
-      "communication": 4,
-      "teamFit": 4,
+      "communication": 3,
       "problemSolving": 3,
+      "teamFit": 4,
       "adaptability": 2
+    },
+    "aiAdvice": {
+      "general": "Brush up on advanced system design and architecture. Improve clarity when walking through solutions.",
+      "improveTechnicalSkills": "Build or contribute to a project involving distributed systems or microservices to showcase deeper knowledge.",
+      "improveProblemSolving": "Practice whiteboarding complex flows, discuss trade-offs, and clarify assumptions early."
     }
   }
 ]
+
