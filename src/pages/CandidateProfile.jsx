@@ -41,7 +41,7 @@ function CandidateProfile() {
       interview_date: ashbyItem.interviewDate,
       ashbyScores: ashbyItem.scores,
       ashbyFeedback: ashbyItem.feedback,
-      aiAdvice: ashbyItem.aiAdvice || null, 
+      aiAdvice: ashbyItem.aiAdvice || null,
       metaviewTranscript: matchingMeta ? matchingMeta.transcript : []
     };
   });
@@ -63,7 +63,7 @@ function CandidateProfile() {
     );
   }
 
-  // 4. If candidate is "Archived", find a "Hired" candidate with same jobTitle
+  // 4. If candidate is "Archived", find a "Hired" candidate with the same jobTitle
   let hiredComparator = null;
   if (candidate.status === "Archived" && candidate.jobTitle) {
     hiredComparator = combinedCandidates.find(
@@ -72,7 +72,7 @@ function CandidateProfile() {
   }
 
   // 5. Build radar data
-  // If we have a "hiredComparator", we'll overlay both sets of scores.
+  // If we have a hired comparator, overlay both sets of scores
   let radarData = [];
   const candidateScores = candidate.ashbyScores || {};
 
@@ -91,7 +91,7 @@ function CandidateProfile() {
       hiredScore: hiredScores[skillKey] || 0
     }));
   } else {
-    // If no comparator or candidate is "Hired", just show the candidate's scores
+    // No comparator or candidate is "Hired": just show single candidate's scores
     radarData = Object.entries(candidateScores).map(([skillKey, score]) => ({
       skillKey,
       skillLabel: skillLabels[skillKey] || skillKey,
@@ -99,7 +99,7 @@ function CandidateProfile() {
     }));
   }
 
-  // 6. Format date
+  // 6. Format interview date
   const formattedDate = candidate.interview_date
     ? new Date(candidate.interview_date).toLocaleDateString()
     : "N/A";
@@ -117,11 +117,12 @@ function CandidateProfile() {
     setTranscriptExpanded((prev) => !prev);
   };
 
-  // 8. A quick “fairness check”
-  // In a real scenario, you'd do more sophisticated logic. Here, we just display a snippet if "Archived."
+  // 8. Third-person “fairness check” message
   let fairnessMessage = "";
   if (candidate.status === "Archived" && hiredComparator) {
-    fairnessMessage = `Comparing your answers to ${hiredComparator.name} (Hired), your technicalSkills score was ${candidateScores.technicalSkills}, while theirs was ${hiredComparator.ashbyScores.technicalSkills}. Historical data suggests additional depth in advanced topics might increase your rating.`;
+    const candidateTechnical = candidateScores.technicalSkills || 0;
+    const hiredTechnical = hiredComparator.ashbyScores.technicalSkills || 0;
+    fairnessMessage = `When compared to a successful candidate for the same role, the archived candidate's technical skills score was ${candidateTechnical}, while the hired candidate's was ${hiredTechnical}. Historical data suggests that demonstrating more depth in advanced topics can lead to higher ratings.`;
   }
 
   return (
@@ -165,7 +166,7 @@ function CandidateProfile() {
             <p>No scores available.</p>
           )}
 
-          {/* Radar Chart (candidate only, or overlay with hired comparator) */}
+          {/* Radar Chart (overlay if archived w/ comparator) */}
           {radarData.length > 0 && (
             <div className="radar-chart-wrapper">
               <h3>Competency Radar</h3>
@@ -179,21 +180,21 @@ function CandidateProfile() {
                 <PolarGrid />
                 <PolarAngleAxis dataKey="skillLabel" />
                 <PolarRadiusAxis angle={30} domain={[0, 5]} />
-                
+
                 {/* Candidate's Radar */}
                 <Radar
-                  name={candidate.name}
+                  name="Archived Candidate"
                   dataKey="candidateScore"
                   stroke="#8884d8"
                   fill="#8884d8"
                   fillOpacity={0.6}
                   isAnimationActive={true}
                 />
-                
-                {/* If there's a hired comparator, overlay their scores */}
+
+                {/* If there's a hired comparator, overlay their scores, but hide name */}
                 {hiredComparator && (
                   <Radar
-                    name={`${hiredComparator.name} (Hired)`}
+                    name="Hired Candidate"
                     dataKey="hiredScore"
                     stroke="#82ca9d"
                     fill="#82ca9d"
@@ -229,7 +230,7 @@ function CandidateProfile() {
             </div>
           )}
 
-          {/* AI Advice (Archived Only) */}
+          {/* AI Advice (Archived Only, third-person wording) */}
           {candidate.status === "Archived" && candidate.aiAdvice && (
             <div className="ai-advice-section">
               <h3>AI Advice</h3>
@@ -282,3 +283,4 @@ function CandidateProfile() {
 }
 
 export default CandidateProfile;
+
