@@ -1,60 +1,90 @@
+/* src/pages/Candidate.css */
+
+/* Overall page container similar to CandidateProfile */
 .candidate-page {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 2rem;
-  background-color: #f8f9fa; /* Light background */
-  color: #1a202c; /* Dark text */
+  font-family: sans-serif;
+  color: #333;
 }
 
 .candidate-page h1 {
-  text-align: center;
-  color: #f6ad55; /* Orange for main title */
+  margin-bottom: 1rem;
+  color: #444;
 }
 
-.candidate-section {
-  margin-top: 2rem;
-}
-
-.candidate-profile {
-  background-color: #ffffff; /* White background */
-  border: 1px solid #e2e8f0; /* Light grey border */
+/* Container for the table and its controls */
+.candidate-list-container {
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
   border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.candidate-profile h3 {
-  color: #2d3748; /* Dark grey */
+/* If your CandidateTable uses a .candidate-table class or something similar, style it here */
+.candidate-table {
+  margin-top: 1rem;
+}
+
+/* Table controls (search input, etc.) */
+.table-controls {
+  display: flex;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-.candidate-profile h4 {
-  color: #4a5568; /* Grey */
-  margin-top: 1.5rem;
+.table-controls input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.candidate-profile p {
-  margin: 0.5rem 0;
+/* Table styling */
+.candidate-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
 }
 
-.candidate-profile ul {
-  list-style-type: none;
-  padding: 0;
+.candidate-table th,
+.candidate-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-.candidate-profile ul li {
-  margin-bottom: 0.5rem;
-}
-
-.back-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #f6ad55; /* Orange */
-  color: #ffffff; /* White text */
+/* Make headers clickable for sorting with a little cursor change */
+.candidate-table th {
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-bottom: 1rem;
+  background-color: #f0f0f0;
+  color: #555;
+  user-select: none; /* Prevent accidental text selection on repeated clicks */
 }
 
-.back-button:hover {
-  background-color: #dd6b20; /* Darker orange */
+.candidate-table th:hover {
+  background-color: #e0e0e0;
 }
+
+/* Row hover effect */
+.candidate-table tbody tr:hover {
+  background-color: #f3f3f3;
+}
+
+/* "Actions" button styling */
+.candidate-table button {
+  background-color: #8884d8;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.candidate-table button:hover {
+  background-color: #6664d8;
+}
+
