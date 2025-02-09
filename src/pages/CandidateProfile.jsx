@@ -1,6 +1,16 @@
 // src/pages/CandidateProfile.jsx
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  Legend
+} from "recharts";
+
+// Mock data imports (assuming you're still using local JSON)
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
 
@@ -20,7 +30,7 @@ function CandidateProfile() {
       department: ashbyItem.jobTitle || "Engineering",
       interview_date: ashbyItem.interviewDate,
       ashbyScores: ashbyItem.scores,
-      ashbyFeedback: ashbyItem.feedback, 
+      ashbyFeedback: ashbyItem.feedback,
       metaviewTranscript: matchingMeta ? matchingMeta.transcript : []
     };
   });
@@ -40,12 +50,25 @@ function CandidateProfile() {
     );
   }
 
+  // Convert ashbyScores object -> array of { skill, score }
+  // e.g. {technicalSkills:4, communication:5} -> [{skill:'technicalSkills',score:4},...]
+  let radarData = [];
+  if (candidate.ashbyScores) {
+    radarData = Object.entries(candidate.ashbyScores).map(
+      ([skill, score]) => ({
+        skill,
+        score
+      })
+    );
+  }
+
   return (
     <div style={{ padding: "1rem" }}>
       <h1>Candidate Profile</h1>
       <h2>{candidate.name}</h2>
       <p>Department: {candidate.department}</p>
-      <p>Interview Date: 
+      <p>
+        Interview Date:{" "}
         {candidate.interview_date
           ? new Date(candidate.interview_date).toLocaleDateString()
           : "N/A"}
@@ -62,6 +85,32 @@ function CandidateProfile() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Radar Chart Example */}
+      {radarData.length > 0 && (
+        <div style={{ margin: "2rem 0" }}>
+          <h3>Radar Chart of Competencies</h3>
+          <RadarChart
+            outerRadius={90}
+            width={400}
+            height={300}
+            data={radarData}
+          >
+            <PolarGrid />
+            <PolarAngleAxis dataKey="skill" />
+            {/* Adjust domain if your scores are 1-5, etc. */}
+            <PolarRadiusAxis angle={30} domain={[0, 5]} />
+            <Radar
+              name="Score"
+              dataKey="score"
+              stroke="#8884d8"
+              fill="#8884d8"
+              fillOpacity={0.6}
+            />
+            <Legend />
+          </RadarChart>
         </div>
       )}
 
