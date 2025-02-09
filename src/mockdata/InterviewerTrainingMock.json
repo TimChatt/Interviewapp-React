@@ -1,0 +1,36 @@
+[
+  {
+    "jobTitle": "Frontend Engineer",
+    "questions": [
+      {
+        "question": "How do you optimize performance in a React application?",
+        "expectedAnswer": "A strong answer might include discussion of code splitting, memoization (useMemo, useCallback), lazy loading, and performance profiling.",
+        "followUp": "Can you give a specific example from a previous project?",
+        "category": "Performance"
+      },
+      {
+        "question": "What strategies do you use for state management?",
+        "expectedAnswer": "Candidates should mention context, Redux or other state management libraries and explain trade-offs.",
+        "followUp": "How do you decide which state management solution is best for a project?",
+        "category": "Architecture"
+      }
+    ]
+  },
+  {
+    "jobTitle": "Backend Engineer",
+    "questions": [
+      {
+        "question": "How do you design an API for high scalability?",
+        "expectedAnswer": "A good answer will discuss stateless design, load balancing, caching strategies, and database optimizations.",
+        "followUp": "What challenges have you faced in scaling an API?",
+        "category": "System Design"
+      },
+      {
+        "question": "How do you ensure database performance under load?",
+        "expectedAnswer": "Expected answers include indexing strategies, query optimization, and possibly sharding or replication.",
+        "followUp": "Can you share an experience where you improved database performance?",
+        "category": "Performance"
+      }
+    ]
+  }
+]
