@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   RadarChart,
@@ -144,6 +144,7 @@ function CandidateProfile() {
       });
     }
   }
+
   const { candidateWords, interviewerWords } = getSpeakingRatio(transcript);
   const totalWords = candidateWords + interviewerWords || 1;
   const candidateRatio = ((candidateWords / totalWords) * 100).toFixed(1);
@@ -182,159 +183,152 @@ function CandidateProfile() {
         </div>
       </div>
 
-      {/* Body */}
-      <div className="candidate-body">
-        {/* LEFT COLUMN */}
-        <div className="profile-left">
-          {/* TIMELINE */}
-          <div className="timeline-section">
-            <h2>Interview Timeline</h2>
-            {candidate.timeline.length > 0 ? (
-              <ul>
-                {candidate.timeline.map((t, idx) => (
-                  <li key={idx}>
-                    <strong>{t.stage}</strong> – {new Date(t.date).toLocaleDateString()}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No timeline data available.</p>
-            )}
-          </div>
-
-          {/* SCORECARD & RADAR */}
-          <div className="scorecard-section">
-            <h2>Scorecard</h2>
-            {candidate.ashbyScores ? (
-              <ul className="score-list">
-                {Object.entries(candidate.ashbyScores).map(([skillKey, score]) => (
-                  <li key={skillKey}>
-                    <strong>{skillKey}:</strong> {score}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No scores available.</p>
-            )}
-
-            {radarData.length > 0 && (
-              <div className="radar-chart-wrapper">
-                <h3>Competency Radar</h3>
-                <RadarChart
-                  outerRadius={90}
-                  width={400}
-                  height={300}
-                  data={radarData}
-                  animationBegin={300}
-                >
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="skillLabel" />
-                  <PolarRadiusAxis angle={30} domain={[0, 5]} />
-                  <Radar
-                    name="Candidate"
-                    dataKey="candidateScore"
-                    stroke="#8884d8"
-                    fill="#8884d8"
-                    fillOpacity={0.6}
-                    isAnimationActive={true}
-                  />
-                  <Tooltip />
-                  <Legend />
-                </RadarChart>
-              </div>
-            )}
-          </div>
-
-          {/* ATTACHMENTS */}
-          <div className="attachments-section">
-            <h2>Candidate Attachments</h2>
-            <p>Resume: <a href="#">View / Download</a></p>
-            <p>Coding Test: <a href="#">Link to GitHub Gist</a></p>
-          </div>
-
-          {/* RED FLAGS */}
-          {redFlags.length > 0 && (
-            <div className="red-flags-section">
-              <h3>Potential Risk Areas</h3>
-              <ul>
-                {redFlags.map((flag, idx) => (
-                  <li key={idx}>{flag}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* CULTURE FIT */}
-          {cultureNotes.length > 0 && (
-            <div className="culture-fit-section">
-              <h3>Culture / Team Fit Notes</h3>
-              <ul>
-                {cultureNotes.map((note, idx) => (
-                  <li key={idx}>{note}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* NEXT STEPS */}
-          {nextSteps.length > 0 && (
-            <div className="next-steps-section">
-              <h3>Recommended Next Steps</h3>
-              <ul>
-                {nextSteps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* AI ADVICE (New) */}
-          {candidate.aiAdvice && (
-            <div className="ai-advice-section">
-              <h3>AI Advice</h3>
-              {/* General commentary */}
-              <p>{candidate.aiAdvice.general}</p>
-
-              {/* Did Well */}
-              {candidate.aiAdvice.didWell && candidate.aiAdvice.didWell.length > 0 && (
-                <div className="did-well-section">
-                  <h4>What Went Well</h4>
-                  <ul>
-                    {candidate.aiAdvice.didWell.map((dw, idx) => (
-                      <li key={idx}>
-                        {dw.point}
-                        {dw.citation && (
-                          <span className="citation"> ({dw.citation})</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Could Improve */}
-              {candidate.aiAdvice.couldImprove && candidate.aiAdvice.couldImprove.length > 0 && (
-                <div className="could-improve-section">
-                  <h4>Areas to Improve</h4>
-                  <ul>
-                    {candidate.aiAdvice.couldImprove.map((ci, idx) => (
-                      <li key={idx}>
-                        {ci.point}
-                        {ci.citation && (
-                          <span className="citation"> ({ci.citation})</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+      {/* Responsive Grid Container */}
+      <div className="candidate-grid">
+        {/* TIMELINE CARD */}
+        <div className="grid-card">
+          <h2>Interview Timeline</h2>
+          {candidate.timeline.length > 0 ? (
+            <ul>
+              {candidate.timeline.map((t, idx) => (
+                <li key={idx}>
+                  <strong>{t.stage}</strong> – {new Date(t.date).toLocaleDateString()}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No timeline data available.</p>
           )}
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="profile-right">
-          <h2>Interview Transcript & Analysis</h2>
+        {/* SCORECARD CARD */}
+        <div className="grid-card">
+          <h2>Scorecard</h2>
+          {candidate.ashbyScores ? (
+            <ul className="score-list">
+              {Object.entries(candidate.ashbyScores).map(([skillKey, score]) => (
+                <li key={skillKey}>
+                  <strong>{skillKey}:</strong> {score}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No scores available.</p>
+          )}
+        </div>
+
+        {/* RADAR CHART CARD */}
+        <div className="grid-card">
+          <h3>Competency Radar</h3>
+          {radarData.length > 0 ? (
+            <RadarChart
+              outerRadius={90}
+              width={400}
+              height={300}
+              data={radarData}
+              animationBegin={300}
+            >
+              <PolarGrid />
+              <PolarAngleAxis dataKey="skillLabel" />
+              <PolarRadiusAxis angle={30} domain={[0, 5]} />
+              <Radar
+                name="Candidate"
+                dataKey="candidateScore"
+                stroke="#8884d8"
+                fill="#8884d8"
+                fillOpacity={0.6}
+                isAnimationActive={true}
+              />
+              <Tooltip />
+              <Legend />
+            </RadarChart>
+          ) : (
+            <p>No radar data available.</p>
+          )}
+        </div>
+
+        {/* ATTACHMENTS CARD */}
+        <div className="grid-card">
+          <h2>Candidate Attachments</h2>
+          <p>Resume: <a href="#">View / Download</a></p>
+          <p>Coding Test: <a href="#">Link to GitHub Gist</a></p>
+        </div>
+
+        {/* RED FLAGS CARD */}
+        {redFlags.length > 0 && (
+          <div className="grid-card red-flags-section">
+            <h3>Potential Risk Areas</h3>
+            <ul>
+              {redFlags.map((flag, idx) => (
+                <li key={idx}>{flag}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* CULTURE FIT CARD */}
+        {cultureNotes.length > 0 && (
+          <div className="grid-card culture-fit-section">
+            <h3>Culture / Team Fit Notes</h3>
+            <ul>
+              {cultureNotes.map((note, idx) => (
+                <li key={idx}>{note}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* NEXT STEPS CARD */}
+        {nextSteps.length > 0 && (
+          <div className="grid-card next-steps-section">
+            <h3>Recommended Next Steps</h3>
+            <ul>
+              {nextSteps.map((step, idx) => (
+                <li key={idx}>{step}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* AI ADVICE CARD */}
+        {candidate.aiAdvice && (
+          <div className="grid-card ai-advice-section">
+            <h3>AI Advice</h3>
+            <p>{candidate.aiAdvice.general}</p>
+
+            {candidate.aiAdvice.didWell && candidate.aiAdvice.didWell.length > 0 && (
+              <div className="did-well-section">
+                <h4>What Went Well</h4>
+                <ul>
+                  {candidate.aiAdvice.didWell.map((dw, i) => (
+                    <li key={i}>
+                      {dw.point}
+                      {dw.citation && <span className="citation"> ({dw.citation})</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {candidate.aiAdvice.couldImprove && candidate.aiAdvice.couldImprove.length > 0 && (
+              <div className="could-improve-section">
+                <h4>Areas to Improve</h4>
+                <ul>
+                  {candidate.aiAdvice.couldImprove.map((ci, i) => (
+                    <li key={i}>
+                      {ci.point}
+                      {ci.citation && <span className="citation"> ({ci.citation})</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TRANSCRIPT CARD */}
+        <div className="grid-card">
+          <h2>Interview Transcript</h2>
           <p>
             <strong>Speaking Ratio:</strong> Candidate {candidateRatio}% / Interviewer {interviewerRatio}%
           </p>
@@ -352,27 +346,24 @@ function CandidateProfile() {
             </div>
           )}
 
-          <div className="transcript-section">
-            <h3>Transcript</h3>
-            {transcript.map((entry, idx) => (
-              <div key={idx} className="transcript-entry">
-                <p>
-                  <strong>{entry.speaker}:</strong> {entry.question}
-                </p>
-                <p>
-                  <em>Answer: {entry.candidateAnswer}</em>
-                </p>
-                <hr />
-              </div>
-            ))}
-          </div>
+          {transcript.map((entry, idx) => (
+            <div key={idx} className="transcript-entry">
+              <p>
+                <strong>{entry.speaker}:</strong> {entry.question}
+              </p>
+              <p>
+                <em>Answer: {entry.candidateAnswer}</em>
+              </p>
+              <hr />
+            </div>
+          ))}
         </div>
-      </div>
 
-      {/* AUTO SUMMARY */}
-      <div className="auto-summary-section">
-        <h2>Auto Summary</h2>
-        <p>{autoSummary}</p>
+        {/* AUTO SUMMARY CARD */}
+        <div className="grid-card auto-summary-section">
+          <h2>Auto Summary</h2>
+          <p>{autoSummary}</p>
+        </div>
       </div>
     </div>
   );
