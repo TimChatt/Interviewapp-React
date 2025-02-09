@@ -1,25 +1,59 @@
+/* src/pages/CandidateProfile.css */
+
 /* Main container for the candidate profile page */
 .candidate-profile-page {
-  max-width: 1200px;
+  max-width: 1200px; /* widen if you have many cards */
   margin: 0 auto;
   padding: 2rem;
   font-family: sans-serif;
   color: #333;
 }
 
-/* Back button, candidate-header, candidate-info, etc. (unchanged) */
-.back-button { /* same styling */ }
-.candidate-header { /* same styling */ }
-.candidate-info { /* same styling */ }
-/* etc... */
+/* Back button */
+.back-button {
+  background-color: #888;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+}
+.back-button:hover {
+  background-color: #666;
+}
 
-/* The new grid container */
+/* Header section with candidate info */
+.candidate-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+.candidate-info {
+  flex: 1;
+}
+.candidate-name {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #444;
+}
+.candidate-department,
+.candidate-interview-date,
+.candidate-status,
+.candidate-stage {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+/* The new grid container for each "card" */
 .candidate-grid {
   display: grid;
-  /* Each card is at least 320px wide, expands to fill space, auto-wrap */
+  /* Each card is at least 320px, expands up to 1fr, auto-wraps */
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem; /* spacing between cards */
-  margin-top: 1rem; /* space below header */
+  margin-top: 1rem;
 }
 
 /* Each section is now a "grid-card" */
@@ -28,26 +62,119 @@
   padding: 1rem 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* If you want consistent spacing for "borders" like red-flags, you can keep them inside or override. */
 }
 
-/* Example styling for .score-list, .transcript-entry, etc. */
+/* TIMELINE */
+.timeline-section h2 {
+  margin-top: 0;
+}
+.timeline-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.timeline-section li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+.timeline-section li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #8884d8;
+  font-weight: bold;
+}
+
+/* SCORECARD */
 .score-list {
   list-style: none;
   padding: 0;
   margin: 0.5rem 0;
 }
-.transcript-entry {
-  margin-bottom: 1rem;
+.radar-chart-wrapper {
+  text-align: center;
+  margin-top: 1rem;
 }
-/* ...other existing styles for .red-flags-section, .culture-fit-section, etc. can remain */
 
+/* ATTACHMENTS */
+.attachments-section h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+.attachments-section p {
+  margin: 0.3rem 0;
+}
+
+/* RED FLAGS */
+.red-flags-section {
+  background-color: #fff4f4;
+  border-left: 4px solid #d9534f;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+.red-flags-section h3 {
+  margin-top: 0;
+  color: #d9534f;
+}
+.red-flags-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* CULTURE / TEAM FIT */
+.culture-fit-section {
+  background-color: #ffffff;
+  border-left: 4px solid #8884d8;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+.culture-fit-section h3 {
+  margin-top: 0;
+  color: #555;
+}
+.culture-fit-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* NEXT STEPS */
+.next-steps-section {
+  background-color: #ffffff;
+  border-left: 4px solid #82ca9d;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+.next-steps-section h3 {
+  margin-top: 0;
+  color: #666;
+}
+.next-steps-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* AI ADVICE */
 .ai-advice-section {
   border-left: 4px solid #8884d8;
   padding-left: 1rem;
+  margin-top: 1rem;
+}
+.ai-advice-section h3 {
+  color: #666;
 }
 .did-well-section,
 .could-improve-section {
   margin-top: 0.75rem;
+}
+.did-well-section ul,
+.could-improve-section ul {
+  list-style: disc;
+  margin-left: 1.5rem;
 }
 .citation {
   color: #888;
@@ -55,10 +182,50 @@
   margin-left: 0.25rem;
 }
 
-/* If you have a large radar chart, you might ensure .grid-card has min-height, or
-   wrap the radar chart in a container to prevent overflow. Up to your preference. */
+/* TRANSCRIPT */
+.transcript-entry {
+  margin-bottom: 1rem;
+}
+.transcript-entry p {
+  margin: 0.2rem 0;
+}
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 0.5rem 0;
+}
 
-/* OPTIONAL: Fallback single-column for very narrow screens */
+/* KEYWORDS */
+.keyword-section {
+  background-color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  margin-top: 1rem;
+}
+.keyword-section h4 {
+  margin-top: 0;
+  color: #555;
+}
+.keyword-section ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* AUTO SUMMARY */
+.auto-summary-section {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.auto-summary-section h2 {
+  margin-top: 0;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive tweak for extremely narrow screens */
 @media (max-width: 400px) {
   .candidate-grid {
     grid-template-columns: 1fr;
