@@ -1,33 +1,58 @@
+/* NavigationBar.css */
+
+/* Main navigation bar container */
 .navbar {
   background-color: #1a202c; /* Dark background */
   color: #f8f9fa; /* Light text */
   padding: 1rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Inner container to center content and constrain width */
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  align-items: center;
 }
 
+/* Logo styling */
 .navbar-logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: #f6ad55; /* Orange */
 }
 
-.navbar-links a {
-  margin: 0 1rem;
-  color: #f8f9fa; /* Light text */
-  transition: color 0.3s ease;
+/* Navigation links container */
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-.navbar-links a:hover {
-  color: #f6ad55; /* Orange */
+/* Remove default link underline */
+.navbar-links a {
+  text-decoration: none;
+}
+
+/* Custom styling for Berry UI Buttons used in the nav bar */
+.nav-button {
+  background-color: transparent !important; /* Remove any default background */
+  color: #f8f9fa !important; /* Light text */
+  font-size: 1.2rem !important;
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: rgba(246, 173, 85, 0.2) !important; /* Subtle orange hover background */
+  border-color: #f6ad55 !important;
+  color: #f6ad55 !important;
 }
