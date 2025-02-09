@@ -1,0 +1,42 @@
+[
+  {
+    "candidateName": "Alice Johnson",
+    "jobTitle": "Frontend Developer",
+    "interviewStage": "Technical Screen",
+    "interviewDate": "2025-02-01T10:30:00Z",
+    "feedback": [
+      {
+        "interviewerName": "John Doe",
+        "summary": "Candidate displayed strong React skills but struggled with advanced design patterns."
+      },
+      {
+        "interviewerName": "Jane Smith",
+        "summary": "Great communication and problem-solving approach."
+      }
+    ],
+    "scores": {
+      "technicalSkills": 4,
+      "communication": 5,
+      "teamFit": 3,
+      "problemSolving": 4
+    }
+  },
+  {
+    "candidateName": "Michael Lee",
+    "jobTitle": "Backend Developer",
+    "interviewStage": "Phone Screen",
+    "interviewDate": "2025-02-02T09:15:00Z",
+    "feedback": [
+      {
+        "interviewerName": "Bob Williams",
+        "summary": "Demonstrated strong Node.js knowledge but didn't elaborate on database design."
+      }
+    ],
+    "scores": {
+      "technicalSkills": 3,
+      "communication": 4,
+      "teamFit": 4,
+      "problemSolving": 3
+    }
+  }
+]
