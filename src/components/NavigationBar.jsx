@@ -8,7 +8,6 @@ const NavigationBar = () => {
     <div className="navbar">
       <div className="navbar-container">
         {/* Optionally, remove or update this logo */}
-        <div className="navbar-logo">My Company</div>
         <div className="navbar-links">
           <Link to="/" className="nav-link">
             Dashboard Overview
