@@ -15,7 +15,7 @@ import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
 import "./CandidateProfile.css";
 
-// Mapping raw skills to user-friendly labels
+// Mapping raw skill keys -> user-friendly labels
 const skillLabels = {
   technicalSkills: "Technical Skills",
   communication: "Communication",
@@ -33,19 +33,20 @@ function CandidateProfile() {
     const matchingMeta = metaviewMockData.find(
       (metaItem) => metaItem.candidateName === ashbyItem.candidateName
     );
-
     return {
       candidate_id: index + 1,
       name: ashbyItem.candidateName,
-      department: ashbyItem.jobTitle || "Engineering",
+      jobTitle: ashbyItem.jobTitle,
+      status: ashbyItem.status, // "Hired" or "Archived"
       interview_date: ashbyItem.interviewDate,
       ashbyScores: ashbyItem.scores,
       ashbyFeedback: ashbyItem.feedback,
+      aiAdvice: ashbyItem.aiAdvice || null, 
       metaviewTranscript: matchingMeta ? matchingMeta.transcript : []
     };
   });
 
-  // 2. Find matching candidate
+  // 2. Find the candidate by ID
   const candidate = combinedCandidates.find(
     (item) => item.candidate_id.toString() === candidateId
   );
@@ -62,28 +63,52 @@ function CandidateProfile() {
     );
   }
 
-  // 4. Create radar data and label the skills nicely
+  // 4. If candidate is "Archived", find a "Hired" candidate with same jobTitle
+  let hiredComparator = null;
+  if (candidate.status === "Archived" && candidate.jobTitle) {
+    hiredComparator = combinedCandidates.find(
+      (c) => c.jobTitle === candidate.jobTitle && c.status === "Hired"
+    );
+  }
+
+  // 5. Build radar data
+  // If we have a "hiredComparator", we'll overlay both sets of scores.
   let radarData = [];
-  if (candidate.ashbyScores) {
-    radarData = Object.entries(candidate.ashbyScores).map(([skillKey, score]) => ({
+  const candidateScores = candidate.ashbyScores || {};
+
+  if (hiredComparator) {
+    const hiredScores = hiredComparator.ashbyScores || {};
+    // Merge each skill into a single object with candidateScore & hiredScore
+    const allSkills = new Set([
+      ...Object.keys(candidateScores),
+      ...Object.keys(hiredScores)
+    ]);
+
+    radarData = Array.from(allSkills).map((skillKey) => ({
       skillKey,
-      // If we have a label, use it, otherwise just show the raw key
       skillLabel: skillLabels[skillKey] || skillKey,
-      score
+      candidateScore: candidateScores[skillKey] || 0,
+      hiredScore: hiredScores[skillKey] || 0
+    }));
+  } else {
+    // If no comparator or candidate is "Hired", just show the candidate's scores
+    radarData = Object.entries(candidateScores).map(([skillKey, score]) => ({
+      skillKey,
+      skillLabel: skillLabels[skillKey] || skillKey,
+      candidateScore: score
     }));
   }
 
-  // 5. Format date
+  // 6. Format date
   const formattedDate = candidate.interview_date
     ? new Date(candidate.interview_date).toLocaleDateString()
     : "N/A";
 
-  // 6. Expandable transcript logic
+  // 7. Expandable transcript logic
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const transcript = candidate.metaviewTranscript || [];
   const MAX_VISIBLE_ENTRIES = 3;
 
-  // If not expanded, limit the visible transcript entries
   const visibleTranscript = transcriptExpanded
     ? transcript
     : transcript.slice(0, MAX_VISIBLE_ENTRIES);
@@ -92,34 +117,42 @@ function CandidateProfile() {
     setTranscriptExpanded((prev) => !prev);
   };
 
-  // 7. Render
+  // 8. A quick “fairness check”
+  // In a real scenario, you'd do more sophisticated logic. Here, we just display a snippet if "Archived."
+  let fairnessMessage = "";
+  if (candidate.status === "Archived" && hiredComparator) {
+    fairnessMessage = `Comparing your answers to ${hiredComparator.name} (Hired), your technicalSkills score was ${candidateScores.technicalSkills}, while theirs was ${hiredComparator.ashbyScores.technicalSkills}. Historical data suggests additional depth in advanced topics might increase your rating.`;
+  }
+
   return (
     <div className="candidate-profile-page">
       <button className="back-button" onClick={() => navigate("/candidates")}>
         &larr; Back to Candidates
       </button>
 
-      {/* Header: Basic Info */}
+      {/* Header */}
       <div className="candidate-header">
         <div className="candidate-info">
           <h1 className="candidate-name">{candidate.name}</h1>
           <p className="candidate-department">
-            <strong>Department:</strong> {candidate.department}
+            <strong>Job Title:</strong> {candidate.jobTitle}
           </p>
           <p className="candidate-interview-date">
             <strong>Interview Date:</strong> {formattedDate}
           </p>
+          <p className="candidate-status">
+            <strong>Status:</strong> {candidate.status}
+          </p>
         </div>
       </div>
 
-      {/* Two-column layout */}
       <div className="candidate-body">
         {/* Left Column: Scorecard + Radar */}
         <div className="scorecard-section">
           <h2>Scorecard</h2>
-          {candidate.ashbyScores ? (
+          {Object.keys(candidateScores).length > 0 ? (
             <ul className="score-list">
-              {Object.entries(candidate.ashbyScores).map(([skillKey, score]) => (
+              {Object.entries(candidateScores).map(([skillKey, score]) => (
                 <li key={skillKey}>
                   <span className="score-skill">
                     {skillLabels[skillKey] || skillKey}
@@ -132,6 +165,7 @@ function CandidateProfile() {
             <p>No scores available.</p>
           )}
 
+          {/* Radar Chart (candidate only, or overlay with hired comparator) */}
           {radarData.length > 0 && (
             <div className="radar-chart-wrapper">
               <h3>Competency Radar</h3>
@@ -143,23 +177,38 @@ function CandidateProfile() {
                 animationBegin={300}
               >
                 <PolarGrid />
-                {/* We'll use skillLabel as the axis label */}
                 <PolarAngleAxis dataKey="skillLabel" />
                 <PolarRadiusAxis angle={30} domain={[0, 5]} />
+                
+                {/* Candidate's Radar */}
                 <Radar
-                  name="Score"
-                  dataKey="score"
+                  name={candidate.name}
+                  dataKey="candidateScore"
                   stroke="#8884d8"
                   fill="#8884d8"
                   fillOpacity={0.6}
                   isAnimationActive={true}
                 />
+                
+                {/* If there's a hired comparator, overlay their scores */}
+                {hiredComparator && (
+                  <Radar
+                    name={`${hiredComparator.name} (Hired)`}
+                    dataKey="hiredScore"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                    fillOpacity={0.4}
+                    isAnimationActive={true}
+                  />
+                )}
+
                 <Tooltip />
                 <Legend />
               </RadarChart>
             </div>
           )}
 
+          {/* Interviewer Feedback */}
           {candidate.ashbyFeedback && candidate.ashbyFeedback.length > 0 && (
             <div className="feedback-section">
               <h3>Interviewer Feedback</h3>
@@ -169,6 +218,34 @@ function CandidateProfile() {
                   <p>{feedbackItem.summary}</p>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Fairness Check (Archived Only) */}
+          {candidate.status === "Archived" && fairnessMessage && (
+            <div className="fairness-section">
+              <h3>Score Fairness Check</h3>
+              <p>{fairnessMessage}</p>
+            </div>
+          )}
+
+          {/* AI Advice (Archived Only) */}
+          {candidate.status === "Archived" && candidate.aiAdvice && (
+            <div className="ai-advice-section">
+              <h3>AI Advice</h3>
+              <p>{candidate.aiAdvice.general}</p>
+              {candidate.aiAdvice.improveTechnicalSkills && (
+                <>
+                  <h4>Improving Technical Skills</h4>
+                  <p>{candidate.aiAdvice.improveTechnicalSkills}</p>
+                </>
+              )}
+              {candidate.aiAdvice.improveProblemSolving && (
+                <>
+                  <h4>Improving Problem-Solving</h4>
+                  <p>{candidate.aiAdvice.improveProblemSolving}</p>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -189,7 +266,6 @@ function CandidateProfile() {
                   <hr />
                 </div>
               ))}
-              {/* Show More / Show Less if there's more than MAX_VISIBLE_ENTRIES */}
               {transcript.length > MAX_VISIBLE_ENTRIES && (
                 <button className="transcript-toggle" onClick={handleToggleTranscript}>
                   {transcriptExpanded ? "Show Less" : "Show More"}
