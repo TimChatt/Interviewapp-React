@@ -1,6 +1,5 @@
 /* src/components/NavigationBar.css */
 
-/* Main navigation bar container */
 .navbar {
   background-color: #1a202c; /* Dark background */
   color: #f8f9fa; /* Light text */
@@ -11,7 +10,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Inner container for centering content */
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -21,40 +19,31 @@
   align-items: center;
 }
 
-/* Logo styling */
 .navbar-logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: #f6ad55; /* Orange */
 }
 
-/* Navigation links container */
 .navbar-links {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
 
-/* Remove default link underline */
 .navbar-links a {
+  margin: 0 1rem;
+  color: #f8f9fa;
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-/* Custom styling for Berry UI Buttons used in the nav bar */
-.nav-button {
-  background-color: transparent !important;
-  color: #f8f9fa !important;
-  font-size: 1.2rem !important;
-  padding: 0.5rem 1rem !important;
-  border: none !important;
-  box-shadow: none !important;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  min-width: 150px; /* Force a minimum width to display text */
-  white-space: nowrap;
+.navbar-links a:hover {
+  color: #f6ad55; /* Orange */
 }
 
-.nav-button:hover {
-  background-color: rgba(246, 173, 85, 0.2) !important; /* Subtle orange hover background */
-  border-color: #f6ad55 !important;
-  color: #f6ad55 !important;
+/* Optionally, if you had additional classes for nav-link styling: */
+.nav-link {
+  font-size: 1.2rem;
+  font-weight: normal;
 }
