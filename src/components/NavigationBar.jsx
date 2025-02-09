@@ -7,7 +7,7 @@ const NavigationBar = () => {
   return (
     <div className="navbar">
       <div className="navbar-container">
-        {/* Optionally, remove or update this logo */}
+        {/* Optionally, you can add or update your logo here */}
         <div className="navbar-links">
           <Link to="/" className="nav-link">
             Dashboard Overview
@@ -20,6 +20,9 @@ const NavigationBar = () => {
           </Link>
           <Link to="/recommendations" className="nav-link">
             Recommendations
+          </Link>
+          <Link to="/interviewer-playbook" className="nav-link">
+            Interviewer Playbook
           </Link>
           <Link to="/admin" className="nav-link">
             Admin
