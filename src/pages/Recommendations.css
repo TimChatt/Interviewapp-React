@@ -9,14 +9,33 @@
 }
 
 .recommendations-page h1 {
-  color: #444;
   margin-bottom: 1rem;
+  color: #444;
 }
 
 .intro-text {
   margin-bottom: 1.5rem;
   font-size: 1rem;
   color: #555;
+}
+
+.recommendation-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.recommendation-filters label {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.recommendation-filters input[type="date"],
+.recommendation-filters input[type="text"] {
+  margin-left: 0.5rem;
+  padding: 0.3rem;
 }
 
 .recommendation-card {
@@ -37,4 +56,3 @@
   margin-left: 1.2rem;
   list-style: disc;
 }
-
