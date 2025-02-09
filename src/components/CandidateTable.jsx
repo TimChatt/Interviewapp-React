@@ -1,11 +1,13 @@
 // src/components/CandidateTable.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CandidateTable.css";
 
 const CandidateTable = ({ candidates }) => {
   const [filter, setFilter] = useState("");
   const [sortKey, setSortKey] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
+  const navigate = useNavigate();
 
   // Filter candidates based on name
   const filteredCandidates = candidates.filter((candidate) =>
@@ -60,7 +62,7 @@ const CandidateTable = ({ candidates }) => {
               <td>{candidate.department}</td>
               <td>{new Date(candidate.interview_date).toLocaleDateString()}</td>
               <td>
-                <button onClick={() => alert(`Viewing ${candidate.name}`)}>
+                <button onClick={() => navigate(`/candidate/${candidate.candidate_id}`)}>
                   View
                 </button>
               </td>
@@ -73,5 +75,4 @@ const CandidateTable = ({ candidates }) => {
 };
 
 export default CandidateTable;
-
 
