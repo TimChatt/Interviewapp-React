@@ -12,7 +12,7 @@ import {
 
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
-import competencyFramework from "../mockdata/CompetencyFrameworkMock.json"; // IMPORT FRAMEWORK
+import competencyFramework from "../mockdata/CompetencyFrameworkMock.json"; // if needed elsewhere
 import "./CandidateProfile.css";
 
 // For reference, if you want to map question IDs to categories:
@@ -21,36 +21,6 @@ const QUESTION_BANK = {
   q2: "Data Structures",
   q3: "Behavioral / Team Fit"
 };
-
-// -- Utility Functions --
-
-// Compare candidate's scores to a job family's level requirements
-function doesCandidateMeetRequirements(candidateScores, requiredCompetencies) {
-  for (let compKey in requiredCompetencies) {
-    const needed = requiredCompetencies[compKey];
-    const actual = candidateScores[compKey] || 0;
-    if (actual < needed) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// Return all matching job families/levels for a candidate's scores
-function findPotentialMatches(candidateScores, framework) {
-  const matches = [];
-  framework.forEach((jobFamilyObj) => {
-    jobFamilyObj.levels.forEach((levelObj) => {
-      if (doesCandidateMeetRequirements(candidateScores, levelObj.requiredCompetencies)) {
-        matches.push({
-          jobFamily: jobFamilyObj.jobFamily,
-          levelName: levelObj.levelName
-        });
-      }
-    });
-  });
-  return matches;
-}
 
 // Identify top keywords from the transcript (placeholder logic).
 function getTopKeywords(transcriptEntries, limit = 5) {
@@ -95,9 +65,7 @@ function detectRedFlags(candidate) {
 function getCultureFitNotes(candidate) {
   if (!candidate.ashbyFeedback) return [];
   return candidate.ashbyFeedback
-    .filter((f) =>
-      f.summary.toLowerCase().includes("team fit") || f.summary.toLowerCase().includes("culture")
-    )
+    .filter((f) => f.summary.toLowerCase().includes("team fit") || f.summary.toLowerCase().includes("culture"))
     .map((f) => `Interviewer ${f.interviewerName} mentioned: "${f.summary}"`);
 }
 
@@ -165,18 +133,44 @@ function CandidateProfile() {
     );
   }
 
-  // Prepare data for the UI
-  const transcript = candidate.metaviewTranscript || [];
+  // For archived candidates, find a historic hired comparator (by job title)
+  let comparatorCandidate = null;
+  if (candidate.status === "Archived") {
+    comparatorCandidate = combinedCandidates.find(
+      (c) => c.jobTitle === candidate.jobTitle && c.status === "Hired"
+    );
+  }
+
+  // Prepare radar data: overlay candidate's scores and, if available, the hired comparator's scores.
   const radarData = [];
   if (candidate.ashbyScores) {
     for (let [skillKey, score] of Object.entries(candidate.ashbyScores)) {
-      radarData.push({
+      const entry = {
         skillKey,
         skillLabel: skillKey,
         candidateScore: score
-      });
+      };
+      if (candidate.status === "Archived" && comparatorCandidate && comparatorCandidate.ashbyScores) {
+        entry.hiredScore = comparatorCandidate.ashbyScores[skillKey] || 0;
+      }
+      radarData.push(entry);
     }
   }
+
+  // Generate written comparison if candidate is archived and comparator exists.
+  let writtenComparisons = [];
+  if (candidate.status === "Archived" && comparatorCandidate && candidate.ashbyScores) {
+    for (let [skill, score] of Object.entries(candidate.ashbyScores)) {
+      const hiredScore = (comparatorCandidate.ashbyScores && comparatorCandidate.ashbyScores[skill]) || 0;
+      if (hiredScore > score) {
+        writtenComparisons.push(
+          `In ${skill}, the hired candidate scored ${hiredScore} while this candidate scored ${score}. Consider improving ${skill} to meet the benchmark.`
+        );
+      }
+    }
+  }
+
+  const transcript = candidate.metaviewTranscript || [];
   const { candidateWords, interviewerWords } = getSpeakingRatio(transcript);
   const totalWords = candidateWords + interviewerWords || 1;
   const candidateRatio = ((candidateWords / totalWords) * 100).toFixed(1);
@@ -187,9 +181,10 @@ function CandidateProfile() {
   const nextSteps = getNextSteps(candidate);
   const autoSummary = generateAutoSummary(candidate, transcript);
 
-  // 1) Find potential role matches using your new Competency Framework:
-  const candidateScores = candidate.ashbyScores || {};
-  const potentialRoles = findPotentialMatches(candidateScores, competencyFramework);
+  // Use potential roles utility if desired (optional)
+  // const potentialRoles = findPotentialMatches(candidate.ashbyScores || {}, competencyFramework);
+  // For brevity, not adding potential roles here if you already have a separate card.
+  // But you can add a grid card for potential roles as needed.
 
   return (
     <div className="candidate-profile-page">
@@ -275,6 +270,17 @@ function CandidateProfile() {
                 fillOpacity={0.6}
                 isAnimationActive={true}
               />
+              {/* If archived and comparator exists, overlay the hired candidate's radar */}
+              {candidate.status === "Archived" && radarData.some(entry => entry.hiredScore !== undefined) && (
+                <Radar
+                  name="Historic Hired"
+                  dataKey="hiredScore"
+                  stroke="#82ca9d"
+                  fill="#82ca9d"
+                  fillOpacity={0.4}
+                  isAnimationActive={true}
+                />
+              )}
               <Tooltip />
               <Legend />
             </RadarChart>
@@ -362,6 +368,20 @@ function CandidateProfile() {
           </div>
         )}
 
+        {/* SCORE COMPARISON CARD (for archived candidates with comparator) */}
+        {candidate.status === "Archived" &&
+          comparatorCandidate &&
+          writtenComparisons.length > 0 && (
+            <div className="grid-card score-comparison-card">
+              <h2>Score Comparison with Historic Hires</h2>
+              <ul>
+                {writtenComparisons.map((comp, idx) => (
+                  <li key={idx}>{comp}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
         {/* TRANSCRIPT CARD */}
         <div className="grid-card">
           <h2>Interview Transcript</h2>
@@ -401,8 +421,8 @@ function CandidateProfile() {
           <p>{autoSummary}</p>
         </div>
 
-        {/* Potential Roles Card */}
-        <div className="grid-card">
+        {/* POTENTIAL ROLES CARD (if you wish to add it) */}
+        {/* <div className="grid-card potential-roles-card">
           <h2>Potential Roles</h2>
           {potentialRoles.length > 0 ? (
             <ul>
@@ -415,7 +435,7 @@ function CandidateProfile() {
           ) : (
             <p>This candidate does not qualify for other roles based on their scores.</p>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
