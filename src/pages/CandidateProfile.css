@@ -1,0 +1,122 @@
+/* src/pages/CandidateProfile.css */
+
+/* Container for the whole page */
+.candidate-profile-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: sans-serif;
+  color: #333;
+}
+
+/* Back Button */
+.back-button {
+  background-color: #888;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+}
+.back-button:hover {
+  background-color: #666;
+}
+
+/* Header (name, dept, interview date) */
+.candidate-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+.candidate-info {
+  flex: 1;
+}
+.candidate-name {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #444;
+}
+.candidate-department,
+.candidate-interview-date {
+  margin: 0.2rem 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Two-column layout */
+.candidate-body {
+  display: flex;
+  gap: 2rem;
+}
+.scorecard-section,
+.transcript-section {
+  flex: 1;
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+.scorecard-section h2,
+.transcript-section h2 {
+  margin-top: 0;
+}
+
+/* Score list styling */
+.score-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+.score-skill {
+  text-transform: capitalize; /* e.g., technicalSkills -> Technicalskills */
+  font-weight: 600;
+}
+
+/* Radar Chart Wrapper */
+.radar-chart-wrapper {
+  margin-top: 1rem;
+  text-align: center; /* center the chart */
+}
+
+/* Feedback cards */
+.feedback-section {
+  margin-top: 1.5rem;
+}
+.feedback-card {
+  background-color: #fff;
+  border-left: 4px solid #8884d8;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+/* Transcript */
+.transcript-entry {
+  margin-bottom: 1rem;
+}
+.transcript-toggle {
+  background-color: #8884d8;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.transcript-toggle:hover {
+  background-color: #6664d8;
+}
+
+/* MEDIA QUERY: Responsive Layout */
+@media (max-width: 768px) {
+  .candidate-body {
+    flex-direction: column;
+  }
+  .scorecard-section,
+  .transcript-section {
+    margin-bottom: 1rem;
+  }
+}
