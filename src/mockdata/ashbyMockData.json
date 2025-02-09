@@ -4,15 +4,15 @@
     "jobTitle": "Frontend Developer",
     "interviewStage": "Onsite",
     "interviewDate": "2025-02-05T10:00:00Z",
-    "status": "Hired", 
+    "status": "Hired",
     "feedback": [
       {
         "interviewerName": "John Doe",
-        "summary": "Excellent understanding of React and state management. Good communication."
+        "summary": "Excellent React and state management knowledge. Very strong communication skills."
       },
       {
         "interviewerName": "Jane Smith",
-        "summary": "Strong problem-solving skills, code quality and organization were solid."
+        "summary": "Demonstrated advanced problem-solving, tackled difficult scenarios effectively."
       }
     ],
     "scores": {
@@ -21,18 +21,23 @@
       "problemSolving": 4,
       "teamFit": 4,
       "adaptability": 4
-    }
+    },
+    "timeline": [
+      { "stage": "Applied", "date": "2025-01-20" },
+      { "stage": "Phone Screen", "date": "2025-01-25" },
+      { "stage": "Onsite", "date": "2025-02-01" }
+    ]
   },
   {
     "candidateName": "Bob Smith",
     "jobTitle": "Frontend Developer",
     "interviewStage": "Onsite",
     "interviewDate": "2025-02-07T14:00:00Z",
-    "status": "Archived", 
+    "status": "Archived",
     "feedback": [
       {
         "interviewerName": "John Doe",
-        "summary": "Knowledgeable but had trouble demonstrating deeper React hooks understanding."
+        "summary": "Has basic React knowledge but struggled with advanced hooks and performance optimizations."
       }
     ],
     "scores": {
@@ -43,10 +48,15 @@
       "adaptability": 2
     },
     "aiAdvice": {
-      "general": "Focus on clarifying your thought process and providing detailed, structured answers. Demonstrate familiarity with advanced React patterns and performance optimizations.",
-      "improveTechnicalSkills": "Review advanced React Hooks usage (useMemo, useCallback). Practice coding challenges focusing on modular code and design patterns.",
-      "improveProblemSolving": "Break down problems step-by-step out loud. Use examples or analogies to clarify complex ideas."
-    }
+      "general": "Bob should refine his knowledge of advanced React patterns and provide more detailed answers on complex UI challenges.",
+      "improveTechnicalSkills": "Focus on hooks like useMemo/useCallback, and practice debugging performance bottlenecks in React.",
+      "improveProblemSolving": "Walk through coding challenges systematically, discussing trade-offs more explicitly."
+    },
+    "timeline": [
+      { "stage": "Applied", "date": "2025-01-22" },
+      { "stage": "Phone Screen", "date": "2025-01-28" },
+      { "stage": "Onsite", "date": "2025-02-07" }
+    ]
   },
   {
     "candidateName": "Jen Williams",
@@ -57,7 +67,7 @@
     "feedback": [
       {
         "interviewerName": "Sam Green",
-        "summary": "Strong Node.js knowledge with good database design principles."
+        "summary": "Strong Node.js knowledge. Great database design principles and effective communication."
       }
     ],
     "scores": {
@@ -66,7 +76,11 @@
       "problemSolving": 4,
       "teamFit": 4,
       "adaptability": 3
-    }
+    },
+    "timeline": [
+      { "stage": "Applied", "date": "2025-01-18" },
+      { "stage": "Phone Screen", "date": "2025-02-02" }
+    ]
   },
   {
     "candidateName": "Michael Lee",
@@ -77,7 +91,7 @@
     "feedback": [
       {
         "interviewerName": "Sandra Kim",
-        "summary": "Knows Node.js but struggled with complex systems. Communication was okay."
+        "summary": "Knows Node.js basics but had trouble with large-scale system design. Communication was fair."
       }
     ],
     "scores": {
@@ -88,10 +102,14 @@
       "adaptability": 2
     },
     "aiAdvice": {
-      "general": "Brush up on advanced system design and architecture. Improve clarity when walking through solutions.",
-      "improveTechnicalSkills": "Build or contribute to a project involving distributed systems or microservices to showcase deeper knowledge.",
-      "improveProblemSolving": "Practice whiteboarding complex flows, discuss trade-offs, and clarify assumptions early."
-    }
+      "general": "Michael can benefit from deeper knowledge of high-traffic server architecture and clearer communication of design trade-offs.",
+      "improveTechnicalSkills": "Study microservices, caching strategies, and load balancing. Build personal projects showcasing distributed systems.",
+      "improveProblemSolving": "Practice whiteboard sessions on large-scale database schemas and real-time data flows. Focus on clarifying assumptions early."
+    },
+    "timeline": [
+      { "stage": "Applied", "date": "2025-01-19" },
+      { "stage": "Phone Screen", "date": "2025-01-27" },
+      { "stage": "Technical Screen", "date": "2025-02-03" }
+    ]
   }
 ]
-
