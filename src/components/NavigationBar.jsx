@@ -4,21 +4,32 @@ import { Link } from "react-router-dom";
 const NavigationBar = () => {
   return (
     <nav style={{ padding: "10px", backgroundColor: "#333", color: "#fff" }}>
-      <ul style={{ listStyle: "none", display: "flex", gap: "15px" }}>
+      <ul style={{ listStyle: "none", display: "flex", gap: "15px", margin: 0, padding: 0 }}>
         <li>
-          <Link to="/" style={{ color: "#fff", textDecoration: "none" }}>Dashboard Overview</Link>
+          <Link to="/" style={{ color: "#fff", textDecoration: "none" }}>
+            Dashboard Overview
+          </Link>
         </li>
         <li>
-          <Link to="/candidate" style={{ color: "#fff", textDecoration: "none" }}>Candidate</Link>
+          {/* Changed to /candidates to match the new route */}
+          <Link to="/candidates" style={{ color: "#fff", textDecoration: "none" }}>
+            Candidates
+          </Link>
         </li>
         <li>
-          <Link to="/insights" style={{ color: "#fff", textDecoration: "none" }}>Insights</Link>
+          <Link to="/insights" style={{ color: "#fff", textDecoration: "none" }}>
+            Insights
+          </Link>
         </li>
         <li>
-          <Link to="/recommendations" style={{ color: "#fff", textDecoration: "none" }}>Recommendations</Link>
+          <Link to="/recommendations" style={{ color: "#fff", textDecoration: "none" }}>
+            Recommendations
+          </Link>
         </li>
         <li>
-          <Link to="/admin" style={{ color: "#fff", textDecoration: "none" }}>Admin</Link>
+          <Link to="/admin" style={{ color: "#fff", textDecoration: "none" }}>
+            Admin
+          </Link>
         </li>
       </ul>
     </nav>
@@ -26,4 +37,3 @@ const NavigationBar = () => {
 };
 
 export default NavigationBar;
-
