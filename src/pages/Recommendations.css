@@ -33,9 +33,10 @@
 }
 
 .recommendation-filters input[type="date"],
-.recommendation-filters input[type="text"] {
+.recommendation-filters select {
   margin-left: 0.5rem;
   padding: 0.3rem;
+  font-size: 1rem;
 }
 
 .recommendation-card {
