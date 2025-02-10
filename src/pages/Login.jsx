@@ -1,12 +1,12 @@
 // src/pages/Login.jsx
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
-import './Login.css'; // Create a CSS file for styling if needed
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
+import "./Login.css"; // Customize styling as needed
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
@@ -15,9 +15,9 @@ const Login = () => {
     e.preventDefault();
     const success = await login(username, password);
     if (success) {
-      navigate('/');  // Redirect to home or a protected route on success
+      navigate("/"); // Redirect to home or a protected route on success
     } else {
-      setError('Invalid credentials. Please try again.');
+      setError("Invalid credentials. Please try again.");
     }
   };
 
@@ -46,6 +46,9 @@ const Login = () => {
         </label>
         <button type="submit">Login</button>
       </form>
+      <div className="signup-link">
+        <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
+      </div>
     </div>
   );
 };
