@@ -16,7 +16,6 @@ import metaviewMockData from "../mockdata/metaviewMockData.json";
 import competencyFramework from "../mockdata/CompetencyFrameworkMock.json"; // if needed elsewhere
 import "./CandidateProfile.css";
 
-// For reference, if you want to map question IDs to categories:
 const QUESTION_BANK = {
   q1: "System Design",
   q2: "Data Structures",
