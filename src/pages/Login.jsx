@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import "./Login.css"; // Ensure the CSS file is correctly linked
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -41,10 +42,16 @@ const Login = () => {
           {error && <p className="error-message">{error}</p>}
           <button type="submit">Login</button>
         </form>
+        {/* Add the Sign up link */}
+        <div className="signup-link">
+          <p>Don't have an account?</p>
+          <Link to="/signup">Sign up</Link>
+        </div>
       </div>
     </div>
   );
 };
 
 export default Login;
+
 
