@@ -1,7 +1,7 @@
 // src/pages/SignUp.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // Reuse the same CSS as the login page
+import "./SignUp.css";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
