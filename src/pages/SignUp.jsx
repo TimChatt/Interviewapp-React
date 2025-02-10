@@ -1,45 +1,30 @@
-// src/pages/SignUp.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./SignUp.css";
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    email: ""
-  });
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ username, password, email }),
       });
-
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || "Signup failed");
+        throw new Error("Signup failed.");
       }
-
-      setSuccessMessage("Signup successful! Await admin approval.");
-      setErrorMessage("");
-      setTimeout(() => navigate("/login"), 2000); // Redirect to login after success
+      const data = await response.json();
+      setMessage(data.message || "Sign up successful!");
     } catch (error) {
-      setErrorMessage(error.message);
-      setSuccessMessage("");
+      setMessage("Error signing up. Please try again.");
     }
   };
 
@@ -47,54 +32,42 @@ const SignUp = () => {
     <div className="login-page">
       <div className="login-container">
         <h1 className="login-header">Sign Up</h1>
-        <p className="login-subheader">Create your account to get started</p>
-        <form className="login-form" onSubmit={handleSubmit}>
-          {successMessage && <p className="success-message">{successMessage}</p>}
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-
+        {message && <p>{message}</p>}
+        <form className="login-form" onSubmit={handleSignUp}>
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
           <button type="submit" className="login-button">Sign Up</button>
         </form>
         <p className="login-footer">
-          Already have an account? <a href="/login">Log in</a>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>
