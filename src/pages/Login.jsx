@@ -1,58 +1,52 @@
 import React, { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
-import "./Login.css"; // Add styling here
+import { Link } from "react-router-dom";
+import "./Login.css";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     const success = await login(username, password);
-    if (success) {
-      navigate("/");
-    } else {
-      setError("Invalid credentials. Please try again.");
+    if (!success) {
+      setError("Invalid username or password.");
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>Welcome Back</h1>
-        <p className="subtext">Log in to access your account</p>
+    <div className="login-page">
+      <div className="login-container">
+        <h1 className="login-header">Login</h1>
         {error && <p className="error-message">{error}</p>}
-        <form onSubmit={handleLogin}>
-          <div className="input-group">
+        <form className="login-form" onSubmit={handleLogin}>
+          <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
-              id="username"
               type="text"
-              placeholder="Enter your username"
+              id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </div>
-          <div className="input-group">
+          <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
-              id="password"
               type="password"
-              placeholder="Enter your password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
-          <button type="submit" className="login-button">
-            Log In
-          </button>
+          <button type="submit" className="login-button">Login</button>
         </form>
-        <p className="signup-text">
-          Don’t have an account? <Link to="/signup">Sign up</Link>
+        <p className="login-footer">
+          Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
       </div>
     </div>
@@ -60,3 +54,4 @@ const Login = () => {
 };
 
 export default Login;
+
