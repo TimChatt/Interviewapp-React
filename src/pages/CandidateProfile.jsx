@@ -1,3 +1,4 @@
+// src/pages/CandidateProfile.jsx
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -33,7 +34,6 @@ function getTopKeywords(transcriptEntries, limit = 5) {
       freqMap[word] = (freqMap[word] || 0) + 1;
     });
   });
-
   const sorted = Object.entries(freqMap).sort((a, b) => b[1] - a[1]);
   return sorted.slice(0, limit).map(([keyword, count]) => ({ keyword, count }));
 }
@@ -181,11 +181,6 @@ function CandidateProfile() {
   const nextSteps = getNextSteps(candidate);
   const autoSummary = generateAutoSummary(candidate, transcript);
 
-  // Use potential roles utility if desired (optional)
-  // const potentialRoles = findPotentialMatches(candidate.ashbyScores || {}, competencyFramework);
-  // For brevity, not adding potential roles here if you already have a separate card.
-  // But you can add a grid card for potential roles as needed.
-
   return (
     <div className="candidate-profile-page">
       <button className="back-button" onClick={() => navigate("/candidates")}>
@@ -214,228 +209,210 @@ function CandidateProfile() {
         </div>
       </div>
 
-      {/* Responsive Grid Container */}
-      <div className="candidate-grid">
-        {/* TIMELINE CARD */}
-        <div className="grid-card">
-          <h2>Interview Timeline</h2>
-          {candidate.timeline.length > 0 ? (
-            <ul>
-              {candidate.timeline.map((t, idx) => (
-                <li key={idx}>
-                  <strong>{t.stage}</strong> – {new Date(t.date).toLocaleDateString()}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No timeline data available.</p>
-          )}
-        </div>
-
-        {/* SCORECARD CARD */}
-        <div className="grid-card">
-          <h2>Scorecard</h2>
-          {candidate.ashbyScores ? (
-            <ul className="score-list">
-              {Object.entries(candidate.ashbyScores).map(([skillKey, score]) => (
-                <li key={skillKey}>
-                  <strong>{skillKey}:</strong> {score}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No scores available.</p>
-          )}
-        </div>
-
-        {/* RADAR CHART CARD */}
-        <div className="grid-card">
-          <h3>Competency Radar</h3>
-          {radarData.length > 0 ? (
-            <RadarChart
-              outerRadius={90}
-              width={400}
-              height={300}
-              data={radarData}
-              animationBegin={300}
-            >
-              <PolarGrid />
-              <PolarAngleAxis dataKey="skillLabel" />
-              <PolarRadiusAxis angle={30} domain={[0, 5]} />
-              <Radar
-                name="Candidate"
-                dataKey="candidateScore"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.6}
-                isAnimationActive={true}
-              />
-              {/* If archived and comparator exists, overlay the hired candidate's radar */}
-              {candidate.status === "Archived" && radarData.some(entry => entry.hiredScore !== undefined) && (
-                <Radar
-                  name="Historic Hired"
-                  dataKey="hiredScore"
-                  stroke="#82ca9d"
-                  fill="#82ca9d"
-                  fillOpacity={0.4}
-                  isAnimationActive={true}
-                />
-              )}
-              <Tooltip />
-              <Legend />
-            </RadarChart>
-          ) : (
-            <p>No radar data available.</p>
-          )}
-        </div>
-
-        {/* ATTACHMENTS CARD */}
-        <div className="grid-card">
-          <h2>Candidate Attachments</h2>
-          <p>Resume: <a href="#">View / Download</a></p>
-          <p>Coding Test: <a href="#">Link to GitHub Gist</a></p>
-        </div>
-
-        {/* RED FLAGS CARD */}
-        {redFlags.length > 0 && (
-          <div className="grid-card red-flags-section">
-            <h3>Potential Risk Areas</h3>
-            <ul>
-              {redFlags.map((flag, idx) => (
-                <li key={idx}>{flag}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* CULTURE FIT CARD */}
-        {cultureNotes.length > 0 && (
-          <div className="grid-card culture-fit-section">
-            <h3>Culture / Team Fit Notes</h3>
-            <ul>
-              {cultureNotes.map((note, idx) => (
-                <li key={idx}>{note}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* NEXT STEPS CARD */}
-        {nextSteps.length > 0 && (
-          <div className="grid-card next-steps-section">
-            <h3>Recommended Next Steps</h3>
-            <ul>
-              {nextSteps.map((step, idx) => (
-                <li key={idx}>{step}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* AI ADVICE CARD */}
-        {candidate.aiAdvice && (
-          <div className="grid-card ai-advice-section">
-            <h3>AI Advice</h3>
-            <p>{candidate.aiAdvice.general}</p>
-
-            {candidate.aiAdvice.didWell && candidate.aiAdvice.didWell.length > 0 && (
-              <div className="did-well-section">
-                <h4>What Went Well</h4>
-                <ul>
-                  {candidate.aiAdvice.didWell.map((dw, i) => (
-                    <li key={i}>
-                      {dw.point}
-                      {dw.citation && <span className="citation"> ({dw.citation})</span>}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {candidate.aiAdvice.couldImprove && candidate.aiAdvice.couldImprove.length > 0 && (
-              <div className="could-improve-section">
-                <h4>Areas to Improve</h4>
-                <ul>
-                  {candidate.aiAdvice.couldImprove.map((ci, i) => (
-                    <li key={i}>
-                      {ci.point}
-                      {ci.citation && <span className="citation"> ({ci.citation})</span>}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* SCORE COMPARISON CARD (for archived candidates with comparator) */}
-        {candidate.status === "Archived" &&
-          comparatorCandidate &&
-          writtenComparisons.length > 0 && (
-            <div className="grid-card score-comparison-card">
-              <h2>Score Comparison with Historic Hires</h2>
+      {/* Outer container for grid with custom background/border */}
+      <div className="candidate-grid-container">
+        {/* Responsive Grid Container */}
+        <div className="candidate-grid">
+          {/* TIMELINE CARD */}
+          <div className="grid-card">
+            <h2>Interview Timeline</h2>
+            {candidate.timeline.length > 0 ? (
               <ul>
-                {writtenComparisons.map((comp, idx) => (
-                  <li key={idx}>{comp}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-        {/* TRANSCRIPT CARD */}
-        <div className="grid-card">
-          <h2>Interview Transcript</h2>
-          <p>
-            <strong>Speaking Ratio:</strong> Candidate {candidateRatio}% / Interviewer {interviewerRatio}%
-          </p>
-
-          {topKeywords.length > 0 && (
-            <div className="keyword-section">
-              <h4>Top Keywords</h4>
-              <ul>
-                {topKeywords.map((kw, idx) => (
+                {candidate.timeline.map((t, idx) => (
                   <li key={idx}>
-                    {kw.keyword} ({kw.count})
+                    <strong>{t.stage}</strong> – {new Date(t.date).toLocaleDateString()}
                   </li>
                 ))}
               </ul>
+            ) : (
+              <p>No timeline data available.</p>
+            )}
+          </div>
+
+          {/* SCORECARD CARD */}
+          <div className="grid-card">
+            <h2>Scorecard</h2>
+            {candidate.ashbyScores ? (
+              <ul className="score-list">
+                {Object.entries(candidate.ashbyScores).map(([skillKey, score]) => (
+                  <li key={skillKey}>
+                    <strong>{skillKey}:</strong> {score}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No scores available.</p>
+            )}
+          </div>
+
+          {/* RADAR CHART CARD */}
+          <div className="grid-card">
+            <h3>Competency Radar</h3>
+            {radarData.length > 0 ? (
+              <RadarChart
+                outerRadius={90}
+                width={400}
+                height={300}
+                data={radarData}
+                animationBegin={300}
+              >
+                <PolarGrid />
+                <PolarAngleAxis dataKey="skillLabel" />
+                <PolarRadiusAxis angle={30} domain={[0, 5]} />
+                <Radar
+                  name="Candidate"
+                  dataKey="candidateScore"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                  fillOpacity={0.6}
+                  isAnimationActive={true}
+                />
+                {candidate.status === "Archived" && radarData.some(entry => entry.hiredScore !== undefined) && (
+                  <Radar
+                    name="Historic Hired"
+                    dataKey="hiredScore"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                    fillOpacity={0.4}
+                    isAnimationActive={true}
+                  />
+                )}
+                <Tooltip />
+                <Legend />
+              </RadarChart>
+            ) : (
+              <p>No radar data available.</p>
+            )}
+          </div>
+
+          {/* ATTACHMENTS CARD */}
+          <div className="grid-card">
+            <h2>Candidate Attachments</h2>
+            <p>Resume: <a href="#">View / Download</a></p>
+            <p>Coding Test: <a href="#">Link to GitHub Gist</a></p>
+          </div>
+
+          {/* RED FLAGS CARD */}
+          {redFlags.length > 0 && (
+            <div className="grid-card red-flags-section">
+              <h3>Potential Risk Areas</h3>
+              <ul>
+                {redFlags.map((flag, idx) => (
+                  <li key={idx}>{flag}</li>
+                ))}
+              </ul>
             </div>
           )}
 
-          {transcript.map((entry, idx) => (
-            <div key={idx} className="transcript-entry">
-              <p>
-                <strong>{entry.speaker}:</strong> {entry.question}
-              </p>
-              <p>
-                <em>Answer: {entry.candidateAnswer}</em>
-              </p>
-              <hr />
+          {/* CULTURE FIT CARD */}
+          {cultureNotes.length > 0 && (
+            <div className="grid-card culture-fit-section">
+              <h3>Culture / Team Fit Notes</h3>
+              <ul>
+                {cultureNotes.map((note, idx) => (
+                  <li key={idx}>{note}</li>
+                ))}
+              </ul>
             </div>
-          ))}
-        </div>
-
-        {/* AUTO SUMMARY CARD */}
-        <div className="grid-card auto-summary-section">
-          <h2>Auto Summary</h2>
-          <p>{autoSummary}</p>
-        </div>
-
-        {/* POTENTIAL ROLES CARD (if you wish to add it) */}
-        {/* <div className="grid-card potential-roles-card">
-          <h2>Potential Roles</h2>
-          {potentialRoles.length > 0 ? (
-            <ul>
-              {potentialRoles.map((match, i) => (
-                <li key={i}>
-                  {match.jobFamily} ({match.levelName})
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>This candidate does not qualify for other roles based on their scores.</p>
           )}
-        </div> */}
+
+          {/* NEXT STEPS CARD */}
+          {nextSteps.length > 0 && (
+            <div className="grid-card next-steps-section">
+              <h3>Recommended Next Steps</h3>
+              <ul>
+                {nextSteps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* AI ADVICE CARD */}
+          {candidate.aiAdvice && (
+            <div className="grid-card ai-advice-section">
+              <h3>AI Advice</h3>
+              <p>{candidate.aiAdvice.general}</p>
+              {candidate.aiAdvice.didWell && candidate.aiAdvice.didWell.length > 0 && (
+                <div className="did-well-section">
+                  <h4>What Went Well</h4>
+                  <ul>
+                    {candidate.aiAdvice.didWell.map((dw, i) => (
+                      <li key={i}>
+                        {dw.point}
+                        {dw.citation && <span className="citation"> ({dw.citation})</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {candidate.aiAdvice.couldImprove && candidate.aiAdvice.couldImprove.length > 0 && (
+                <div className="could-improve-section">
+                  <h4>Areas to Improve</h4>
+                  <ul>
+                    {candidate.aiAdvice.couldImprove.map((ci, i) => (
+                      <li key={i}>
+                        {ci.point}
+                        {ci.citation && <span className="citation"> ({ci.citation})</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SCORE COMPARISON CARD (for archived candidates with comparator) */}
+          {candidate.status === "Archived" &&
+            comparatorCandidate &&
+            writtenComparisons.length > 0 && (
+              <div className="grid-card score-comparison-card">
+                <h2>Score Comparison with Historic Hires</h2>
+                <ul>
+                  {writtenComparisons.map((comp, idx) => (
+                    <li key={idx}>{comp}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+          {/* TRANSCRIPT CARD */}
+          <div className="grid-card">
+            <h2>Interview Transcript</h2>
+            <p>
+              <strong>Speaking Ratio:</strong> Candidate {candidateRatio}% / Interviewer {interviewerRatio}%
+            </p>
+            {topKeywords.length > 0 && (
+              <div className="keyword-section">
+                <h4>Top Keywords</h4>
+                <ul>
+                  {topKeywords.map((kw, idx) => (
+                    <li key={idx}>
+                      {kw.keyword} ({kw.count})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {transcript.map((entry, idx) => (
+              <div key={idx} className="transcript-entry">
+                <p>
+                  <strong>{entry.speaker}:</strong> {entry.question}
+                </p>
+                <p>
+                  <em>Answer: {entry.candidateAnswer}</em>
+                </p>
+                <hr />
+              </div>
+            ))}
+          </div>
+
+          {/* AUTO SUMMARY CARD */}
+          <div className="grid-card auto-summary-section">
+            <h2>Auto Summary</h2>
+            <p>{autoSummary}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
