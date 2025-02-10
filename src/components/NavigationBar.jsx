@@ -1,13 +1,21 @@
 // src/components/NavigationBar.jsx
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 import "./NavigationBar.css";
 
 const NavigationBar = () => {
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <div className="navbar">
       <div className="navbar-container">
-        {/* Optionally, you can add or update your logo here */}
         <div className="navbar-links">
           <Link to="/" className="nav-link">
             Dashboard Overview
@@ -21,18 +29,25 @@ const NavigationBar = () => {
           <Link to="/recommendations" className="nav-link">
             Recommendations
           </Link>
-          <Link to="/interviewer-playbook" className="nav-link">
-            Interviewer Playbook
-          </Link>
           <Link to="/admin" className="nav-link">
             Admin
           </Link>
+          {/* Optionally, include a link to the Interviewer Playbook */}
+          <Link to="/admin-dashboard" className="nav-link">
+            Admin Dashboard
+          </Link>
         </div>
+        {user && (
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
 export default NavigationBar;
+
 
 
