@@ -14,7 +14,7 @@ import AdminDashboard from "./pages/AdminDashboard"; // New admin dashboard page
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 
-const App = () => {
+const AppContent = () => {
   const location = useLocation();
 
   // Define paths where the NavigationBar should be hidden
@@ -22,27 +22,34 @@ const App = () => {
   const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
 
   return (
+    <>
+      {!shouldHideNavBar && <NavigationBar />}
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        {/* Protected routes */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/candidates" element={<Candidate />} />
+          <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Route>
+      </Routes>
+    </>
+  );
+};
+
+const App = () => {
+  return (
     <AuthProvider>
       <Router>
-        {!shouldHideNavBar && <NavigationBar />}
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          {/* Protected routes */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/candidates" element={<Candidate />} />
-            <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/recommendations" element={<Recommendations />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          </Route>
-        </Routes>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
 };
 
 export default App;
-
