@@ -1,60 +1,50 @@
-// src/contexts/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
+import "./Login.css";
 
-// Create the context
-export const AuthContext = createContext();
+const Login = () => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-// Provider component
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);  // user object: { username, token, ... }
-  const [loading, setLoading] = useState(true);
-
-  // On mount, try to load user from localStorage (for demonstration)
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const success = await login(username, password);
+    if (success) {
+      navigate("/"); // Redirect to Home on success
+    } else {
+      setError("Invalid username or password. Please try again.");
     }
-    setLoading(false);
-  }, []);
-
-  // Login function that calls the backend API
-  const login = async (username, password) => {
-    try {
-      // Adjust the URL (e.g., to your production endpoint) as needed.
-const response = await fetch('https://interviewappbe-production.up.railway.app/api/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ username, password })
-});
-      
-      if (!response.ok) {
-        // You can further check for specific status codes here (like 401 or 403)
-        throw new Error('Login failed');
-      }
-      
-      const data = await response.json();
-      // Expecting data to include at least { username, token, ... }
-      localStorage.setItem('user', JSON.stringify(data));
-      setUser(data);
-      return true;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
+    <div className="login-page">
+      <div className="login-container">
+        <h1>Login</h1>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </div>
   );
 };
 
+export default Login;
