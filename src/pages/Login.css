@@ -19,6 +19,9 @@
   max-width: 400px;
   width: 100%;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Heading */
@@ -38,6 +41,7 @@
 /* Input group */
 .input-group {
   margin-bottom: 1rem;
+  width: 100%; /* Full width inside the card */
   text-align: left;
 }
 
@@ -50,7 +54,7 @@
 }
 
 .input-group input {
-  width: 100%;
+  width: 100%; /* Full width for the input fields */
   padding: 0.8rem;
   border: 1px solid #ddd;
   border-radius: 5px;
