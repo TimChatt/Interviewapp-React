@@ -18,16 +18,30 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Dummy login function (replace with real API call)
+  // Login function that calls the backend API
   const login = async (username, password) => {
-    // For demonstration, we assume a single valid username/password:
-    if (username === 'admin' && password === 'password') {
-      // In a real scenario, your API would return a token and user details
-      const userData = { username, token: 'dummy-jwt-token' };
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
+    try {
+      // Adjust the URL (e.g., to your production endpoint) as needed.
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (!response.ok) {
+        // You can further check for specific status codes here (like 401 or 403)
+        throw new Error('Login failed');
+      }
+      
+      const data = await response.json();
+      // Expecting data to include at least { username, token, ... }
+      localStorage.setItem('user', JSON.stringify(data));
+      setUser(data);
       return true;
-    } else {
+    } catch (error) {
+      console.error('Login error:', error);
       return false;
     }
   };
@@ -43,3 +57,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
