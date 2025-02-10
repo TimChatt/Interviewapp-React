@@ -12,7 +12,7 @@ import Recommendations from "./pages/Recommendations";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard"; // New admin dashboard page
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import SignUp from "./pages/SignUp";
 
 const App = () => {
   const location = useLocation();
@@ -27,7 +27,7 @@ const App = () => {
         {!shouldHideNavBar && <NavigationBar />}
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<SignUp />} />
           {/* Protected routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Home />} />
