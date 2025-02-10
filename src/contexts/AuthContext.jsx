@@ -22,13 +22,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       // Adjust the URL (e.g., to your production endpoint) as needed.
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      });
+const response = await fetch('https://interviewapp-react-production.up.railway.app/api/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ username, password })
+});
       
       if (!response.ok) {
         // You can further check for specific status codes here (like 401 or 403)
