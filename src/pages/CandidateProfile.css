@@ -124,6 +124,23 @@
   padding-left: 1.2rem;
 }
 
+/* Outer container for the grid to reduce dead white space */
+.candidate-grid-container {
+  background-color: #f0f0f0;  /* Light gray background */
+  border: 2px solid #cbd5e0;  /* Subtle blue-gray border */
+  border-radius: 8px;
+  padding: 1.5rem;  /* Space between the border and the grid */
+  margin-top: 1rem;
+}
+
+/* Existing grid container */
+.candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
 /* CULTURE / TEAM FIT */
 .culture-fit-section {
   background-color: #ffffff;
