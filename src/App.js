@@ -11,6 +11,7 @@ import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp"; // Import the SignUp component
 import AdminDashboard from "./pages/AdminDashboard";  // New admin dashboard page
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
         <NavigationBar />
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />  {/* Added signup route */}
           {/* Protected routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Home />} />
