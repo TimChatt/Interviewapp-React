@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       // Adjust the URL (e.g., to your production endpoint) as needed.
-const response = await fetch('https://interviewapp-react-production.up.railway.app/api/login', {
+const response = await fetch('https://interviewappbe-production.up.railway.app/api/login', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
