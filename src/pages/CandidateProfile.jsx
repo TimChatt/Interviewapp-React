@@ -65,7 +65,9 @@ function detectRedFlags(candidate) {
 function getCultureFitNotes(candidate) {
   if (!candidate.ashbyFeedback) return [];
   return candidate.ashbyFeedback
-    .filter((f) => f.summary.toLowerCase().includes("team fit") || f.summary.toLowerCase().includes("culture"))
+    .filter((f) =>
+      f.summary.toLowerCase().includes("team fit") || f.summary.toLowerCase().includes("culture")
+    )
     .map((f) => `Interviewer ${f.interviewerName} mentioned: "${f.summary}"`);
 }
 
@@ -163,8 +165,9 @@ function CandidateProfile() {
     for (let [skill, score] of Object.entries(candidate.ashbyScores)) {
       const hiredScore = (comparatorCandidate.ashbyScores && comparatorCandidate.ashbyScores[skill]) || 0;
       if (hiredScore > score) {
+        const diff = hiredScore - score;
         writtenComparisons.push(
-          `In ${skill}, the hired candidate scored ${hiredScore} while this candidate scored ${score}. Consider improving ${skill} to meet the benchmark.`
+          `In ${skill}, the hired candidate scored ${hiredScore} while this candidate scored ${score} (a difference of ${diff} point${diff > 1 ? "s" : ""}). To bridge this gap, consider providing more detailed examples and deeper explanations of ${skill}.`
         );
       }
     }
@@ -209,7 +212,7 @@ function CandidateProfile() {
         </div>
       </div>
 
-      {/* Outer container for grid with custom background/border */}
+      {/* Outer container for grid with custom background and border */}
       <div className="candidate-grid-container">
         {/* Responsive Grid Container */}
         <div className="candidate-grid">
