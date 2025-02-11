@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./Navbar.css"; // Ensure this CSS is correct
+import "./Navbar.css";
 
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -61,4 +61,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
