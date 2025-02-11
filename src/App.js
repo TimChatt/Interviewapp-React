@@ -16,7 +16,7 @@ function App() {
     <Router>
       <div className="app-container">
         <Navbar /> {/* Sidebar Navigation */}
-        <div className="main-content">
+        <div className="main-content"> {/* This should be the main wrapper */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/candidate/search" element={<CandidateSearch />} />
