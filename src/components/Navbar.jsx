@@ -35,7 +35,7 @@ const Navbar = () => {
         <li className={`navbar-item dropdown ${openDropdown === "insights" ? "open" : ""}`} onClick={() => toggleDropdown("insights")}>
           Insights
           <ul className="dropdown-menu">
-            <li><Link to="/insights/trends">Trends & Patterns</Link></li>
+            <li><<Link to="/insights/trends">Trends & Patterns</Link></li>
             <li><Link to="/insights/ai">AI vs Actual Scores</Link></li>
           </ul>
         </li>
