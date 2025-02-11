@@ -9,6 +9,7 @@ import Candidate from "./pages/Candidate";
 import CandidateProfile from "./pages/CandidateProfile";
 import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
+import CompetencyFrameworkPlannerPage from "./pages/CompetencyFrameworkPlanner";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard"; // New admin dashboard page
 import Login from "./pages/Login";
@@ -36,6 +37,7 @@ const AppContent = () => {
           <Route path="/recommendations" element={<Recommendations />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/competency-planner" element={<CompetencyFrameworkPlannerPage />} />
         </Route>
       </Routes>
     </>
