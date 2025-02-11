@@ -1,71 +1,81 @@
+/* Sidebar Navigation */
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  width: 250px;
+  height: 100vh; /* Full height */
+  position: fixed;
+  top: 0;
+  left: 0;
   background-color: #1a202c; /* Dark background */
-  padding: 1rem 2rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #cbd5e0; /* Light grey text */
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo Styling */
+.navbar-logo {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .navbar-logo a {
-  color: #f6ad55; /* Orange for logo */
+  color: #f6ad55; /* Orange */
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
 }
 
+/* Sidebar Menu */
 .navbar-menu {
   list-style: none;
-  display: flex;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
 .navbar-item {
-  margin: 0 1rem;
-  position: relative;
+  width: 100%;
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .navbar-item a {
-  color: #cbd5e0; /* Light grey */
+  color: #cbd5e0;
   text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.3s;
+  display: block;
+  padding: 0.75rem;
 }
 
-.navbar-item a:hover {
-  color: #f6ad55; /* Orange on hover */
+/* Hover and Active States */
+.navbar-item:hover {
+  background-color: #4a5568; /* Slightly lighter grey */
+}
+
+.navbar-item.active a {
+  background-color: #f6ad55; /* Orange */
+  color: #1a202c; /* Dark text for active */
+}
+
+/* Dropdown Styling */
+.dropdown {
+  position: relative;
 }
 
 .dropdown-menu {
   display: none;
-  position: absolute;
-  background-color: #2d3748; /* Darker dropdown */
-  padding: 0.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  top: 2.5rem;
-  z-index: 10;
+  flex-direction: column;
+  padding-left: 1rem;
 }
 
-.dropdown-menu li {
-  margin: 0;
+.dropdown.open .dropdown-menu {
+  display: flex;
 }
 
-.dropdown-menu a {
-  display: block;
-  padding: 0.5rem 1rem;
-  color: #cbd5e0;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.dropdown-menu a:hover {
-  background-color: #4a5568; /* Light grey on hover */
-  color: #f6ad55;
-}
-
-.navbar-item:hover .dropdown-menu {
-  display: block;
+/* Adjust Main Content to Avoid Overlapping */
+.main-content {
+  margin-left: 250px; /* Push content to the right */
+  padding: 2rem;
 }
