@@ -16,7 +16,7 @@ function App() {
     <Router>
       <div className="app-container">
         <Navbar /> {/* Sidebar Navigation */}
-        <div className="content-container">
+        <div className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/candidate/search" element={<CandidateSearch />} />
