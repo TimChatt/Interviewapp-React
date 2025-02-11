@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+iimport React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SignUp.css";
 
 const SignUp = () => {
@@ -7,68 +7,61 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleSignUp = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password, email }),
-      });
-      if (!response.ok) {
-        throw new Error("Signup failed.");
-      }
+      const response = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/signup",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, email }),
+        }
+      );
       const data = await response.json();
-      setMessage(data.message || "Sign up successful!");
+      if (response.ok) {
+        setMessage("Registration successful. Await admin approval.");
+        setTimeout(() => navigate("/login"), 2000); // Redirect to login after 2 seconds
+      } else {
+        setMessage(data.detail || "An error occurred.");
+      }
     } catch (error) {
-      setMessage("Error signing up. Please try again.");
+      setMessage("Failed to sign up. Please try again later.");
+      console.error(error);
     }
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <h1 className="login-header">Sign Up</h1>
-        {message && <p>{message}</p>}
-        <form className="login-form" onSubmit={handleSignUp}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="login-button">Sign Up</button>
+    <div className="signup-page">
+      <div className="signup-container">
+        <h1>Sign Up</h1>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Sign Up</button>
         </form>
-        <p className="login-footer">
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
+        {message && <p className="signup-message">{message}</p>}
       </div>
     </div>
   );
