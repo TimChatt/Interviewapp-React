@@ -23,7 +23,10 @@ const Navbar = () => {
         </li>
 
         {/* Candidate Dropdown */}
-        <li className={`navbar-item dropdown ${openDropdown === "candidate" ? "open" : ""}`} onClick={() => toggleDropdown("candidate")}>
+        <li 
+          className={`navbar-item dropdown ${openDropdown === "candidate" ? "open" : ""}`} 
+          onClick={() => toggleDropdown("candidate")}
+        >
           Candidate
           <ul className="dropdown-menu">
             <li><Link to="/candidate/search">Search</Link></li>
@@ -31,17 +34,23 @@ const Navbar = () => {
           </ul>
         </li>
 
-        {/* Insights Dropdown */}
-        <li className={`navbar-item dropdown ${openDropdown === "insights" ? "open" : ""}`} onClick={() => toggleDropdown("insights")}>
+        {/* Insights Dropdown - Fixed Extra '<' */}
+        <li 
+          className={`navbar-item dropdown ${openDropdown === "insights" ? "open" : ""}`} 
+          onClick={() => toggleDropdown("insights")}
+        >
           Insights
           <ul className="dropdown-menu">
-            <li><<Link to="/insights/trends">Trends & Patterns</Link></li>
+            <li><Link to="/insights/trends">Trends & Patterns</Link></li> {/* ✅ Fixed here */}
             <li><Link to="/insights/ai">AI vs Actual Scores</Link></li>
           </ul>
         </li>
 
         {/* Admin Dropdown */}
-        <li className={`navbar-item dropdown ${openDropdown === "admin" ? "open" : ""}`} onClick={() => toggleDropdown("admin")}>
+        <li 
+          className={`navbar-item dropdown ${openDropdown === "admin" ? "open" : ""}`} 
+          onClick={() => toggleDropdown("admin")}
+        >
           Admin
           <ul className="dropdown-menu">
             <li><Link to="/admin/settings">Settings</Link></li>
