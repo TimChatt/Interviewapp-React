@@ -1,57 +1,35 @@
-// src/App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import PrivateRoute from "./components/PrivateRoute";
-import NavigationBar from "./components/NavigationBar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Candidate from "./pages/Candidate";
+import CandidateSearch from "./pages/CandidateSearch";
 import CandidateProfile from "./pages/CandidateProfile";
-import Insights from "./pages/Insights";
+import Trends from "./pages/Trends";
+import AIvsActualScores from "./pages/AIvsActualScores";
+import Settings from "./pages/Settings";
+import Security from "./pages/Security";
+import Reporting from "./pages/Reporting";
 import Recommendations from "./pages/Recommendations";
-import CompetencyFrameworkPlannerPage from "./pages/CompetencyFrameworkPlanner";
-import Admin from "./pages/Admin";
-import AdminDashboard from "./pages/AdminDashboard"; // New admin dashboard page
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
 
-const AppContent = () => {
-  const location = useLocation();
-
-  // Define paths where the NavigationBar should be hidden
-  const hideNavBarPaths = ["/login", "/signup"];
-  const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
-
+function App() {
   return (
-    <>
-      {!shouldHideNavBar && <NavigationBar />}
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        {/* Protected routes */}
-        <Route element={<PrivateRoute />}>
+    <Router>
+      <Navbar />
+      <div className="main-content">
+        <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/candidates" element={<Candidate />} />
-          <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-          <Route path="/insights" element={<Insights />} />
+          <Route path="/candidate/search" element={<CandidateSearch />} />
+          <Route path="/candidate/profile" element={<CandidateProfile />} />
+          <Route path="/insights/trends" element={<Trends />} />
+          <Route path="/insights/ai" element={<AIvsActualScores />} />
+          <Route path="/admin/settings" element={<Settings />} />
+          <Route path="/admin/security" element={<Security />} />
+          <Route path="/reporting" element={<Reporting />} />
           <Route path="/recommendations" element={<Recommendations />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/competency-planner" element={<CompetencyFrameworkPlannerPage />} />
-        </Route>
-      </Routes>
-    </>
+        </Routes>
+      </div>
+    </Router>
   );
-};
-
-const App = () => {
-  return (
-    <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
-  );
-};
+}
 
 export default App;
