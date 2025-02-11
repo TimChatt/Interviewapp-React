@@ -1,8 +1,4 @@
 import React, { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 
 const CompetencyFrameworkPlanner = () => {
   const [framework, setFramework] = useState({
@@ -81,85 +77,90 @@ const CompetencyFrameworkPlanner = () => {
   };
 
   return (
-    <div className="p-4">
-      <Card>
-        <CardContent>
-          <h1 className="text-xl font-bold mb-4">Competency Framework Planner</h1>
-          <div className="grid gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Department</label>
-              <Input
+    <div className="competency-framework-planner">
+      <div className="card">
+        <div className="card-content">
+          <h1 className="title">Competency Framework Planner</h1>
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Department</label>
+              <input
+                type="text"
                 value={framework.department}
                 onChange={(e) => handleInputChange("department", e.target.value)}
                 placeholder="Enter department"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Job Title</label>
-              <Input
+            <div className="form-group">
+              <label>Job Title</label>
+              <input
+                type="text"
                 value={framework.jobTitle}
                 onChange={(e) => handleInputChange("jobTitle", e.target.value)}
                 placeholder="Enter job title"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Job Levels</label>
-              <div className="flex gap-2">
-                <Input
+            <div className="form-group">
+              <label>Job Levels</label>
+              <div className="input-group">
+                <input
+                  type="text"
                   value={newJobLevel}
                   onChange={(e) => setNewJobLevel(e.target.value)}
                   placeholder="Enter job level"
                 />
-                <Button onClick={addJobLevel}>Add</Button>
+                <button onClick={addJobLevel}>Add</button>
               </div>
-              <ul className="list-disc pl-5 mt-2">
+              <ul className="job-level-list">
                 {framework.jobLevels.map((level, index) => (
                   <li key={index}>{level}</li>
                 ))}
               </ul>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Add Competency</label>
-              <div className="flex gap-2">
-                <Input
+            <div className="form-group">
+              <label>Add Competency</label>
+              <div className="input-group">
+                <input
+                  type="text"
                   value={newCompetency}
                   onChange={(e) => setNewCompetency(e.target.value)}
                   placeholder="Competency name"
                 />
-                <Button onClick={addCompetency}>Add</Button>
+                <button onClick={addCompetency}>Add</button>
               </div>
             </div>
-            <div>
-              <Button onClick={autoDefineCompetencies} className="mt-4">Auto-Define Competencies</Button>
+            <div className="form-group">
+              <button onClick={autoDefineCompetencies}>Auto-Define Competencies</button>
             </div>
-            <div>
-              <Button onClick={saveFramework} className="mt-4">Save Framework</Button>
-            </div>
-            <div>
-              <h2 className="text-lg font-medium mt-4">Competencies:</h2>
-              {framework.competencies.map((competency, compIndex) => (
-                <div key={compIndex} className="mt-4">
-                  <h3 className="font-medium">{competency.name}</h3>
-                  <ul className="list-disc pl-5">
-                    {framework.jobLevels.map((level, levelIndex) => (
-                      <li key={levelIndex} className="flex gap-2 items-center mt-2">
-                        <span className="w-32">{level}:</span>
-                        <Input
-                          value={competency.levels[levelIndex]}
-                          onChange={(e) =>
-                            updateCompetencyLevel(compIndex, levelIndex, e.target.value)
-                          }
-                          placeholder="Define competency"
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className="form-group">
+              <button onClick={saveFramework}>Save Framework</button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="competencies-list">
+            <h2>Competencies:</h2>
+            {framework.competencies.map((competency, compIndex) => (
+              <div key={compIndex} className="competency-item">
+                <h3>{competency.name}</h3>
+                <ul>
+                  {framework.jobLevels.map((level, levelIndex) => (
+                    <li key={levelIndex}>
+                      <span>{level}:</span>
+                      <input
+                        type="text"
+                        value={competency.levels[levelIndex]}
+                        onChange={(e) =>
+                          updateCompetencyLevel(compIndex, levelIndex, e.target.value)
+                        }
+                        placeholder="Define competency"
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
