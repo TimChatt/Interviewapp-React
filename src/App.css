@@ -3,18 +3,9 @@
   height: 100vh;
 }
 
-.content-container {
-  margin-left: 250px; /* Adjust for the sidebar width */
+.main-content {
+  margin-left: 250px; /* Matches sidebar width */
   padding: 2rem;
-  width: calc(100% - 250px);
-  background-color: #f8f9fa; /* Light background for content */
-  color: #1a202c; /* Dark text */
-  overflow-y: auto;
-}
-
-.metrics-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-top: 2rem;
+  flex-grow: 1; /* Ensures it fills remaining space */
+  background-color: #f8f9fa; /* Light background */
 }
