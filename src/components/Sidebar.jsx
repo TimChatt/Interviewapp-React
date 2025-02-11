@@ -1,65 +1,63 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import "./Sidebar.css"; // Add CSS for styling the sidebar
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./Navbar.css";
 
-const Sidebar = () => {
-  const location = useLocation();
+const Navbar = () => {
+  const [openDropdown, setOpenDropdown] = useState(null);
 
-  // Check if a link is active
-  const isActive = (path) => location.pathname.startsWith(path);
+  const toggleDropdown = (menu) => {
+    setOpenDropdown(openDropdown === menu ? null : menu);
+  };
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-header">
-        <h2>Interview Analysis</h2>
+    <nav className="navbar">
+      {/* Sidebar Logo */}
+      <div className="navbar-logo">
+        <Link to="/">Interview Analysis</Link>
       </div>
-      <ul className="sidebar-menu">
-        <li className={`sidebar-item ${isActive("/") ? "active" : ""}`}>
+
+      {/* Sidebar Menu */}
+      <ul className="navbar-menu">
+        <li className="navbar-item">
           <Link to="/">Home</Link>
         </li>
-        <li className={`sidebar-item ${isActive("/candidate") ? "active" : ""}`}>
-          <span>Candidate</span>
-          <ul className="sidebar-submenu">
-            <li className={isActive("/candidate/search") ? "active" : ""}>
-              <Link to="/candidate/search">Search</Link>
-            </li>
-            <li className={isActive("/candidate/profile") ? "active" : ""}>
-              <Link to="/candidate/profile">Profile</Link>
-            </li>
+
+        {/* Candidate Dropdown */}
+        <li className={`navbar-item dropdown ${openDropdown === "candidate" ? "open" : ""}`} onClick={() => toggleDropdown("candidate")}>
+          Candidate
+          <ul className="dropdown-menu">
+            <li><Link to="/candidate/search">Search</Link></li>
+            <li><Link to="/candidate/profile">Profile</Link></li>
           </ul>
         </li>
-        <li className={`sidebar-item ${isActive("/insights") ? "active" : ""}`}>
-          <span>Insights</span>
-          <ul className="sidebar-submenu">
-            <li className={isActive("/insights/trends") ? "active" : ""}>
-              <Link to="/insights/trends">Trends & Patterns</Link>
-            </li>
-            <li className={isActive("/insights/ai") ? "active" : ""}>
-              <Link to="/insights/ai">AI vs Actual Scores</Link>
-            </li>
+
+        {/* Insights Dropdown */}
+        <li className={`navbar-item dropdown ${openDropdown === "insights" ? "open" : ""}`} onClick={() => toggleDropdown("insights")}>
+          Insights
+          <ul className="dropdown-menu">
+            <li><Link to="/insights/trends">Trends & Patterns</Link></li>
+            <li><Link to="/insights/ai">AI vs Actual Scores</Link></li>
           </ul>
         </li>
-        <li className={`sidebar-item ${isActive("/admin") ? "active" : ""}`}>
-          <span>Admin</span>
-          <ul className="sidebar-submenu">
-            <li className={isActive("/admin/settings") ? "active" : ""}>
-              <Link to="/admin/settings">Settings</Link>
-            </li>
-            <li className={isActive("/admin/security") ? "active" : ""}>
-              <Link to="/admin/security">Security</Link>
-            </li>
+
+        {/* Admin Dropdown */}
+        <li className={`navbar-item dropdown ${openDropdown === "admin" ? "open" : ""}`} onClick={() => toggleDropdown("admin")}>
+          Admin
+          <ul className="dropdown-menu">
+            <li><Link to="/admin/settings">Settings</Link></li>
+            <li><Link to="/admin/security">Security</Link></li>
           </ul>
         </li>
-        <li className={`sidebar-item ${isActive("/reporting") ? "active" : ""}`}>
+
+        <li className="navbar-item">
           <Link to="/reporting">Reporting</Link>
         </li>
-        <li className={`sidebar-item ${isActive("/recommendations") ? "active" : ""}`}>
+        <li className="navbar-item">
           <Link to="/recommendations">Recommendations</Link>
         </li>
       </ul>
-    </aside>
+    </nav>
   );
 };
 
-export default Sidebar;
-
+export default Navbar;
