@@ -1,64 +1,70 @@
-/* src/components/NavigationBar.css */
-
+/* Sidebar navigation */
 .navbar {
   background-color: #1a202c; /* Dark background */
   color: #f8f9fa; /* Light text */
+  width: 250px; /* Adjust width as needed */
+  height: 100vh; /* Full height */
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Container for logo and links */
 .navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
+/* Logo at the top */
 .navbar-logo {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #f6ad55; /* Orange */
+  margin-bottom: 2rem;
 }
 
+/* Navigation links */
 .navbar-links {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .navbar-links a {
-  margin: 0 1rem;
+  width: 100%;
+  text-align: center;
+  padding: 0.75rem;
   color: #f8f9fa;
   text-decoration: none;
-  transition: color 0.3s ease;
+  font-size: 1.2rem;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .navbar-links a:hover {
-  color: #f6ad55; /* Orange */
+  background-color: #f6ad55; /* Orange */
+  color: #1a202c;
 }
 
-/* Optionally, if you had additional classes for nav-link styling: */
-.nav-link {
-  font-size: 1.2rem;
-  font-weight: normal;
-}
-
+/* Logout button styling */
 .logout-button {
-  padding: 0.5rem 1rem;
-  background-color: #e53e3e; /* red */
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #e53e3e; /* Red */
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-left: 1rem;
+  margin-top: auto; /* Pushes it to the bottom */
 }
 
 .logout-button:hover {
   background-color: #c53030;
 }
-
