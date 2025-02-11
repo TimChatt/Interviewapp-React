@@ -1,7 +1,7 @@
 /* Sidebar Container */
-.sidebar {
+.navbar {
   width: 250px;
-  height: 100vh;
+  height: 100vh; /* Full height */
   position: fixed;
   top: 0;
   left: 0;
@@ -13,69 +13,69 @@
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Sidebar Header */
-.sidebar-header {
+/* Sidebar Logo */
+.navbar-logo {
+  text-align: center;
   margin-bottom: 2rem;
 }
 
-.sidebar-header h2 {
+.navbar-logo a {
   color: #f6ad55; /* Orange */
   font-size: 1.5rem;
-  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 /* Sidebar Menu */
-.sidebar-menu {
+.navbar-menu {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
-.sidebar-item {
-  margin-bottom: 1rem;
+.navbar-item {
+  width: 100%;
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.sidebar-item a,
-.sidebar-item span {
+.navbar-item a {
   color: #cbd5e0;
   text-decoration: none;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
   display: block;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 0.75rem;
 }
 
 /* Hover and Active States */
-.sidebar-item a:hover,
-.sidebar-item span:hover {
+.navbar-item:hover {
   background-color: #4a5568; /* Slightly lighter grey */
-  color: #f6ad55; /* Orange */
 }
 
-.sidebar-item.active > a,
-.sidebar-item.active > span {
+.navbar-item.active a {
   background-color: #f6ad55; /* Orange */
   color: #1a202c; /* Dark text for active */
 }
 
-/* Submenu Styling */
-.sidebar-submenu {
-  list-style: none;
-  margin: 0;
-  margin-left: 1rem;
-  padding: 0;
+/* Dropdown Styling */
+.dropdown {
+  position: relative;
 }
 
-.sidebar-submenu li {
-  margin-bottom: 0.5rem;
+.dropdown-menu {
+  display: none;
+  flex-direction: column;
+  padding-left: 1rem;
 }
 
-.sidebar-submenu li a {
-  font-size: 0.9rem;
+.dropdown.open .dropdown-menu {
+  display: flex;
 }
 
-.sidebar-submenu li.active a {
-  font-weight: bold;
-  color: #f6ad55;
+/* Adjust Main Content to Avoid Overlapping */
+.main-content {
+  margin-left: 250px; /* Same width as the sidebar */
+  padding: 2rem;
 }
