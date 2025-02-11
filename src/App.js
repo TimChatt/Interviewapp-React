@@ -14,19 +14,21 @@ import Recommendations from "./pages/Recommendations";
 function App() {
   return (
     <Router>
-      <Navbar />
-      <div className="main-content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/candidate/search" element={<CandidateSearch />} />
-          <Route path="/candidate/profile" element={<CandidateProfile />} />
-          <Route path="/insights/trends" element={<Trends />} />
-          <Route path="/insights/ai" element={<AIvsActualScores />} />
-          <Route path="/admin/settings" element={<Settings />} />
-          <Route path="/admin/security" element={<Security />} />
-          <Route path="/reporting" element={<Reporting />} />
-          <Route path="/recommendations" element={<Recommendations />} />
-        </Routes>
+      <div className="app-container">
+        <Navbar /> {/* Sidebar Navigation */}
+        <div className="content-container">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/candidate/search" element={<CandidateSearch />} />
+            <Route path="/candidate/profile" element={<CandidateProfile />} />
+            <Route path="/insights/trends" element={<Trends />} />
+            <Route path="/insights/ai" element={<AIvsActualScores />} />
+            <Route path="/admin/settings" element={<Settings />} />
+            <Route path="/admin/security" element={<Security />} />
+            <Route path="/reporting" element={<Reporting />} />
+            <Route path="/recommendations" element={<Recommendations />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
