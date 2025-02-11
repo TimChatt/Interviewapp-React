@@ -32,9 +32,12 @@ const NavigationBar = () => {
           <Link to="/admin" className="nav-link">
             Admin
           </Link>
-          {/* Optionally, include a link to the Interviewer Playbook */}
           <Link to="/admin-dashboard" className="nav-link">
             Admin Dashboard
+          </Link>
+          {/* New link for Competency Framework Planner */}
+          <Link to="/competency-planner" className="nav-link">
+            Competency Planner
           </Link>
         </div>
         {user && (
@@ -48,6 +51,3 @@ const NavigationBar = () => {
 };
 
 export default NavigationBar;
-
-
-
