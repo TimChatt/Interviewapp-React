@@ -1,81 +1,46 @@
-/* Sidebar Container */
-.navbar {
-  width: 250px;
-  height: 100vh; /* Full height */
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #1a202c; /* Dark background */
-  color: #cbd5e0; /* Light grey text */
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-}
+/* src/components/Sidebar.css */
 
-/* Sidebar Logo */
-.navbar-logo {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.navbar-logo a {
-  color: #f6ad55; /* Orange */
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-/* Sidebar Menu */
-.navbar-menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* Collapsible Section Styles */
+.collapsible-section {
   width: 100%;
 }
 
-.navbar-item {
-  width: 100%;
-  padding: 0.75rem;
+.collapsible-toggle {
+  background: none;
+  color: #f8f9fa;
+  border: none;
   text-align: left;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.navbar-item a {
-  color: #cbd5e0;
-  text-decoration: none;
-  display: block;
-  padding: 0.75rem;
+.collapsible-toggle:hover {
+  background-color: #f6ad55;
+  color: #1a202c;
 }
 
-/* Hover and Active States */
-.navbar-item:hover {
-  background-color: #4a5568; /* Slightly lighter grey */
-}
-
-.navbar-item.active a {
-  background-color: #f6ad55; /* Orange */
-  color: #1a202c; /* Dark text for active */
-}
-
-/* Dropdown Styling */
-.dropdown {
-  position: relative;
-}
-
-.dropdown-menu {
-  display: none;
-  flex-direction: column;
-  padding-left: 1rem;
-}
-
-.dropdown.open .dropdown-menu {
+.collapsible-links {
   display: flex;
+  flex-direction: column;
+  padding-left: 1rem; /* Indent sub-links */
 }
 
-/* Adjust Main Content to Avoid Overlapping */
-.main-content {
-  margin-left: 250px; /* Same width as the sidebar */
-  padding: 2rem;
+.collapsible-links a {
+  text-decoration: none;
+  color: #f8f9fa;
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.collapsible-links a:hover {
+  background-color: #f6ad55;
+  color: #1a202c;
+}
+
+.collapsible-links .active {
+  background-color: #f6ad55;
+  color: #1a202c;
 }
