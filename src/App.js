@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
+import SavedFrameworks from "./pages/SavedFrameworks"; // Import the SavedFrameworks page
 import "./index.css"; // Ensure global styles are included
 
 const AppContent = () => {
@@ -39,6 +40,7 @@ const AppContent = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+          <Route path="/frameworks" element={<SavedFrameworks />} /> {/* Add route for SavedFrameworks */}
         </Routes>
       </div>
     </div>
