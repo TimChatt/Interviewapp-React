@@ -16,19 +16,36 @@ function App() {
   return (
     <Router>
       <div className="app-container">
+        {/* Sidebar navigation */}
         <Sidebar />
+
+        {/* Main content area */}
         <div className="main-content">
           <Routes>
+            {/* Home page */}
             <Route path="/" element={<Home />} />
+
+            {/* Candidate routes */}
             <Route path="/candidate/search" element={<Candidate />} />
             <Route path="/candidate/profile" element={<CandidateProfile />} />
+
+            {/* Insights and recommendations */}
             <Route path="/insights" element={<Insights />} />
             <Route path="/recommendations" element={<Recommendations />} />
+
+            {/* Admin routes */}
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+
+            {/* Competency Framework Planner */}
+            <Route
+              path="/competency-framework-planner"
+              element={<CompetencyFrameworkPlanner />}
+            />
+
+            {/* Authentication */}
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </div>
       </div>
@@ -37,3 +54,4 @@ function App() {
 }
 
 export default App;
+
