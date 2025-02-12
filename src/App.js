@@ -11,6 +11,7 @@ import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Logout from "./pages/Logout"; // ✅ Ensure Logout is imported
+import "./App.css";
 
 function App() {
   return (
