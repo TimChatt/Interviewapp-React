@@ -3,14 +3,21 @@
   width: 250px;
   height: 100vh;
   position: fixed;
+  top: 0;
+  left: 0;
   background-color: #1f2937; /* Dark navy-blue background */
   color: #ffffff; /* White text */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow-y: auto;
   z-index: 1000;
+  transition: transform 0.3s ease; /* Smooth transition for hiding sidebar */
+}
+
+.sidebar.hidden {
+  transform: translateX(-100%); /* Hide sidebar by moving it off-screen */
 }
 
 /* Sidebar Logo */
@@ -117,6 +124,11 @@
 @media (max-width: 768px) {
   .sidebar {
     width: 200px;
+    transform: translateX(-100%); /* Default to hidden on smaller screens */
+  }
+
+  .sidebar.visible {
+    transform: translateX(0); /* Make sidebar visible when toggled */
   }
 
   .sidebar-logo {
@@ -138,3 +150,4 @@
     padding: 0.5rem 1rem;
   }
 }
+
