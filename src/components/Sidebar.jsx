@@ -1,76 +1,36 @@
-// src/components/Sidebar.jsx
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 
 const Sidebar = () => {
-  const [isAdminOpen, setIsAdminOpen] = useState(false); // Toggle for Admin section
-
-  const toggleAdminSection = () => {
-    setIsAdminOpen((prev) => !prev);
-  };
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const location = useLocation();
 
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <h2>Your Logo</h2>
-      </div>
-      <nav className="sidebar-links">
-        <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
-          Dashboard Overview
-        </NavLink>
-        <NavLink to="/candidates" className={({ isActive }) => (isActive ? "active" : "")}>
-          Candidates
-        </NavLink>
-        <NavLink to="/insights" className={({ isActive }) => (isActive ? "active" : "")}>
-          Insights
-        </NavLink>
-        <NavLink to="/recommendations" className={({ isActive }) => (isActive ? "active" : "")}>
-          Recommendations
-        </NavLink>
+    <nav className="sidebar">
+      <ul>
+        <li><Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link></li>
+        <li><Link to="/candidate/search" className={location.pathname === "/candidate/search" ? "active" : ""}>Candidate Search</Link></li>
+        <li><Link to="/candidate/profile" className={location.pathname === "/candidate/profile" ? "active" : ""}>Candidate Profile</Link></li>
+        <li><Link to="/insights" className={location.pathname === "/insights" ? "active" : ""}>Insights</Link></li>
+        <li><Link to="/recommendations" className={location.pathname === "/recommendations" ? "active" : ""}>Recommendations</Link></li>
 
         {/* Collapsible Admin Section */}
-        <div className="collapsible-section">
-          <button className="collapsible-toggle" onClick={toggleAdminSection}>
+        <li className="collapsible-section">
+          <button className="collapsible-toggle" onClick={() => setIsAdminOpen(!isAdminOpen)}>
             Admin {isAdminOpen ? "▲" : "▼"}
           </button>
           {isAdminOpen && (
             <div className="collapsible-links">
-              <NavLink
-                to="/admin"
-                className={({ isActive }) => (isActive ? "active" : "")}
-              >
-                Admin Panel
-              </NavLink>
-              <NavLink
-                to="/admin-dashboard"
-                className={({ isActive }) => (isActive ? "active" : "")}
-              >
-                Admin Dashboard
-              </NavLink>
+              <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>Admin</Link>
+              <Link to="/admin/dashboard" className={location.pathname === "/admin/dashboard" ? "active" : ""}>Dashboard</Link>
             </div>
           )}
-        </div>
+        </li>
 
-        {/* Competency Framework Planner */}
-        <NavLink
-          to="/competency-framework-planner"
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          Competency Framework Planner
-        </NavLink>
-
-        <button
-          className="logout-button"
-          onClick={() => {
-            localStorage.clear();
-            window.location.href = "/login";
-          }}
-        >
-          Logout
-        </button>
-      </nav>
-    </div>
+        <li><Link to="/competency-framework-planner" className={location.pathname === "/competency-framework-planner" ? "active" : ""}>Competency Framework</Link></li>
+      </ul>
+    </nav>
   );
 };
 
