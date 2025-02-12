@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import navigation hook
 import "./SavedFrameworks.css";
 
 const SavedFrameworks = () => {
-  const [frameworks, setFrameworks] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedJobTitle, setSelectedJobTitle] = useState(null);
+  const [frameworks, setFrameworks] = useState([]); // Store all frameworks
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate(); // Initialize navigate hook
 
   // Fetch all saved frameworks from the backend
   useEffect(() => {
@@ -14,7 +15,7 @@ const SavedFrameworks = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          "https://interviewappbe-production.up.railway.app/api/saved-frameworks"
+          "https://interviewappbe-production.up.railway.app/api/get-frameworks" // Ensure this matches your backend route
         );
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
@@ -33,23 +34,9 @@ const SavedFrameworks = () => {
     fetchFrameworks();
   }, []);
 
-  // Handle department selection
+  // Handle navigation to DepartmentFrameworks page
   const handleDepartmentClick = (department) => {
-    if (selectedDepartment === department) {
-      setSelectedDepartment(null); // Collapse if already selected
-    } else {
-      setSelectedDepartment(department);
-      setSelectedJobTitle(null); // Reset job title when switching departments
-    }
-  };
-
-  // Handle job title selection
-  const handleJobTitleClick = (jobTitle) => {
-    if (selectedJobTitle === jobTitle) {
-      setSelectedJobTitle(null); // Collapse if already selected
-    } else {
-      setSelectedJobTitle(jobTitle);
-    }
+    navigate(`/frameworks/${department}`);
   };
 
   return (
@@ -68,59 +55,12 @@ const SavedFrameworks = () => {
       {!loading && !error && frameworks.length > 0 && (
         <div className="departments-list">
           {frameworks.map((framework) => (
-            <div key={framework.department} className="department-container">
-              <h2
-                className="department-title"
-                onClick={() => handleDepartmentClick(framework.department)}
-              >
-                {framework.department}
-              </h2>
-
-              {selectedDepartment === framework.department && (
-                <div className="job-titles-list">
-                  {framework.jobTitles.map((jobTitle) => (
-                    <div
-                      key={jobTitle.title}
-                      className="job-title-container"
-                    >
-                      <h3
-                        className="job-title"
-                        onClick={() => handleJobTitleClick(jobTitle.title)}
-                      >
-                        {jobTitle.title}
-                      </h3>
-
-                      {selectedJobTitle === jobTitle.title && (
-                        <div className="competencies-list">
-                          {jobTitle.competencies.map((competency) => (
-                            <div
-                              key={competency.name}
-                              className="competency-card"
-                            >
-                              <h4 className="competency-name">
-                                {competency.name}
-                              </h4>
-                              <div className="competency-levels">
-                                {Object.entries(
-                                  competency.descriptions
-                                ).map(([level, description]) => (
-                                  <div
-                                    key={level}
-                                    className="competency-level"
-                                  >
-                                    <strong>{level}:</strong>{" "}
-                                    <span>{description}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div
+              key={framework.department}
+              className="department-container"
+              onClick={() => handleDepartmentClick(framework.department)} // Navigate on click
+            >
+              <h2 className="department-title">{framework.department}</h2>
             </div>
           ))}
         </div>
