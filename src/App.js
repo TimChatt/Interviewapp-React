@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
+import "./index.css"; // Ensure global styles are included
 
 const AppContent = () => {
   const location = useLocation();
@@ -22,9 +23,11 @@ const AppContent = () => {
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
 
   return (
-    <div className="app-container">
-      {!shouldHideSidebar && <Sidebar />} {/* Conditionally render Sidebar */}
-      <div className={`main-content ${shouldHideSidebar ? "no-sidebar" : ""}`}>
+    <div className={`app-container ${shouldHideSidebar ? "no-sidebar" : ""}`}>
+      {/* Conditionally render Sidebar */}
+      {!shouldHideSidebar && <Sidebar />}
+      {/* Main content area */}
+      <div className={`main-content ${shouldHideSidebar ? "expanded" : ""}`}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
@@ -51,4 +54,3 @@ const App = () => (
 );
 
 export default App;
-
