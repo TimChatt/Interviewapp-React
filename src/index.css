@@ -1,22 +1,16 @@
-/* index.css or App.css */
-
+/* Global Styles (index.css) */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f3f4f6; /* Light blue background */
+  background-color: #f3f4f6; /* Light blue background for the whole app */
   color: #333;
+  line-height: 1.6;
 }
 
 .app-container {
   display: flex;
-  flex-direction: row; /* Align sidebar and main content horizontally */
-  height: 100vh; /* Full height */
-}
-
-.sidebar {
-  width: 250px;
-  background-color: #ffffff;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  flex-direction: row; /* Sidebar and main content aligned horizontally */
+  height: 100vh; /* Full height of viewport */
 }
 
 .main-content {
@@ -26,37 +20,32 @@ body {
   background-color: #ffffff; /* White background for content */
 }
 
-/* Competency Framework Planner */
-.competency-framework-planner {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem; /* Spacing between grid items */
-  padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 8px;
+/* Utility Classes */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.box-shadow {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.card {
-  padding: 1rem;
-  margin: 1rem;
-  background-color: #ffffff;
+.rounded {
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .app-container {
-    flex-direction: column; /* Stack sidebar and content */
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
+    flex-direction: column; /* Stack sidebar and main content */
   }
 
   .main-content {
-    margin-left: 0;
+    margin-left: 0; /* Reset margin for responsive layout */
   }
 }
