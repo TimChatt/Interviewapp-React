@@ -1,11 +1,16 @@
+/* index.css or App.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6; /* Light blue background */
+  color: #333;
+}
+
 .app-container {
   display: flex;
-  height: 100vh;
 }
 
 .main-content {
-  margin-left: 250px; /* Matches sidebar width */
+  margin-left: 250px; /* Same width as the sidebar */
   padding: 2rem;
-  flex-grow: 1; /* Ensures it fills remaining space */
-  background-color: #f8f9fa; /* Light background */
 }
