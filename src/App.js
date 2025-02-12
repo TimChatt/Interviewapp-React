@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar"; // Sidebar for navigation
 import Home from "./pages/Home";
-import CandidateSearch from "./pages/CandidateSearch";
+import CandidateTable from "./pages/CandidateTable";
 import CandidateProfile from "./pages/CandidateProfile";
 import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
@@ -19,7 +19,7 @@ function App() {
           <Routes>
             {/* Main sections */}
             <Route path="/" element={<Home />} />
-            <Route path="/candidate/search" element={<CandidateSearch />} />
+            <Route path="/candidate/search" element={<CandidateTable />} />
             <Route path="/candidate/profile" element={<CandidateProfile />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/recommendations" element={<Recommendations />} />
