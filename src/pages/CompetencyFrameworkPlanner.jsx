@@ -196,7 +196,8 @@ const CompetencyFramework = () => {
             <div className="competency-levels">
               {Object.entries(competency.descriptions).map(([level, description]) => (
                 <div key={level} className="competency-level">
-                  <strong>{level}:</strong> <span>{description}</span>
+                  <strong>{level}:</strong>
+                  <p>{description}</p>
                 </div>
               ))}
             </div>
