@@ -13,11 +13,31 @@ body {
   height: 100vh; /* Full height of viewport */
 }
 
+.app-container.no-sidebar .main-content {
+  margin-left: 0; /* Reset margin when sidebar is hidden */
+  width: 100%; /* Full width for main content when sidebar is hidden */
+}
+
 .main-content {
+  margin-left: 250px; /* Sidebar width */
   flex-grow: 1;
   padding: 2rem;
   overflow-y: auto;
   background-color: #ffffff; /* White background for content */
+}
+
+.main-content.expanded {
+  margin-left: 0; /* No margin when sidebar is hidden */
+}
+
+/* Sidebar-specific styles (if required) */
+.sidebar {
+  width: 250px;
+  background-color: #1f2937; /* Dark navy-blue */
+  color: #ffffff;
+  height: 100vh;
+  position: fixed;
+  z-index: 1000;
 }
 
 /* Utility Classes */
@@ -47,5 +67,9 @@ body {
 
   .main-content {
     margin-left: 0; /* Reset margin for responsive layout */
+  }
+
+  .sidebar {
+    width: 200px; /* Reduce sidebar width on smaller screens */
   }
 }
