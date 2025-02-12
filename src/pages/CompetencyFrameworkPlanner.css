@@ -1,121 +1,118 @@
-body {
-  font-family: "Roboto", sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
-
-.competency-framework-planner {
-  max-width: 800px;
+/* Container for the planner */
+.planner-container {
+  max-width: 900px;
   margin: 40px auto;
-  background: #fff;
+  padding: 20px;
+  background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  padding: 24px;
 }
 
-.title {
+/* Title Styles */
+.planner-title {
   font-size: 2rem;
   font-weight: bold;
   color: #2c3e50;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-.form-grid {
-  display: flex;
-  flex-direction: column;
+/* Form Section */
+.planner-form {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 8px;
-  color: #555;
-}
-
-input[type="text"],
-textarea {
+.planner-form input,
+.planner-form textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 10px;
-  font-size: 0.9rem;
+  box-sizing: border-box;
   outline: none;
   transition: border-color 0.3s ease;
-  width: 100%;
-  resize: none;
 }
 
-input[type="text"]:focus,
-textarea:focus {
+.planner-form input:focus,
+.planner-form textarea:focus {
   border-color: #4f46e5;
-  box-shadow: 0 0 4px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
 }
 
-textarea {
-  min-height: 80px;
-}
-
+/* Button */
 button {
-  background-color: #4f46e5;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+  width: 100%;
   padding: 12px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #3730a3;
+  background-color: #3b3fcf;
 }
 
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #4f46e5;
+}
+
+/* Results Section */
 .result-section {
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
-.result-section h2 {
+.result-title {
   font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
-.competency-item {
-  margin-bottom: 16px;
-  padding: 16px;
+.competency-card {
+  background-color: #f9f9f9;
   border: 1px solid #e6e6e6;
   border-radius: 8px;
-  background: #f9f9f9;
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.competency-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.competency-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.competency-item h3 {
-  font-size: 1.2rem;
+.competency-title {
+  font-size: 1.25rem;
   font-weight: bold;
-  margin-bottom: 12px;
   color: #2c3e50;
+  margin-bottom: 10px;
 }
 
-.competency-item p {
-  margin: 0;
-  font-size: 0.9rem;
+.competency-level {
+  margin-left: 10px;
+  font-size: 1rem;
   color: #555;
+}
+
+.competency-level strong {
+  color: #333;
 }
