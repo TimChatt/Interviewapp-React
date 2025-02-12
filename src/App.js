@@ -9,7 +9,7 @@ import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Signup from "./pages/SignUp";
 import Logout from "./pages/Logout"; // ✅ Ensure Logout is imported
 import "./App.css";
 
@@ -29,7 +29,7 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/logout" element={<Logout />} />  {/* ✅ Ensure Logout route is present */}
           </Routes>
         </div>
