@@ -1,32 +1,38 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar"; // Sidebar for navigation
 import Home from "./pages/Home";
 import CandidateSearch from "./pages/CandidateSearch";
 import CandidateProfile from "./pages/CandidateProfile";
-import Trends from "./pages/Trends";
-import AIvsActualScores from "./pages/AIvsActualScores";
-import Settings from "./pages/Settings";
-import Security from "./pages/Security";
-import Reporting from "./pages/Reporting";
+import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
+import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard"; // Sub-area under Admin
+import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 
 function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar /> {/* Sidebar Navigation */}
-        <div className="main-content"> {/* This should be the main wrapper */}
+        <Sidebar /> {/* Sidebar Navigation */}
+        <div className="main-content"> {/* Main wrapper */}
           <Routes>
+            {/* Main sections */}
             <Route path="/" element={<Home />} />
             <Route path="/candidate/search" element={<CandidateSearch />} />
             <Route path="/candidate/profile" element={<CandidateProfile />} />
-            <Route path="/insights/trends" element={<Trends />} />
-            <Route path="/insights/ai" element={<AIvsActualScores />} />
-            <Route path="/admin/settings" element={<Settings />} />
-            <Route path="/admin/security" element={<Security />} />
-            <Route path="/reporting" element={<Reporting />} />
+            <Route path="/insights" element={<Insights />} />
             <Route path="/recommendations" element={<Recommendations />} />
+
+            {/* Admin section with collapsible sub-area */}
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+            {/* Competency Framework Planner */}
+            <Route
+              path="/competency-framework-planner"
+              element={<CompetencyFrameworkPlanner />}
+            />
           </Routes>
         </div>
       </div>
@@ -35,3 +41,4 @@ function App() {
 }
 
 export default App;
+
