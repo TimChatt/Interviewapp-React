@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./CompetencyFrameworkPlanner.css";
 
 const CompetencyFramework = () => {
   const [framework, setFramework] = useState({
