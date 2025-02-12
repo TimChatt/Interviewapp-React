@@ -75,6 +75,8 @@ const CompetencyFramework = () => {
 
       const data = await response.json();
 
+      console.log("API Response:", data); // Debugging log
+
       if (data.success) {
         setGeneratedDescriptions(data.competencyDescriptions);
         setFramework((prev) => ({
@@ -117,18 +119,22 @@ const CompetencyFramework = () => {
         {/* Job Levels Section */}
         <div className="input-group">
           <h3>Job Levels</h3>
-          <input
-            type="text"
-            placeholder="Add a job level"
-            value={jobLevelInput}
-            onChange={(e) => setJobLevelInput(e.target.value)}
-          />
-          <button onClick={addJobLevel} className="add-button">
-            Add Job Level
-          </button>
+          <div className="input-row">
+            <input
+              type="text"
+              placeholder="Add a job level"
+              value={jobLevelInput}
+              onChange={(e) => setJobLevelInput(e.target.value)}
+            />
+            <button onClick={addJobLevel} className="add-button">
+              Add
+            </button>
+          </div>
           <ul className="job-level-list">
             {framework.jobLevels.map((level, index) => (
-              <li key={index}>{level}</li>
+              <li key={index} className="job-level-item">
+                {level}
+              </li>
             ))}
           </ul>
         </div>
@@ -136,18 +142,20 @@ const CompetencyFramework = () => {
         {/* Competencies Section */}
         <div className="input-group">
           <h3>Competencies</h3>
-          <input
-            type="text"
-            placeholder="Add a competency"
-            value={competencyInput}
-            onChange={(e) => setCompetencyInput(e.target.value)}
-          />
-          <button onClick={addCompetency} className="add-button">
-            Add Competency
-          </button>
+          <div className="input-row">
+            <input
+              type="text"
+              placeholder="Add a competency"
+              value={competencyInput}
+              onChange={(e) => setCompetencyInput(e.target.value)}
+            />
+            <button onClick={addCompetency} className="add-button">
+              Add
+            </button>
+          </div>
           <ul className="competencies-list">
             {framework.competencies.map((competency, index) => (
-              <li key={index}>
+              <li key={index} className="competency-item">
                 <strong>{competency.name}</strong>
               </li>
             ))}
