@@ -1,63 +1,77 @@
+// src/components/Sidebar.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "./Navbar.css";
+import { NavLink } from "react-router-dom";
+import "./Sidebar.css";
 
-const Navbar = () => {
-  const [openDropdown, setOpenDropdown] = useState(null);
+const Sidebar = () => {
+  const [isAdminOpen, setIsAdminOpen] = useState(false); // Toggle for Admin section
 
-  const toggleDropdown = (menu) => {
-    setOpenDropdown(openDropdown === menu ? null : menu);
+  const toggleAdminSection = () => {
+    setIsAdminOpen((prev) => !prev);
   };
 
   return (
-    <nav className="navbar">
-      {/* Sidebar Logo */}
-      <div className="navbar-logo">
-        <Link to="/">Interview Analysis</Link>
+    <div className="sidebar">
+      <div className="sidebar-header">
+        <h2>Your Logo</h2>
       </div>
-
-      {/* Sidebar Menu */}
-      <ul className="navbar-menu">
-        <li className="navbar-item">
-          <Link to="/">Home</Link>
-        </li>
-
-        {/* Candidate Dropdown */}
-        <li className={`navbar-item dropdown ${openDropdown === "candidate" ? "open" : ""}`} onClick={() => toggleDropdown("candidate")}>
-          Candidate
-          <ul className="dropdown-menu">
-            <li><Link to="/candidate/search">Search</Link></li>
-            <li><Link to="/candidate/profile">Profile</Link></li>
-          </ul>
-        </li>
-
-        {/* Insights Dropdown */}
-        <li className={`navbar-item dropdown ${openDropdown === "insights" ? "open" : ""}`} onClick={() => toggleDropdown("insights")}>
+      <nav className="sidebar-links">
+        <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
+          Dashboard Overview
+        </NavLink>
+        <NavLink to="/candidates" className={({ isActive }) => (isActive ? "active" : "")}>
+          Candidates
+        </NavLink>
+        <NavLink to="/insights" className={({ isActive }) => (isActive ? "active" : "")}>
           Insights
-          <ul className="dropdown-menu">
-            <li><Link to="/insights/trends">Trends & Patterns</Link></li>
-            <li><Link to="/insights/ai">AI vs Actual Scores</Link></li>
-          </ul>
-        </li>
+        </NavLink>
+        <NavLink to="/recommendations" className={({ isActive }) => (isActive ? "active" : "")}>
+          Recommendations
+        </NavLink>
 
-        {/* Admin Dropdown */}
-        <li className={`navbar-item dropdown ${openDropdown === "admin" ? "open" : ""}`} onClick={() => toggleDropdown("admin")}>
-          Admin
-          <ul className="dropdown-menu">
-            <li><Link to="/admin/settings">Settings</Link></li>
-            <li><Link to="/admin/security">Security</Link></li>
-          </ul>
-        </li>
+        {/* Collapsible Admin Section */}
+        <div className="collapsible-section">
+          <button className="collapsible-toggle" onClick={toggleAdminSection}>
+            Admin {isAdminOpen ? "▲" : "▼"}
+          </button>
+          {isAdminOpen && (
+            <div className="collapsible-links">
+              <NavLink
+                to="/admin"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Admin Panel
+              </NavLink>
+              <NavLink
+                to="/admin-dashboard"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Admin Dashboard
+              </NavLink>
+            </div>
+          )}
+        </div>
 
-        <li className="navbar-item">
-          <Link to="/reporting">Reporting</Link>
-        </li>
-        <li className="navbar-item">
-          <Link to="/recommendations">Recommendations</Link>
-        </li>
-      </ul>
-    </nav>
+        {/* Competency Framework Planner */}
+        <NavLink
+          to="/competency-framework-planner"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          Competency Framework Planner
+        </NavLink>
+
+        <button
+          className="logout-button"
+          onClick={() => {
+            localStorage.clear();
+            window.location.href = "/login";
+          }}
+        >
+          Logout
+        </button>
+      </nav>
+    </div>
   );
 };
 
-export default Navbar;
+export default Sidebar;
