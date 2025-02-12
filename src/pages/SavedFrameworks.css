@@ -1,0 +1,83 @@
+.saved-frameworks-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.saved-frameworks-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.department-container {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 15px;
+}
+
+.department-title {
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin: 0;
+  color: #4f46e5;
+}
+
+.job-titles-list {
+  padding-left: 20px;
+}
+
+.job-title-container {
+  margin-bottom: 10px;
+}
+
+.job-title {
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.competencies-list {
+  padding-left: 20px;
+}
+
+.competency-card {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+}
+
+.competency-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.competency-level {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.error-message,
+.no-frameworks-message {
+  text-align: center;
+  color: red;
+  margin-top: 20px;
+}
+
+.loading-spinner {
+  text-align: center;
+  font-size: 1rem;
+  color: #4f46e5;
+  margin-top: 20px;
+}
