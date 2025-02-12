@@ -10,7 +10,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
-import Logout from "./pages/Logout"; // ✅ Ensure Logout is imported
 import "./App.css";
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
             <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/logout" element={<Logout />} />  {/* ✅ Ensure Logout route is present */}
           </Routes>
         </div>
       </div>
