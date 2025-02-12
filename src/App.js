@@ -10,7 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
-import "./App.css";
+import "./src/App.css";
 
 function App() {
   return (
