@@ -1,5 +1,6 @@
+// src/App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
@@ -13,33 +14,41 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+
+  // Define paths where the Sidebar should be hidden
+  const hideSidebarPaths = ["/login", "/signup"];
+  const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
+
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app-container">
-          <Sidebar />
-          <div className="main-content">
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/" element={<Home />} />
-              <Route path="/candidates" element={<Candidate />} />
-              <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-              <Route
-                path="/competency-framework-planner"
-                element={<CompetencyFrameworkPlanner />}
-              />
-            </Routes>
-          </div>
-        </div>
-      </Router>
-    </AuthProvider>
+    <div className="app-container">
+      {!shouldHideSidebar && <Sidebar />} {/* Conditionally render Sidebar */}
+      <div className={`main-content ${shouldHideSidebar ? "no-sidebar" : ""}`}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/candidates" element={<Candidate />} />
+          <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+        </Routes>
+      </div>
+    </div>
   );
 };
 
+const App = () => (
+  <AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
+  </AuthProvider>
+);
+
 export default App;
+
