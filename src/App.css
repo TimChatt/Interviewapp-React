@@ -1,16 +1,34 @@
-/* index.css or App.css */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f3f4f6; /* Light blue background */
-  color: #333;
-}
+/* App.css */
 
+/* Style for the main app container */
 .app-container {
   display: flex;
+  flex-direction: column; /* Or 'row' if you're using a sidebar */
+  min-height: 100vh; /* Make sure the app spans the full viewport height */
+  background-color: #fff; /* Default background color for app */
 }
 
+/* Styling for headers (if used in App.js) */
+.app-header {
+  background-color: #1d4ed8; /* Blue header */
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Style for the main content area */
 .main-content {
-  margin-left: 250px; /* Same width as the sidebar */
+  flex-grow: 1; /* Ensures this area takes up remaining space */
   padding: 2rem;
+}
+
+/* Styling for the footer (if used in App.js) */
+.app-footer {
+  background-color: #374151; /* Dark gray */
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
 }
