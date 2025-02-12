@@ -13,7 +13,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
-import SavedFrameworks from "./pages/SavedFrameworks"; // Import the SavedFrameworks page
+import SavedFrameworks from "./pages/SavedFrameworks";
+import DepartmentFrameworks from "./pages/DepartmentFrameworks"; // Import DepartmentFrameworks page
+import JobTitleDetails from "./pages/JobTitleDetails"; // Import JobTitleDetails page
 import "./index.css"; // Ensure global styles are included
 
 const AppContent = () => {
@@ -40,7 +42,9 @@ const AppContent = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
-          <Route path="/frameworks" element={<SavedFrameworks />} /> {/* Add route for SavedFrameworks */}
+          <Route path="/frameworks" element={<SavedFrameworks />} />
+          <Route path="/frameworks/:department" element={<DepartmentFrameworks />} /> {/* Add route for DepartmentFrameworks */}
+          <Route path="/frameworks/:department/:jobTitle" element={<JobTitleDetails />} /> {/* Add route for JobTitleDetails */}
         </Routes>
       </div>
     </div>
@@ -56,3 +60,4 @@ const App = () => (
 );
 
 export default App;
+
