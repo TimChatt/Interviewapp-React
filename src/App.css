@@ -2,41 +2,19 @@
 .app-container {
   display: flex;
   flex-direction: row; /* Ensures sidebar and content are side by side */
-  min-height: 100vh;
-  background-color: #fff;
-}
-
-/* Sidebar styling */
-.sidebar {
-  width: 250px; /* Adjust as needed */
-  background-color: #f3f4f6; /* Light gray */
-  padding: 1rem;
-  height: 100vh; /* Full height */
-  position: fixed;
-  left: 0;
-  top: 0;
-  overflow-y: auto;
-}
-
-/* Sidebar links */
-.sidebar a {
-  display: block;
-  padding: 10px;
-  text-decoration: none;
-  color: #1d4ed8; /* Blue */
-  font-weight: bold;
-}
-
-.sidebar a:hover {
-  background-color: #e5e7eb; /* Light gray hover effect */
-  border-radius: 4px;
+  min-height: 100vh; /* Full viewport height */
+  background-color: #f9fafb; /* Subtle light blue-gray background */
 }
 
 /* Main content area */
 .main-content {
   flex-grow: 1;
-  margin-left: 250px; /* Adjust to match sidebar width */
   padding: 2rem;
+  transition: margin-left 0.3s ease; /* Smooth transition for sidebar toggling */
+}
+
+.main-content.no-sidebar {
+  margin-left: 0; /* No margin if the sidebar is hidden */
 }
 
 /* Header styling */
@@ -56,4 +34,5 @@
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
+  margin-top: auto; /* Push footer to the bottom */
 }
