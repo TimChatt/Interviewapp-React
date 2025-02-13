@@ -1,37 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import navigation hook
-import { useDebounce } from "use-debounce"; // Install with npm: npm install use-debounce
+import { useNavigate } from "react-router-dom";
 import "./SavedFrameworks.css";
 
 const SavedFrameworks = () => {
-  const [frameworks, setFrameworks] = useState([]); // Store all frameworks
+  const [allFrameworks, setAllFrameworks] = useState([]); // Store all frameworks fetched from backend
+  const [displayedFrameworks, setDisplayedFrameworks] = useState([]); // Frameworks to display based on search query
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 300); // Debounce for search input
-  const navigate = useNavigate(); // Initialize navigation hook
+  const navigate = useNavigate();
 
-  // Fetch all saved frameworks from the backend
+  // Fetch all frameworks from the backend on component mount
   useEffect(() => {
-    const fetchFrameworks = async (query = "") => {
+    const fetchFrameworks = async () => {
       setLoading(true);
       try {
-        if (!query.trim() && query === "") {
-          // Prevent empty query API calls
-          setFrameworks([]);
-          setLoading(false);
-          return;
-        }
-
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${query}`
+          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=`
         );
+
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.detail || `Error: ${response.status}`);
         }
+
         const data = await response.json();
-        setFrameworks(data.frameworks || []);
+        console.log("Fetched all frameworks:", data.frameworks); // Debugging log
+        setAllFrameworks(data.frameworks || []);
+        setDisplayedFrameworks(data.frameworks || []); // Display all frameworks initially
         setError(null);
       } catch (err) {
         console.error("Error fetching frameworks:", err);
@@ -41,8 +37,23 @@ const SavedFrameworks = () => {
       }
     };
 
-    fetchFrameworks(debouncedSearchQuery);
-  }, [debouncedSearchQuery]); // Re-fetch frameworks when the debounced search query changes
+    fetchFrameworks();
+  }, []); // Run once on component mount
+
+  // Update displayed frameworks based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      // If search query is empty, display all frameworks
+      setDisplayedFrameworks(allFrameworks);
+    } else {
+      // Filter frameworks based on the search query
+      const filteredFrameworks = allFrameworks.filter((framework) =>
+        framework.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        framework.job_title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setDisplayedFrameworks(filteredFrameworks);
+    }
+  }, [searchQuery, allFrameworks]);
 
   // Handle navigation to DepartmentFrameworks page
   const handleDepartmentClick = (department) => {
@@ -70,7 +81,7 @@ const SavedFrameworks = () => {
       }
 
       alert("Framework deleted successfully!");
-      setFrameworks(frameworks.filter((framework) => framework.id !== id)); // Remove the deleted framework from state
+      setAllFrameworks(allFrameworks.filter((framework) => framework.id !== id));
     } catch (error) {
       console.error("Error deleting framework:", error);
       alert("An error occurred while deleting the framework. Please try again.");
@@ -79,13 +90,7 @@ const SavedFrameworks = () => {
 
   // Handle framework editing
   const handleEdit = (id) => {
-    navigate(`/edit-framework/${id}`); // Redirect to an edit page or modal
-  };
-
-  // Handle search input changes
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
+    navigate(`/edit-framework/${id}`);
   };
 
   return (
@@ -98,7 +103,7 @@ const SavedFrameworks = () => {
           type="text"
           placeholder="Search by department or job title"
           value={searchQuery}
-          onChange={handleSearchChange}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
@@ -109,7 +114,7 @@ const SavedFrameworks = () => {
       {error && <div className="error-message">{error}</div>}
 
       {/* Empty State */}
-      {!loading && !error && frameworks.length === 0 && (
+      {!loading && !error && displayedFrameworks.length === 0 && (
         <div className="no-frameworks-message">
           <p>No saved frameworks found. Start by generating a new framework.</p>
           <button
@@ -122,13 +127,13 @@ const SavedFrameworks = () => {
       )}
 
       {/* Frameworks List */}
-      {!loading && !error && frameworks.length > 0 && (
+      {!loading && !error && displayedFrameworks.length > 0 && (
         <div className="frameworks-list">
-          {frameworks.map((framework) => (
+          {displayedFrameworks.map((framework) => (
             <div key={framework.id} className="framework-item">
               <div
                 className="framework-info"
-                onClick={() => handleDepartmentClick(framework.department)} // Navigate on click
+                onClick={() => handleDepartmentClick(framework.department)}
               >
                 <h2 className="framework-title">{framework.department}</h2>
                 <p className="framework-job-title">{framework.job_title}</p>
