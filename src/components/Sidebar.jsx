@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import { AuthContext } from "../contexts/AuthContext";
+import { FaEye } from "react-icons/fa"; // Adding a futuristic icon
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -17,8 +18,11 @@ const Sidebar = () => {
   return (
     <nav className="sidebar">
       <div className="sidebar-container">
-        {/* App Logo */}
-        <div className="sidebar-logo">My App</div>
+        {/* Futuristic App Logo */}
+        <div className="sidebar-logo">
+          <FaEye className="logo-icon" />
+          <span className="futuristic-text">TA Vision</span>
+        </div>
 
         {/* Navigation Links */}
         <ul className="sidebar-links">
