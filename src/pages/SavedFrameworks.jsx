@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import navigation hook
+import { useDebounce } from "use-debounce"; // Install with npm: npm install use-debounce
 import "./SavedFrameworks.css";
 
 const SavedFrameworks = () => {
@@ -7,6 +8,7 @@ const SavedFrameworks = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300); // Debounce for search input
   const navigate = useNavigate(); // Initialize navigation hook
 
   // Fetch all saved frameworks from the backend
@@ -14,11 +16,19 @@ const SavedFrameworks = () => {
     const fetchFrameworks = async (query = "") => {
       setLoading(true);
       try {
+        if (!query.trim() && query === "") {
+          // Prevent empty query API calls
+          setFrameworks([]);
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${query}` // Search functionality
+          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${query}`
         );
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          const errorData = await response.json();
+          throw new Error(errorData.detail || `Error: ${response.status}`);
         }
         const data = await response.json();
         setFrameworks(data.frameworks || []);
@@ -31,8 +41,8 @@ const SavedFrameworks = () => {
       }
     };
 
-    fetchFrameworks(searchQuery);
-  }, [searchQuery]); // Re-fetch frameworks when the search query changes
+    fetchFrameworks(debouncedSearchQuery);
+  }, [debouncedSearchQuery]); // Re-fetch frameworks when the debounced search query changes
 
   // Handle navigation to DepartmentFrameworks page
   const handleDepartmentClick = (department) => {
@@ -55,14 +65,15 @@ const SavedFrameworks = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to delete framework");
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to delete framework");
       }
 
       alert("Framework deleted successfully!");
       setFrameworks(frameworks.filter((framework) => framework.id !== id)); // Remove the deleted framework from state
     } catch (error) {
       console.error("Error deleting framework:", error);
-      alert("An error occurred while deleting the framework.");
+      alert("An error occurred while deleting the framework. Please try again.");
     }
   };
 
@@ -71,28 +82,46 @@ const SavedFrameworks = () => {
     navigate(`/edit-framework/${id}`); // Redirect to an edit page or modal
   };
 
+  // Handle search input changes
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+  };
+
   return (
     <div className="saved-frameworks-container">
       <h1 className="saved-frameworks-title">Saved Competency Frameworks</h1>
 
+      {/* Search Bar */}
       <div className="search-bar">
         <input
           type="text"
           placeholder="Search by department or job title"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
         />
       </div>
 
+      {/* Loading Spinner */}
       {loading && <div className="loading-spinner">Loading...</div>}
+
+      {/* Error Message */}
       {error && <div className="error-message">{error}</div>}
 
+      {/* Empty State */}
       {!loading && !error && frameworks.length === 0 && (
         <div className="no-frameworks-message">
-          No saved frameworks found. Start by generating a new framework.
+          <p>No saved frameworks found. Start by generating a new framework.</p>
+          <button
+            className="create-framework-button"
+            onClick={() => navigate("/generate-framework")}
+          >
+            Generate New Framework
+          </button>
         </div>
       )}
 
+      {/* Frameworks List */}
       {!loading && !error && frameworks.length > 0 && (
         <div className="frameworks-list">
           {frameworks.map((framework) => (
