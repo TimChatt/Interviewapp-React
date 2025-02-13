@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./SavedFrameworks.css";
+import "./styles.css";
 
 const SavedFrameworks = () => {
   const [allFrameworks, setAllFrameworks] = useState([]); // Store all frameworks fetched from backend
