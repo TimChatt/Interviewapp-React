@@ -25,6 +25,7 @@
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 /* Footer styling */
@@ -35,4 +36,24 @@
   padding: 1rem;
   font-size: 0.9rem;
   margin-top: auto; /* Push footer to the bottom */
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column; /* Stack sidebar and content vertically */
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .app-header {
+    font-size: 1.2rem;
+  }
+
+  .app-footer {
+    font-size: 0.8rem;
+  }
 }
