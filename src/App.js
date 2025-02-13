@@ -45,6 +45,7 @@ const AppContent = () => {
           <Route path="/frameworks" element={<SavedFrameworks />} />
           <Route path="/frameworks/:department" element={<DepartmentFrameworks />} /> {/* Add route for DepartmentFrameworks */}
           <Route path="/frameworks/:department/:jobTitle" element={<JobTitleDetails />} /> {/* Add route for JobTitleDetails */}
+          <Route path="/edit-framework/:id" element={<EditFramework />} />
         </Routes>
       </div>
     </div>
