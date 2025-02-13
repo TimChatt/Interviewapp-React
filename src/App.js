@@ -17,7 +17,11 @@ import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
 import DepartmentFrameworks from "./pages/DepartmentFrameworks"; // Import DepartmentFrameworks page
 import JobTitleDetails from "./pages/JobTitleDetails"; // Import JobTitleDetails page
-import "./index.css"; // Ensure global styles are included
+
+// Import CSS files
+import "./index.css"; // Global resets and minimal base styles
+import "./styles.css"; // Shared styles (grid, buttons, cards, etc.)
+import "./app.css"; // Layout-specific styles (app-container, main-content, etc.)
 
 const AppContent = () => {
   const location = useLocation();
