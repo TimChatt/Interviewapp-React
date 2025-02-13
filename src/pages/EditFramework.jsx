@@ -8,8 +8,14 @@ const EditFramework = () => {
   const [framework, setFramework] = useState(null); // Store framework details
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [updatedFramework, setUpdatedFramework] = useState({
+    department: "",
+    job_title: "",
+    job_levels: "",
+    competencies: [],
+  });
 
-  // Fetch framework details by ID
+  // Fetch the framework details by ID
   useEffect(() => {
     const fetchFramework = async () => {
       setLoading(true);
@@ -22,10 +28,16 @@ const EditFramework = () => {
         }
         const data = await response.json();
         setFramework(data);
+        setUpdatedFramework({
+          department: data.department,
+          job_title: data.job_title,
+          job_levels: data.job_levels,
+          competencies: data.competencies,
+        });
         setError(null);
       } catch (err) {
         console.error("Error fetching framework:", err);
-        setError("Failed to fetch framework. Please try again.");
+        setError("Failed to fetch framework details. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -34,137 +46,105 @@ const EditFramework = () => {
     fetchFramework();
   }, [id]);
 
-  // Handle form changes
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFramework((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setUpdatedFramework((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle competencies changes
-  const handleCompetenciesChange = (index, field, value) => {
-    const updatedCompetencies = [...framework.competencies];
-    updatedCompetencies[index][field] = value;
-    setFramework((prev) => ({
-      ...prev,
-      competencies: updatedCompetencies,
-    }));
-  };
-
-  // Add a new competency
-  const addCompetency = () => {
-    setFramework((prev) => ({
-      ...prev,
-      competencies: [
-        ...prev.competencies,
-        { name: "", levels: {} },
-      ],
-    }));
-  };
-
-  // Save the updated framework
-  const handleSave = async () => {
+  // Handle form submission to update the framework
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/update-framework/${id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(framework),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedFramework),
         }
       );
-
       if (!response.ok) {
-        throw new Error("Failed to update framework.");
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-
-      alert("Framework updated successfully!");
-      navigate("/saved-frameworks"); // Redirect to the saved frameworks page
+      navigate("/frameworks"); // Redirect to the frameworks page after successful update
     } catch (err) {
-      console.error("Error saving framework:", err);
-      alert("An error occurred while saving the framework.");
+      console.error("Error updating framework:", err);
+      setError("Failed to update framework. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
   if (error) return <div className="error-message">{error}</div>;
-  if (!framework) return null; // Avoid rendering before framework is fetched
 
   return (
     <div className="edit-framework-container">
-      <h1 className="edit-framework-title">Edit Framework</h1>
-
-      <div className="form-group">
-        <label>Department</label>
-        <input
-          type="text"
-          name="department"
-          value={framework.department}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Job Title</label>
-        <input
-          type="text"
-          name="job_title"
-          value={framework.job_title}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Job Levels (comma-separated)</label>
-        <input
-          type="text"
-          name="job_levels"
-          value={framework.job_levels}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="competencies-container">
-        <h2>Competencies</h2>
-        {framework.competencies.map((competency, index) => (
-          <div key={index} className="competency-item">
+      <h1>Edit Framework</h1>
+      {framework && (
+        <form onSubmit={handleSubmit} className="edit-framework-form">
+          <div className="form-group">
+            <label htmlFor="department">Department:</label>
             <input
               type="text"
-              placeholder="Competency Name"
-              value={competency.name}
-              onChange={(e) =>
-                handleCompetenciesChange(index, "name", e.target.value)
-              }
-            />
-            <textarea
-              placeholder="Competency Levels (e.g., Level 1: ..., Level 2: ...)"
-              value={JSON.stringify(competency.levels, null, 2)}
-              onChange={(e) =>
-                handleCompetenciesChange(index, "levels", JSON.parse(e.target.value))
-              }
+              id="department"
+              name="department"
+              value={updatedFramework.department}
+              onChange={handleChange}
+              required
             />
           </div>
-        ))}
-        <button className="add-competency-button" onClick={addCompetency}>
-          Add Competency
-        </button>
-      </div>
-
-      <div className="actions">
-        <button className="save-button" onClick={handleSave}>
-          Save
-        </button>
-        <button
-          className="cancel-button"
-          onClick={() => navigate("/saved-frameworks")}
-        >
-          Cancel
-        </button>
-      </div>
+          <div className="form-group">
+            <label htmlFor="job_title">Job Title:</label>
+            <input
+              type="text"
+              id="job_title"
+              name="job_title"
+              value={updatedFramework.job_title}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="job_levels">Job Levels:</label>
+            <input
+              type="text"
+              id="job_levels"
+              name="job_levels"
+              value={updatedFramework.job_levels}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="competencies">Competencies (JSON format):</label>
+            <textarea
+              id="competencies"
+              name="competencies"
+              value={JSON.stringify(updatedFramework.competencies, null, 2)}
+              onChange={(e) =>
+                setUpdatedFramework((prev) => ({
+                  ...prev,
+                  competencies: JSON.parse(e.target.value),
+                }))
+              }
+              required
+            />
+          </div>
+          <button type="submit" className="save-button">
+            Save Changes
+          </button>
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => navigate("/frameworks")}
+          >
+            Cancel
+          </button>
+        </form>
+      )}
     </div>
   );
 };
