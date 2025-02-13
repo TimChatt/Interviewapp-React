@@ -58,10 +58,10 @@ const Sidebar = () => {
             </Link>
           </li>
 
-          {/* Collapsible Admin Section */}
+          {/* Collapsible Admin Section - Styled like a Link */}
           <li className="collapsible-section">
             <button
-              className="collapsible-toggle"
+              className={`collapsible-toggle ${isAdminOpen ? "active" : ""}`}
               onClick={() => setIsAdminOpen(!isAdminOpen)}
             >
               Admin
