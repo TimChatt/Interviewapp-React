@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import "./SavedFrameworks.css";
 
 const SavedFrameworks = () => {
   const [allFrameworks, setAllFrameworks] = useState([]);
