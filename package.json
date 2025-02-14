@@ -4,6 +4,7 @@
   "description": "Interview Analysis App",
   "main": "index.js",
   "scripts": {
+    "preinstall": "rm -rf package-lock.json node_modules",
     "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
