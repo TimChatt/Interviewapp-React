@@ -26,8 +26,24 @@ const SavedFrameworks = () => {
 
         const data = await response.json();
         console.log("Fetched all frameworks:", data.frameworks);
-        setAllFrameworks(data.frameworks || []);
-        setDisplayedFrameworks(data.frameworks || []);
+
+        // Group frameworks by department
+        const frameworksByDepartment = data.frameworks.reduce((acc, framework) => {
+          if (!acc[framework.department]) {
+            acc[framework.department] = [];
+          }
+          acc[framework.department].push(framework);
+          return acc;
+        }, {});
+
+        // Convert the grouped data to an array for rendering
+        const groupedFrameworks = Object.entries(frameworksByDepartment).map(([department, frameworks]) => ({
+          department,
+          frameworks,
+        }));
+
+        setAllFrameworks(groupedFrameworks);
+        setDisplayedFrameworks(groupedFrameworks);
         setError(null);
       } catch (err) {
         console.error("Error fetching frameworks:", err);
@@ -44,15 +60,15 @@ const SavedFrameworks = () => {
     if (!searchQuery.trim()) {
       setDisplayedFrameworks(allFrameworks);
     } else {
-      const filteredFrameworks = allFrameworks.filter((framework) =>
-        framework.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        framework.job_title.toLowerCase().includes(searchQuery.toLowerCase())
+      const filteredFrameworks = allFrameworks.filter((group) =>
+        group.department.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setDisplayedFrameworks(filteredFrameworks);
     }
   }, [searchQuery, allFrameworks]);
 
   const handleDepartmentClick = (department) => {
+    // Navigate to the department's detailed page
     navigate(`/frameworks/${department}`);
   };
 
@@ -105,7 +121,7 @@ const SavedFrameworks = () => {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search by department or job title"
+          placeholder="Search by department"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -136,38 +152,17 @@ const SavedFrameworks = () => {
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
-                {displayedFrameworks.map((framework, index) => (
-                  <Draggable key={framework.id} draggableId={framework.id.toString()} index={index}>
-                    {(provided, snapshot) => (
+                {displayedFrameworks.map((group, index) => (
+                  <Draggable key={group.department} draggableId={group.department} index={index}>
+                    {(provided) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`framework-card ${snapshot.isDragging ? "dragging" : ""}`}
-                        onClick={(e) => {
-                          if (!snapshot.isDragging) {
-                            handleDepartmentClick(framework.department);
-                          }
-                        }}
+                        className="department-container"
+                        onClick={() => handleDepartmentClick(group.department)} // Navigate to department page
                       >
-                        <div className="framework-content">
-                          {/* Proper Engineering Cogwheel SVG */}
-                          {framework.department.includes("Engineering") && (
-                            <svg
-                              className="engineering-icon"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              width="24"
-                              height="24"
-                              fill="currentColor"
-                            >
-                              <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7zm0-9a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"/>
-                              <path d="M4.075 13.75a1 1 0 0 1-1.1-1.7l1.232-.86a7.6 7.6 0 0 1 0-1.58l-1.232-.86a1 1 0 0 1 1.1-1.7l1.43.99a7.4 7.4 0 0 1 1.47-.85l.28-1.67a1 1 0 0 1 1.23-.79l1.55.41a7.2 7.2 0 0 1 1.52 0l1.55-.41a1 1 0 0 1 1.23.79l.28 1.67a7.4 7.4 0 0 1 1.47.85l1.43-.99a1 1 0 0 1 1.1 1.7l-1.23.86c.05.52.05 1.05 0 1.58l1.23.86a1 1 0 0 1-1.1 1.7l-1.43-.99a7.4 7.4 0 0 1-1.47.85l-.28 1.67a1 1 0 0 1-1.23.79l-1.55-.41a7.2 7.2 0 0 1-1.52 0l-1.55.41a1 1 0 0 1-1.23-.79l-.28-1.67a7.4 7.4 0 0 1-1.47-.85l-1.43.99z"/>
-                            </svg>
-                          )}
-                          <h3>{framework.department}</h3>
-                        </div>
-                        <p>{framework.job_title}</p>
+                        <h3>{group.department}</h3> {/* Only show the department name */}
                       </div>
                     )}
                   </Draggable>
