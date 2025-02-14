@@ -94,7 +94,7 @@ const SavedFrameworks = () => {
   };
 
   return (
-    <div className="saved-frameworks-container">
+    <div className="saved-frameworks">
       <h1 className="saved-frameworks-title">Saved Competency Frameworks</h1>
 
       {/* Search Bar */}
@@ -119,24 +119,24 @@ const SavedFrameworks = () => {
           <p>No saved frameworks found. Start by generating a new framework.</p>
           <button
             className="create-framework-button"
-            onClick={() => navigate("/generate-framework")}
+            onClick={() => navigate("/competency-framework-planner")}
           >
             Generate New Framework
           </button>
         </div>
       )}
 
-      {/* Frameworks List */}
+      {/* Frameworks Grid */}
       {!loading && !error && displayedFrameworks.length > 0 && (
-        <div className="frameworks-list">
+        <div className="grid-container">
           {displayedFrameworks.map((framework) => (
-            <div key={framework.id} className="framework-item">
+            <div key={framework.id} className="grid-item">
               <div
-                className="framework-info"
+                className="framework-card"
                 onClick={() => handleDepartmentClick(framework.department)}
               >
-                <h2 className="framework-title">{framework.department}</h2>
-                <p className="framework-job-title">{framework.job_title}</p>
+                <h3>{framework.department}</h3>
+                <p>{framework.job_title}</p>
               </div>
               <div className="framework-actions">
                 <button
@@ -161,3 +161,4 @@ const SavedFrameworks = () => {
 };
 
 export default SavedFrameworks;
+
