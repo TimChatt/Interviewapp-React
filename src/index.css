@@ -1,19 +1,55 @@
 /* index.css - Minimal Global Base Styles */
+
 body {
   margin: 0;
+  padding: 0; /* Ensure no padding by default */
   font-family: "Inter", sans-serif; /* Use the modern font */
   background-color: #f4f5f7; /* Subtle SaaS background */
-  color: #333;
-  line-height: 1.6;
+  color: #333; /* Neutral text color for readability */
+  line-height: 1.6; /* Comfortable line height */
 }
 
 a {
-  text-decoration: none;
-  color: inherit;
+  text-decoration: none; /* Remove underline from all links */
+  color: inherit; /* Inherit text color for links by default */
+  transition: color 0.2s ease; /* Add smooth color transitions for hover states */
+}
+
+a:hover {
+  color: #3498db; /* Accent color for hover states */
 }
 
 ul, ol {
   margin: 0;
   padding: 0;
-  list-style: none;
+  list-style: none; /* Remove default bullet points and numbering */
+}
+
+button {
+  font-family: inherit; /* Ensure buttons use the same font as the rest of the app */
+  border: none; /* Remove default browser styles */
+  outline: none; /* Remove focus outlines */
+  cursor: pointer; /* Indicate interactivity */
+  background: none; /* Neutral base background */
+  padding: 0; /* Remove padding by default */
+  transition: all 0.2s ease; /* Smooth transition for hover effects */
+}
+
+button:focus {
+  outline: 2px solid #3498db; /* Add focus outline for accessibility */
+}
+
+input, textarea {
+  font-family: inherit; /* Match the app's font */
+  border-radius: 4px; /* Add subtle rounding */
+  border: 1px solid #ddd; /* Neutral border for inputs */
+  padding: 8px; /* Default padding for inputs */
+  font-size: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #3498db; /* Accent color for focused state */
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.2); /* Subtle focus shadow */
+  outline: none; /* Remove default outline */
 }
