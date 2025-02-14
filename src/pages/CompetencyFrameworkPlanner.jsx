@@ -115,6 +115,21 @@ const CompetencyFramework = () => {
     setError(null);
     setSuccess(null);
 
+    // Create the job titles array from the current framework
+    const jobTitles = framework.jobLevels.map((jobLevel, index) => ({
+      job_title: `${framework.jobTitle} ${jobLevel}`, // Combine jobTitle and jobLevel
+      job_levels: [jobLevel], // Currently, each job level is handled separately, but you can add more levels if needed
+      competencies: framework.competencies.map((competency) => ({
+        name: competency.name,
+        descriptions: competency.descriptions
+      }))
+    }));
+
+    const requestBody = {
+      department: framework.department,
+      jobTitles: jobTitles
+    };
+
     try {
       const response = await fetch(
         "https://interviewappbe-production.up.railway.app/api/save-competencies",
@@ -123,7 +138,7 @@ const CompetencyFramework = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(framework),
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -264,4 +279,3 @@ const CompetencyFramework = () => {
 };
 
 export default CompetencyFramework;
-
