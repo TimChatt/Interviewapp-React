@@ -87,14 +87,14 @@ const SavedFrameworks = () => {
 
   // Drag and drop handler
   const onDragEnd = (result) => {
-    if (!result.destination) return; // If dropped outside the list, ignore
+    if (!result.destination) return;
 
     const reorderedFrameworks = Array.from(displayedFrameworks);
     const [movedFramework] = reorderedFrameworks.splice(result.source.index, 1);
     reorderedFrameworks.splice(result.destination.index, 0, movedFramework);
 
     setDisplayedFrameworks(reorderedFrameworks);
-    setAllFrameworks(reorderedFrameworks); // Ensuring persistence in the main state
+    setAllFrameworks(reorderedFrameworks);
   };
 
   return (
@@ -145,21 +145,36 @@ const SavedFrameworks = () => {
                         {...provided.dragHandleProps}
                         className={`framework-card ${snapshot.isDragging ? "dragging" : ""}`}
                         onClick={(e) => {
-                          // Prevent drag events from blocking navigation
                           if (!snapshot.isDragging) {
                             handleDepartmentClick(framework.department);
                           }
                         }}
                       >
                         <div className="framework-content">
+                          {/* If department is Engineering, show an inline SVG */}
+                          {framework.department.includes("Engineering") && (
+                            <svg
+                              className="engineering-icon"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7zm0-9a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          )}
                           <h3>{framework.department}</h3>
-                          <p>{framework.job_title}</p>
                         </div>
+                        <p>{framework.job_title}</p>
                         <div className="framework-actions">
                           <button
                             className="edit-button"
                             onClick={(e) => {
-                              e.stopPropagation(); // Prevent click event from triggering navigation
+                              e.stopPropagation();
                               handleEdit(framework.id);
                             }}
                           >
@@ -168,7 +183,7 @@ const SavedFrameworks = () => {
                           <button
                             className="delete-button"
                             onClick={(e) => {
-                              e.stopPropagation(); // Prevent click event from triggering navigation
+                              e.stopPropagation();
                               handleDelete(framework.id);
                             }}
                           >
