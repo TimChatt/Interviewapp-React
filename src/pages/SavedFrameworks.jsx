@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const SavedFrameworks = () => {
-  const [allFrameworks, setAllFrameworks] = useState([]); // Store all frameworks fetched from backend
-  const [displayedFrameworks, setDisplayedFrameworks] = useState([]); // Frameworks to display based on search query
+  const [allFrameworks, setAllFrameworks] = useState([]);
+  const [displayedFrameworks, setDisplayedFrameworks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  // Fetch all frameworks from the backend on component mount
   useEffect(() => {
     const fetchFrameworks = async () => {
       setLoading(true);
@@ -24,9 +24,9 @@ const SavedFrameworks = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched all frameworks:", data.frameworks); // Debugging log
+        console.log("Fetched all frameworks:", data.frameworks);
         setAllFrameworks(data.frameworks || []);
-        setDisplayedFrameworks(data.frameworks || []); // Display all frameworks initially
+        setDisplayedFrameworks(data.frameworks || []);
         setError(null);
       } catch (err) {
         console.error("Error fetching frameworks:", err);
@@ -37,15 +37,12 @@ const SavedFrameworks = () => {
     };
 
     fetchFrameworks();
-  }, []); // Run once on component mount
+  }, []);
 
-  // Update displayed frameworks based on search query
   useEffect(() => {
     if (!searchQuery.trim()) {
-      // If search query is empty, display all frameworks
       setDisplayedFrameworks(allFrameworks);
     } else {
-      // Filter frameworks based on the search query
       const filteredFrameworks = allFrameworks.filter((framework) =>
         framework.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
         framework.job_title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -54,12 +51,10 @@ const SavedFrameworks = () => {
     }
   }, [searchQuery, allFrameworks]);
 
-  // Handle navigation to DepartmentFrameworks page
   const handleDepartmentClick = (department) => {
     navigate(`/frameworks/${department}`);
   };
 
-  // Handle framework deletion
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this framework?"
@@ -69,9 +64,7 @@ const SavedFrameworks = () => {
     try {
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/delete-framework/${id}`,
-        {
-          method: "DELETE",
-        }
+        { method: "DELETE" }
       );
 
       if (!response.ok) {
@@ -87,9 +80,20 @@ const SavedFrameworks = () => {
     }
   };
 
-  // Handle framework editing
   const handleEdit = (id) => {
     navigate(`/edit-framework/${id}`);
+  };
+
+  // Drag and drop handler
+  const onDragEnd = (result) => {
+    if (!result.destination) return; // If dropped outside the list, ignore
+
+    const reorderedFrameworks = Array.from(displayedFrameworks);
+    const [movedFramework] = reorderedFrameworks.splice(result.source.index, 1);
+    reorderedFrameworks.splice(result.destination.index, 0, movedFramework);
+
+    setDisplayedFrameworks(reorderedFrameworks);
+    setAllFrameworks(reorderedFrameworks); // Ensuring persistence in the main state
   };
 
   return (
@@ -106,13 +110,9 @@ const SavedFrameworks = () => {
         />
       </div>
 
-      {/* Loading Spinner */}
       {loading && <div className="loading-spinner">Loading...</div>}
-
-      {/* Error Message */}
       {error && <div className="error-message">{error}</div>}
 
-      {/* Empty State */}
       {!loading && !error && displayedFrameworks.length === 0 && (
         <div className="no-frameworks-message">
           <p>No saved frameworks found. Start by generating a new framework.</p>
@@ -125,35 +125,49 @@ const SavedFrameworks = () => {
         </div>
       )}
 
-      {/* Frameworks Grid */}
+      {/* Drag and Drop Enabled Frameworks Grid */}
       {!loading && !error && displayedFrameworks.length > 0 && (
-        <div className="grid-container">
-          {displayedFrameworks.map((framework) => (
-            <div key={framework.id} className="grid-item">
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="frameworks">
+            {(provided) => (
               <div
-                className="framework-card"
-                onClick={() => handleDepartmentClick(framework.department)}
+                className="grid-container"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
               >
-                <h3>{framework.department}</h3>
-                <p>{framework.job_title}</p>
+                {displayedFrameworks.map((framework, index) => (
+                  <Draggable key={framework.id} draggableId={framework.id.toString()} index={index}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="grid-item"
+                      >
+                        <div
+                          className="framework-card"
+                          onClick={() => handleDepartmentClick(framework.department)}
+                        >
+                          <h3>{framework.department}</h3>
+                          <p>{framework.job_title}</p>
+                        </div>
+                        <div className="framework-actions">
+                          <button className="edit-button" onClick={() => handleEdit(framework.id)}>
+                            Edit
+                          </button>
+                          <button className="delete-button" onClick={() => handleDelete(framework.id)}>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
               </div>
-              <div className="framework-actions">
-                <button
-                  className="edit-button"
-                  onClick={() => handleEdit(framework.id)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDelete(framework.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )}
     </div>
   );
