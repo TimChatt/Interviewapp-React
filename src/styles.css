@@ -203,6 +203,68 @@ button:disabled {
   font-weight: bold;
 }
 
+/* Saved Competency Frameworks - Container */
+.saved-frameworks {
+  max-width: 1200px;
+  margin: 0 auto; /* Center the container */
+  padding: 20px;
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: 12px; /* Modern rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Headings in SavedFrameworks */
+.saved-frameworks h1 {
+  font-size: 36px; /* Larger size for page title */
+  font-weight: 700; /* Bold */
+  margin-bottom: 20px; /* Add spacing below */
+  text-align: center; /* Center-align the heading */
+  color: #2c3e50; /* Modern blue-gray */
+}
+
+.saved-frameworks h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  color: #34495e; /* Darker text for section headings */
+}
+
+/* Grid Layout for Framework Items */
+.saved-frameworks .frameworks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+  gap: 20px; /* Space between grid items */
+  margin-top: 20px; /* Space above grid */
+}
+
+/* Individual Framework Item */
+.saved-frameworks .framework-card {
+  background-color: #fcfcfc; /* Softer white for cards */
+  padding: 20px;
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth hover effect */
+  cursor: pointer;
+}
+
+.saved-frameworks .framework-card:hover {
+  transform: translateY(-5px); /* Lift on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+}
+
+.saved-frameworks .framework-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #34495e; /* Darker text color for titles */
+  margin-bottom: 10px;
+}
+
+.saved-frameworks .framework-card p {
+  font-size: 16px;
+  color: #7f8c8d; /* Subtle text color for descriptions */
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   h1 {
