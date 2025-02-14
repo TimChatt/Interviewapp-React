@@ -97,7 +97,7 @@ const SavedFrameworks = () => {
   };
 
   return (
-    <div className="saved-frameworks">
+    <div className="saved-frameworks-container">
       <h1 className="saved-frameworks-title">Saved Competency Frameworks</h1>
 
       {/* Search Bar */}
@@ -137,20 +137,15 @@ const SavedFrameworks = () => {
               >
                 {displayedFrameworks.map((framework, index) => (
                   <Draggable key={framework.id} draggableId={framework.id.toString()} index={index}>
-                    {(provided) => (
+                    {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="grid-item"
+                        className={`framework-card ${snapshot.isDragging ? "dragging" : ""}`}
                       >
-                        <div
-                          className="framework-card"
-                          onClick={() => handleDepartmentClick(framework.department)}
-                        >
-                          <h3>{framework.department}</h3>
-                          <p>{framework.job_title}</p>
-                        </div>
+                        <h3>{framework.department}</h3>
+                        <p>{framework.job_title}</p>
                         <div className="framework-actions">
                           <button className="edit-button" onClick={() => handleEdit(framework.id)}>
                             Edit
@@ -174,4 +169,3 @@ const SavedFrameworks = () => {
 };
 
 export default SavedFrameworks;
-
