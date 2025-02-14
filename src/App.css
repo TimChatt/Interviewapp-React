@@ -4,6 +4,7 @@
   flex-direction: row; /* Ensures sidebar and content are side by side */
   min-height: 100vh; /* Full viewport height */
   background-color: #f9fafb; /* Subtle light blue-gray background */
+  overflow: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Main content area */
@@ -11,6 +12,9 @@
   flex-grow: 1;
   padding: 2rem;
   transition: margin-left 0.3s ease; /* Smooth transition for sidebar toggling */
+  background-color: #ffffff; /* White background for content */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 .main-content.no-sidebar {
@@ -19,13 +23,14 @@
 
 /* Header styling */
 .app-header {
-  background-color: #1d4ed8; /* Blue */
+  background-color: #1d4ed8; /* Vibrant blue */
   color: white;
   padding: 1rem;
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-bottom: 3px solid #1abc9c; /* Add a modern accent line */
 }
 
 /* Footer styling */
@@ -37,6 +42,12 @@
   font-size: 0.9rem;
   margin-top: auto; /* Push footer to the bottom */
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-top: 3px solid #3498db; /* Add a modern accent line */
+}
+
+/* Sidebar compatibility */
+.sidebar + .main-content {
+  margin-left: 250px; /* Account for sidebar width */
 }
 
 /* Responsive Adjustments */
@@ -47,6 +58,8 @@
 
   .main-content {
     padding: 1rem;
+    border-radius: 0; /* Remove rounded corners on small screens */
+    box-shadow: none; /* Simplify layout on mobile */
   }
 
   .app-header {
