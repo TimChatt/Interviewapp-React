@@ -36,35 +36,35 @@
 /* Grid container for frameworks */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjusted for better spacing */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
   padding: 16px;
   justify-content: center;
 }
 
-/* Framework card: Now a properly styled purple box */
+/* Framework card: Now has a purple border instead of a full background */
 .framework-card {
-  background: #6a0dad; /* Purple background */
-  color: white;
-  padding: 20px; /* More padding for better spacing */
-  border-radius: 12px; /* Softer corners */
-  border: 3px solid #4f46e5; /* Stronger border */
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Improved shadow */
+  background: white; /* White background for easy readability */
+  color: #2c3e50;
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #6a0dad; /* Purple border instead of full background */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center; /* Centers content */
-  text-align: center; /* Centers text */
-  min-height: 120px; /* Ensures all boxes have equal height */
+  align-items: center;
+  text-align: center;
+  min-height: 120px;
   cursor: grab;
   transition: background 0.2s ease-in-out, transform 0.2s ease;
 }
 
 /* Dragging effect */
 .dragging {
-  background: #9b59b6 !important; /* Lighter purple when dragging */
+  border-color: #9b59b6; /* Slightly lighter purple when dragging */
   transform: scale(1.05);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Framework title and job title styling */
@@ -82,15 +82,15 @@
 /* Ensure buttons inside the framework cards are always visible */
 .framework-actions {
   display: flex;
-  justify-content: space-evenly; /* Ensures even spacing */
+  justify-content: space-evenly;
   margin-top: 15px;
   width: 100%;
 }
 
 /* Edit button */
 .edit-button {
-  background: #ffffff;
-  color: #6a0dad;
+  background: #6a0dad;
+  color: white;
   border: 1px solid #6a0dad;
   padding: 8px 12px;
   border-radius: 6px;
@@ -100,8 +100,7 @@
 }
 
 .edit-button:hover {
-  background: #d8b9f1;
-  color: #4f46e5;
+  background: #4f46e5;
 }
 
 /* Delete button */
@@ -149,8 +148,4 @@
   font-size: 1rem;
   color: #4f46e5;
   margin-top: 20px;
-}
-
-.create-framework-button:hover {
-  background: #3730a3;
 }
