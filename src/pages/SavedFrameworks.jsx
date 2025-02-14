@@ -32,7 +32,11 @@ const SavedFrameworks = () => {
           if (!acc[framework.department]) {
             acc[framework.department] = [];
           }
-          acc[framework.department].push(framework);
+          // If job_titles is included in the framework, add them to the department group
+          acc[framework.department].push({
+            ...framework,
+            jobTitles: framework.job_titles || [], // Ensure job_titles exist
+          });
           return acc;
         }, {});
 
@@ -163,6 +167,16 @@ const SavedFrameworks = () => {
                         onClick={() => handleDepartmentClick(group.department)} // Navigate to department page
                       >
                         <h3>{group.department}</h3> {/* Only show the department name */}
+                        {/* Show job titles */}
+                        <ul>
+                          {group.frameworks.map((framework, idx) => (
+                            <li key={idx}>
+                              {framework.jobTitles.map((title, titleIndex) => (
+                                <div key={titleIndex}>{title.job_title}</div>
+                              ))}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </Draggable>
