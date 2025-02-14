@@ -144,14 +144,34 @@ const SavedFrameworks = () => {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         className={`framework-card ${snapshot.isDragging ? "dragging" : ""}`}
+                        onClick={(e) => {
+                          // Prevent drag events from blocking navigation
+                          if (!snapshot.isDragging) {
+                            handleDepartmentClick(framework.department);
+                          }
+                        }}
                       >
-                        <h3>{framework.department}</h3>
-                        <p>{framework.job_title}</p>
+                        <div className="framework-content">
+                          <h3>{framework.department}</h3>
+                          <p>{framework.job_title}</p>
+                        </div>
                         <div className="framework-actions">
-                          <button className="edit-button" onClick={() => handleEdit(framework.id)}>
+                          <button
+                            className="edit-button"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent click event from triggering navigation
+                              handleEdit(framework.id);
+                            }}
+                          >
                             Edit
                           </button>
-                          <button className="delete-button" onClick={() => handleDelete(framework.id)}>
+                          <button
+                            className="delete-button"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent click event from triggering navigation
+                              handleDelete(framework.id);
+                            }}
+                          >
                             Delete
                           </button>
                         </div>
