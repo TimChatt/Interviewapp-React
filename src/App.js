@@ -20,8 +20,8 @@ import JobTitleDetails from "./pages/JobTitleDetails"; // Import JobTitleDetails
 
 // Import CSS files
 import "./index.css"; // Global resets and minimal base styles
-import "./styles.css"; // Shared styles (grid, buttons, cards, etc.)
 import "./App.css"; // Layout-specific styles (app-container, main-content, etc.)
+import "./styles.css"; // Shared styles (grid, buttons, cards, etc.)
 
 const AppContent = () => {
   const location = useLocation();
