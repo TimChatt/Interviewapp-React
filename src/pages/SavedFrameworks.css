@@ -135,6 +135,29 @@
   background: #3730a3;
 }
 
+/* Engineering Icon (Cogwheel) */
+.engineering-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+  fill: #6a0dad; /* Purple color */
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0px 0px 5px rgba(106, 13, 173, 0.6));
+}
+
+/* Make the cogwheel rotate slightly when hovering over the card */
+.framework-card:hover .engineering-icon {
+  transform: rotate(15deg) scale(1.2);
+  filter: drop-shadow(0px 0px 10px rgba(106, 13, 173, 1));
+}
+
+/* Align icon and text */
+.framework-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Loading & Error Messages */
 .error-message,
 .no-frameworks-message {
