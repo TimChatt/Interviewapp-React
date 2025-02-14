@@ -151,45 +151,23 @@ const SavedFrameworks = () => {
                         }}
                       >
                         <div className="framework-content">
-                          {/* If department is Engineering, show an inline SVG */}
+                          {/* Proper Engineering Cogwheel SVG */}
                           {framework.department.includes("Engineering") && (
                             <svg
                               className="engineering-icon"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
                               width="24"
                               height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
                             >
-                              <path
-                                d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7zm0-9a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"
-                                fill="currentColor"
-                              />
+                              <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7zm0-9a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"/>
+                              <path d="M4.075 13.75a1 1 0 0 1-1.1-1.7l1.232-.86a7.6 7.6 0 0 1 0-1.58l-1.232-.86a1 1 0 0 1 1.1-1.7l1.43.99a7.4 7.4 0 0 1 1.47-.85l.28-1.67a1 1 0 0 1 1.23-.79l1.55.41a7.2 7.2 0 0 1 1.52 0l1.55-.41a1 1 0 0 1 1.23.79l.28 1.67a7.4 7.4 0 0 1 1.47.85l1.43-.99a1 1 0 0 1 1.1 1.7l-1.23.86c.05.52.05 1.05 0 1.58l1.23.86a1 1 0 0 1-1.1 1.7l-1.43-.99a7.4 7.4 0 0 1-1.47.85l-.28 1.67a1 1 0 0 1-1.23.79l-1.55-.41a7.2 7.2 0 0 1-1.52 0l-1.55.41a1 1 0 0 1-1.23-.79l-.28-1.67a7.4 7.4 0 0 1-1.47-.85l-1.43.99z"/>
                             </svg>
                           )}
                           <h3>{framework.department}</h3>
                         </div>
                         <p>{framework.job_title}</p>
-                        <div className="framework-actions">
-                          <button
-                            className="edit-button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(framework.id);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="delete-button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(framework.id);
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </div>
                       </div>
                     )}
                   </Draggable>
