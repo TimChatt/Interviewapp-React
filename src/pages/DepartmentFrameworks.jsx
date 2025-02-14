@@ -1,74 +1,93 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import "./DepartmentFrameworks.css";
 
 const DepartmentFrameworks = () => {
-  const { department } = useParams(); // Extract department from URL params
-  const [frameworks, setFrameworks] = useState([]); // State to hold job titles for the department
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const { department } = useParams(); // Get the department name from the URL
+  const [jobTitles, setJobTitles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchFrameworks = async () => {
+    const fetchDepartmentFrameworks = async () => {
       setLoading(true);
       try {
-        // Fetch all frameworks from the backend
         const response = await fetch(
-          "https://interviewappbe-production.up.railway.app/api/search-frameworks?query="
+          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${department}`
         );
 
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          const errorData = await response.json();
+          throw new Error(errorData.detail || `Error: ${response.status}`);
         }
 
         const data = await response.json();
-
-        // Filter frameworks by department
         const departmentFrameworks = data.frameworks.filter(
-          (fw) => fw.department.toLowerCase() === department.toLowerCase()
+          (framework) => framework.department.toLowerCase() === department.toLowerCase()
         );
 
-        setFrameworks(departmentFrameworks); // Set the filtered frameworks
-        setError(null); // Clear any errors
-      } catch (error) {
-        console.error("Error fetching frameworks:", error);
-        setError("Failed to load job titles for this department. Please try again.");
+        // Map the job titles for the selected department
+        const jobTitlesData = departmentFrameworks.map((framework) => ({
+          jobTitle: framework.job_title,
+          competencies: framework.competencies
+        }));
+
+        setJobTitles(jobTitlesData);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching department frameworks:", err);
+        setError("Failed to fetch frameworks for this department. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFrameworks();
+    fetchDepartmentFrameworks();
   }, [department]);
 
   const handleJobTitleClick = (jobTitle) => {
-    // Navigate to competencies for the selected job title
-    navigate(`/frameworks/${department}/${jobTitle}`);
+    navigate(`/frameworks/${department}/${jobTitle}`); // Navigate to the detailed job title page
+  };
+
+  const handleEdit = (jobTitle) => {
+    // Navigate to the edit page for the job title
+    navigate(`/edit-framework/${jobTitle}`);
   };
 
   return (
-    <div className="department-frameworks">
+    <div className="department-frameworks-container">
       <h1>{department} Frameworks</h1>
 
       {loading && <div className="loading-spinner">Loading...</div>}
-
       {error && <div className="error-message">{error}</div>}
 
-      {!loading && !error && frameworks.length === 0 && (
-        <div className="no-frameworks-message">
+      {!loading && !error && jobTitles.length === 0 && (
+        <div className="no-job-titles-message">
           <p>No job titles found for this department.</p>
         </div>
       )}
 
-      {!loading && !error && frameworks.length > 0 && (
-        <div className="frameworks-list">
-          {frameworks.map((framework, index) => (
-            <div
-              key={index}
-              className="job-title-container"
-              onClick={() => handleJobTitleClick(framework.job_title)}
-            >
-              <h2>{framework.job_title}</h2>
+      {!loading && !error && jobTitles.length > 0 && (
+        <div className="job-titles-grid">
+          {jobTitles.map((job, index) => (
+            <div key={index} className="job-title-card">
+              <h3>{job.jobTitle}</h3>
+              <button onClick={() => handleJobTitleClick(job.jobTitle)}>View Details</button>
+              <button onClick={() => handleEdit(job.jobTitle)}>Edit Framework</button>
+              {/* You can display competencies or additional data here */}
+              <div className="competencies-list">
+                {job.competencies && job.competencies.map((competency, idx) => (
+                  <div key={idx} className="competency-item">
+                    <p><strong>{competency.name}</strong></p>
+                    <ul>
+                      {Object.entries(competency.descriptions || {}).map(([level, description]) => (
+                        <li key={level}>{level}: {description}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
