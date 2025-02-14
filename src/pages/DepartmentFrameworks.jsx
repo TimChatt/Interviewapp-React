@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./../styles.css";
 
 const DepartmentFrameworks = () => {
   const { department } = useParams(); // Extract department from URL params
