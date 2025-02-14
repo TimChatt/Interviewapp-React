@@ -30,7 +30,6 @@ const DepartmentFrameworks = () => {
         // Map the job titles for the selected department
         const jobTitlesData = departmentFrameworks.map((framework) => ({
           jobTitle: framework.job_title,
-          competencies: framework.competencies
         }));
 
         setJobTitles(jobTitlesData);
@@ -75,19 +74,6 @@ const DepartmentFrameworks = () => {
               <h3>{job.jobTitle}</h3>
               <button onClick={() => handleJobTitleClick(job.jobTitle)}>View Details</button>
               <button onClick={() => handleEdit(job.jobTitle)}>Edit Framework</button>
-              {/* You can display competencies or additional data here */}
-              <div className="competencies-list">
-                {job.competencies && job.competencies.map((competency, idx) => (
-                  <div key={idx} className="competency-item">
-                    <p><strong>{competency.name}</strong></p>
-                    <ul>
-                      {Object.entries(competency.descriptions || {}).map(([level, description]) => (
-                        <li key={level}>{level}: {description}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
             </div>
           ))}
         </div>
