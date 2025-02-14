@@ -137,8 +137,8 @@
 
 /* Engineering Icon (Cogwheel) */
 .engineering-icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   margin-right: 8px;
   fill: #6a0dad; /* Purple color */
   transition: transform 0.3s ease, filter 0.3s ease;
@@ -147,7 +147,7 @@
 
 /* Make the cogwheel rotate slightly when hovering over the card */
 .framework-card:hover .engineering-icon {
-  transform: rotate(15deg) scale(1.2);
+  transform: rotate(20deg) scale(1.2);
   filter: drop-shadow(0px 0px 10px rgba(106, 13, 173, 1));
 }
 
