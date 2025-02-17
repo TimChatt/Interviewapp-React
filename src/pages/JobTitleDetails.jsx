@@ -13,7 +13,7 @@ const JobTitleDetails = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-framework/${department}/${jobTitle}/${jobLevel}`
+          `https://interviewappbe-production.up.railway.app/api/get-job-title-details/${department}/${jobTitle}/${jobLevel}`
         );
 
         if (!response.ok) {
