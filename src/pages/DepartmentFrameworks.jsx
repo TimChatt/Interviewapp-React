@@ -65,7 +65,7 @@ const DepartmentFrameworks = () => {
           {jobTitles.map((job, index) => (
             <div key={index} className="job-title-card">
               <h3>{job.job_title}</h3>
-              <button onClick={() => handleJobTitleClick(job.job_title)}>View Details</button>
+              <button onClick={() => handleJobTitleClick(job.jobTitle, job.jobTitle.split(' ').pop())}>View Details</button>
               <button onClick={() => handleEdit(job.job_title)}>Edit Framework</button>
             </div>
           ))}
