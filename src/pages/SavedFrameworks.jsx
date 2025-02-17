@@ -41,10 +41,12 @@ const SavedFrameworks = () => {
         }, {});
 
         // Convert the grouped data to an array for rendering
-        const groupedFrameworks = Object.entries(frameworksByDepartment).map(([department, frameworks]) => ({
-          department,
-          frameworks,
-        }));
+        const groupedFrameworks = Object.entries(frameworksByDepartment).map(
+          ([department, frameworks]) => ({
+            department,
+            frameworks,
+          })
+        );
 
         setAllFrameworks(groupedFrameworks);
         setDisplayedFrameworks(groupedFrameworks);
