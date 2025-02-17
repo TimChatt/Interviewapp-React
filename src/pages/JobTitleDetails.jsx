@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import "./JobTitleDetails.css";
 
 const JobTitleDetails = () => {
   const { department, jobTitle } = useParams(); // Extract department and job title from the URL params
