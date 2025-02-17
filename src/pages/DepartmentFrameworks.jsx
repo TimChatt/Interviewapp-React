@@ -38,8 +38,8 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  const handleJobTitleClick = (jobTitle) => {
-    navigate(`/frameworks/${department}/${jobTitle}`); // Navigate to the detailed job title page
+  const handleJobTitleClick = (jobTitle, jobLevel) => {
+    navigate(`/frameworks/${department}/${jobTitle}/${jobLevel}`); // Pass the job level too
   };
 
   const handleEdit = (jobTitle) => {
