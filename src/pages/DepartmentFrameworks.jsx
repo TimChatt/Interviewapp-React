@@ -37,7 +37,8 @@ const DepartmentFrameworks = () => {
   }, [department]);
 
   const handleJobTitleClick = (jobTitle) => {
-    const jobLevel = jobTitle ? jobTitle.split(' ').pop() : "L1"; // Default to "L1" if jobTitle is not available
+    const levels = ["L1", "L2", "L3", "L4"]; // Assuming these are the possible levels
+    const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1"; // Default to "L1" if no level found
     navigate(`/frameworks/${department}/${jobTitle}/${jobLevel}`);
   };
 
