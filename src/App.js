@@ -49,7 +49,7 @@ const AppContent = () => {
           <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
           <Route path="/frameworks" element={<SavedFrameworks />} />
           <Route path="/frameworks/:department" element={<DepartmentFrameworks />} /> {/* Add route for DepartmentFrameworks */}
-          <Route path="/frameworks/:department/:jobTitle" element={<JobTitleDetails />} /> {/* Add route for JobTitleDetails */}
+          <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} /> {/* Add route for JobTitleDetails */}
           <Route path="/edit-framework/:id" element={<EditFramework />} />
         </Routes>
       </div>
