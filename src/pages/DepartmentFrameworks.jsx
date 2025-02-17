@@ -10,11 +10,12 @@ const DepartmentFrameworks = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDepartmentFrameworks = async () => {
+    const fetchDepartmentJobTitles = async () => {
       setLoading(true);
       try {
+        // Fetch job titles related to the department
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${department}`
+          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
         );
 
         if (!response.ok) {
@@ -23,26 +24,18 @@ const DepartmentFrameworks = () => {
         }
 
         const data = await response.json();
-        const departmentFrameworks = data.frameworks.filter(
-          (framework) => framework.department.toLowerCase() === department.toLowerCase()
-        );
-
-        // Map the job titles for the selected department
-        const jobTitlesData = departmentFrameworks.map((framework) => ({
-          jobTitle: framework.job_title,
-        }));
-
-        setJobTitles(jobTitlesData);
+        // Set job titles data from the response
+        setJobTitles(data.job_titles || []);
         setError(null);
       } catch (err) {
-        console.error("Error fetching department frameworks:", err);
-        setError("Failed to fetch frameworks for this department. Please try again.");
+        console.error("Error fetching department job titles:", err);
+        setError("Failed to fetch job titles for this department. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDepartmentFrameworks();
+    fetchDepartmentJobTitles();
   }, [department]);
 
   const handleJobTitleClick = (jobTitle) => {
@@ -71,9 +64,9 @@ const DepartmentFrameworks = () => {
         <div className="job-titles-grid">
           {jobTitles.map((job, index) => (
             <div key={index} className="job-title-card">
-              <h3>{job.jobTitle}</h3>
-              <button onClick={() => handleJobTitleClick(job.jobTitle)}>View Details</button>
-              <button onClick={() => handleEdit(job.jobTitle)}>Edit Framework</button>
+              <h3>{job.job_title}</h3>
+              <button onClick={() => handleJobTitleClick(job.job_title)}>View Details</button>
+              <button onClick={() => handleEdit(job.job_title)}>Edit Framework</button>
             </div>
           ))}
         </div>
