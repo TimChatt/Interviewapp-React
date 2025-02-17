@@ -65,3 +65,4 @@ const JobTitleDetails = () => {
 };
 
 export default JobTitleDetails;
+
