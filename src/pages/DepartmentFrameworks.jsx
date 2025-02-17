@@ -39,10 +39,9 @@ const DepartmentFrameworks = () => {
   }, [department]);
 
   const handleJobTitleClick = (jobTitle, jobLevel) => {
-    // Now include jobLevel in the URL
     navigate(`/frameworks/${department}/${jobTitle}/${jobLevel}`);
-  };
-  
+};
+
   const handleEdit = (jobTitle) => {
     // Navigate to the edit page for the job title
     navigate(`/edit-framework/${jobTitle}`);
