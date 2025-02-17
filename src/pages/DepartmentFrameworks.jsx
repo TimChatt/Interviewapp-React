@@ -13,7 +13,6 @@ const DepartmentFrameworks = () => {
     const fetchDepartmentJobTitles = async () => {
       setLoading(true);
       try {
-        // Fetch job titles related to the department
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
         );
@@ -24,7 +23,6 @@ const DepartmentFrameworks = () => {
         }
 
         const data = await response.json();
-        // Set job titles data from the response
         setJobTitles(data.job_titles || []);
         setError(null);
       } catch (err) {
@@ -38,12 +36,12 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  const handleJobTitleClick = (jobTitle, jobLevel) => {
+  const handleJobTitleClick = (jobTitle) => {
+    const jobLevel = jobTitle ? jobTitle.split(' ').pop() : "L1"; // Default to "L1" if jobTitle is not available
     navigate(`/frameworks/${department}/${jobTitle}/${jobLevel}`);
-};
+  };
 
   const handleEdit = (jobTitle) => {
-    // Navigate to the edit page for the job title
     navigate(`/edit-framework/${jobTitle}`);
   };
 
@@ -65,7 +63,7 @@ const DepartmentFrameworks = () => {
           {jobTitles.map((job, index) => (
             <div key={index} className="job-title-card">
               <h3>{job.job_title}</h3>
-              <button onClick={() => handleJobTitleClick(job.jobTitle, job.jobTitle.split(' ').pop())}>View Details</button>
+              <button onClick={() => handleJobTitleClick(job.job_title)}>View Details</button>
               <button onClick={() => handleEdit(job.job_title)}>Edit Framework</button>
             </div>
           ))}
