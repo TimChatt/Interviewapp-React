@@ -36,8 +36,7 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  const handleJobTitleClick = (jobTitle) => {
-    const jobLevel = jobTitle ? jobTitle.split(' ').pop() : "L1"; // Default to "L1" if jobTitle is not available
+  const handleJobTitleClick = (jobTitle, jobLevel) => {
     navigate(`/frameworks/${department}/${jobTitle}/${jobLevel}`);
   };
 
@@ -61,9 +60,17 @@ const DepartmentFrameworks = () => {
       {!loading && !error && jobTitles.length > 0 && (
         <div className="job-titles-grid">
           {jobTitles.map((job, index) => (
-            <div key={index} className="job-title-card">
+            <div key={index} className="job-title-container">
               <h3>{job.job_title}</h3>
-              <button onClick={() => handleJobTitleClick(job.job_title)}>View Details</button>
+              <div className="job-levels">
+                {job.job_levels.split(',').map((level, idx) => (
+                  <div key={idx} className="job-level-card">
+                    <button onClick={() => handleJobTitleClick(job.job_title, level)}>
+                      {level}
+                    </button>
+                  </div>
+                ))}
+              </div>
               <button onClick={() => handleEdit(job.job_title)}>Edit Framework</button>
             </div>
           ))}
