@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./JobTitleDetails.css";
 
 const JobTitleDetails = () => {
-  const { department, jobTitle } = useParams(); // Extract department and job title from the URL params
+  const { department, jobTitle, jobLevel } = useParams(); // Extract department, job title, and job level from the URL params
   const [jobDetails, setJobDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ const JobTitleDetails = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-framework/${department}/${jobTitle}`
+          `https://interviewappbe-production.up.railway.app/api/get-framework/${department}/${jobTitle}/${jobLevel}`
         );
 
         if (!response.ok) {
@@ -22,7 +22,7 @@ const JobTitleDetails = () => {
         }
 
         const data = await response.json();
-        setJobDetails(data); // Set the job title details
+        setJobDetails(data); // Set the job details for the selected job title and level
         setError(null);
       } catch (err) {
         console.error("Error fetching job title details:", err);
@@ -33,31 +33,25 @@ const JobTitleDetails = () => {
     };
 
     fetchJobDetails();
-  }, [department, jobTitle]);
+  }, [department, jobTitle, jobLevel]);
 
   return (
     <div className="job-title-details-container">
-      <h1>{department} - {jobTitle} Framework</h1>
+      <h1>{department} - {jobTitle} - {jobLevel} Framework</h1>
 
       {loading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
 
       {jobDetails && (
         <div className="job-details-content">
-          <h2>Job Levels</h2>
+          <h2>Job Level: {jobLevel}</h2>
+          <h3>Competencies</h3>
           <ul>
-            {jobDetails.job_levels && jobDetails.job_levels.split(",").map((level, index) => (
-              <li key={index}>{level}</li>
-            ))}
-          </ul>
-
-          <h2>Competencies</h2>
-          <ul>
-            {jobDetails.competencies && jobDetails.competencies.map((competency, index) => (
+            {jobDetails.competencies.map((competency, index) => (
               <li key={index}>
                 <strong>{competency.name}</strong>
                 <ul>
-                  {competency.descriptions && Object.entries(competency.descriptions).map(([level, description], idx) => (
+                  {Object.entries(competency.descriptions).map(([level, description], idx) => (
                     <li key={idx}><strong>{level}:</strong> {description}</li>
                   ))}
                 </ul>
