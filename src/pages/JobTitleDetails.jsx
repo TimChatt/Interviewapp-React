@@ -1,86 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const JobTitleDetails = () => {
-  const { department, jobTitle } = useParams(); // Extract department and jobTitle from the URL params
-  const [framework, setFramework] = useState(null); // State to store the selected framework
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const { department, jobTitle } = useParams(); // Extract department and job title from the URL params
+  const [jobDetails, setJobDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFramework = async () => {
+    const fetchJobDetails = async () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${jobTitle}`
+          `https://interviewappbe-production.up.railway.app/api/get-framework/${department}/${jobTitle}`
         );
 
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          const errorData = await response.json();
+          throw new Error(errorData.detail || `Error: ${response.status}`);
         }
 
         const data = await response.json();
-
-        // Find the specific framework for the department and job title
-        const selectedFramework = data.frameworks.find(
-          (fw) =>
-            fw.department.toLowerCase() === department.toLowerCase() &&
-            fw.job_title.toLowerCase() === jobTitle.toLowerCase()
-        );
-
-        if (!selectedFramework) {
-          throw new Error("Framework not found for the selected job title.");
-        }
-
-        setFramework(selectedFramework); // Set the selected framework
-        setError(null); // Clear any existing errors
-      } catch (error) {
-        console.error("Error fetching framework:", error);
-        setError(error.message || "Failed to fetch framework details.");
+        setJobDetails(data); // Set the job title details
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching job title details:", err);
+        setError("Failed to fetch job title details. Please try again.");
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
-    fetchFramework();
+    fetchJobDetails();
   }, [department, jobTitle]);
 
-  if (loading) {
-    return <div className="loading-spinner">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
-  if (!framework) {
-    return (
-      <div className="no-framework-message">
-        No framework details available for this job title.
-      </div>
-    );
-  }
-
   return (
-    <div className="job-title-details">
-      <h1>{framework.job_title}</h1>
-      <h2>Department: {framework.department}</h2>
-      <h2>Competencies:</h2>
+    <div className="job-title-details-container">
+      <h1>{department} - {jobTitle} Framework</h1>
 
-      {framework.competencies.length > 0 ? (
-        framework.competencies.map((competency, index) => (
-          <div key={index} className="competency-card">
-            <h3>{competency.name}</h3>
-            {Object.entries(competency.descriptions || {}).map(([level, description]) => (
-              <div key={level}>
-                <strong>{level}:</strong> {description}
-              </div>
+      {loading && <div className="loading-spinner">Loading...</div>}
+      {error && <div className="error-message">{error}</div>}
+
+      {jobDetails && (
+        <div className="job-details-content">
+          <h2>Job Levels</h2>
+          <ul>
+            {jobDetails.job_levels && jobDetails.job_levels.split(",").map((level, index) => (
+              <li key={index}>{level}</li>
             ))}
-          </div>
-        ))
-      ) : (
-        <div className="no-competencies-message">
-          No competencies have been defined for this job title.
+          </ul>
+
+          <h2>Competencies</h2>
+          <ul>
+            {jobDetails.competencies && jobDetails.competencies.map((competency, index) => (
+              <li key={index}>
+                <strong>{competency.name}</strong>
+                <ul>
+                  {competency.descriptions && Object.entries(competency.descriptions).map(([level, description], idx) => (
+                    <li key={idx}><strong>{level}:</strong> {description}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
@@ -88,4 +70,3 @@ const JobTitleDetails = () => {
 };
 
 export default JobTitleDetails;
-
