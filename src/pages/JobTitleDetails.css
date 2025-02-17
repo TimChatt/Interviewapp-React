@@ -1,0 +1,139 @@
+/* Main container */
+.job-title-details-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+.job-title-details-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Job levels section */
+.job-details-content h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+.job-details-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.job-details-content ul li {
+  font-size: 1.1rem;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  color: #2c3e50;
+}
+
+/* Competencies Section */
+.job-details-content ul {
+  margin-top: 20px;
+}
+
+.job-details-content ul li {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  transition: all 0.2s ease;
+}
+
+.job-details-content ul li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.job-details-content ul li strong {
+  font-weight: bold;
+  color: #2980b9;
+}
+
+.job-details-content ul li ul {
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.job-details-content ul li ul li {
+  font-size: 1rem;
+  color: #7f8c8d;
+}
+
+.job-details-content ul li ul li strong {
+  font-weight: normal;
+  color: #34495e;
+}
+
+/* Loading spinner and error messages */
+.loading-spinner {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #3498db;
+  margin-top: 20px;
+}
+
+.error-message {
+  text-align: center;
+  color: red;
+  font-size: 1.1rem;
+  margin-top: 20px;
+}
+
+/* Button Styles (if you have buttons for editing, etc.) */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #4f46e5;
+  color: white;
+  font-size: 1rem;
+  margin-top: 20px;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #3730a3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .job-title-details-container {
+    padding: 15px;
+  }
+
+  .job-title-details-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .job-details-content h2 {
+    font-size: 1.4rem;
+  }
+
+  .job-details-content ul li {
+    font-size: 1rem;
+    padding: 6px 0;
+  }
+
+  .job-details-content ul li strong {
+    font-size: 1rem;
+  }
+
+  button {
+    width: 100%;
+    font-size: 1.1rem;
+  }
+}
