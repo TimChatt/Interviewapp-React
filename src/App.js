@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Sidebar from "./components/Sidebar";
@@ -19,36 +19,26 @@ import DepartmentFrameworks from "./pages/DepartmentFrameworks";
 import JobTitleDetails from "./pages/JobTitleDetails";
 
 // Import CSS files
-import "./index.css"; // Global resets and minimal base styles
-import "./App.css"; // Layout-specific styles (app-container, main-content, etc.)
-import "./styles.css"; // Shared styles (grid, buttons, cards, etc.)
+import "./index.css"; // Global resets and base styles
+import "./App.css"; // Layout styles
+import "./styles.css"; // Shared styles
 
 const AppContent = () => {
   const location = useLocation();
-  const [sidebarVisible, setSidebarVisible] = useState(true);
 
-  // Paths where sidebar should be hidden (Login & Signup pages)
+  // Sidebar should be hidden on Login & Signup pages
   const hideSidebarPaths = ["/login", "/signup"];
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
 
   return (
     <div className={`app-container ${shouldHideSidebar ? "no-sidebar" : ""}`}>
-      {/* Sidebar (Hidden on Login/Signup pages) */}
-      {!shouldHideSidebar && <Sidebar isVisible={sidebarVisible} />}
+      {/* Sidebar (Visible except on Login/Signup pages) */}
+      {!shouldHideSidebar && <Sidebar />}
 
       {/* Main Content Area */}
-      <div className={`main-content ${shouldHideSidebar ? "expanded" : sidebarVisible ? "" : "collapsed"}`}>
-        {/* Header with Sidebar Toggle */}
-        {!shouldHideSidebar && (
-          <header className="app-header">
-            <button className="sidebar-toggle" onClick={() => setSidebarVisible(!sidebarVisible)}>
-              ☰
-            </button>
-            <span>Interview Analysis App</span>
-          </header>
-        )}
+      <div className={`main-content ${shouldHideSidebar ? "expanded" : ""}`}>
+        <header className="app-header">Interview Analysis App</header>
 
-        {/* Routes */}
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
