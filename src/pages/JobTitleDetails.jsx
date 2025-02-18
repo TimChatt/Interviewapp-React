@@ -5,19 +5,20 @@ import "./JobTitleDetails.css";
 const JobTitleDetails = () => {
   const { department, jobTitle, jobLevel } = useParams();
 
+  // Original states
   const [jobDetails, setJobDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Toggles edit mode
+  // Edit mode toggles
   const [isEditing, setIsEditing] = useState(false);
 
-  // Local states to hold editable fields
+  // Editable fields
   const [editedSalaryMin, setEditedSalaryMin] = useState("");
   const [editedSalaryMax, setEditedSalaryMax] = useState("");
   const [editedCompetencies, setEditedCompetencies] = useState([]);
 
-  // Fetch job details
+  // Fetch details
   useEffect(() => {
     const fetchJobDetails = async () => {
       setLoading(true);
@@ -35,10 +36,10 @@ const JobTitleDetails = () => {
         setJobDetails(data);
         setError(null);
 
-        // Initialize local editable states
+        // Initialize editable fields
         setEditedSalaryMin(data.salary_min || "");
         setEditedSalaryMax(data.salary_max || "");
-        // Deep-copy or store the competencies as needed
+        // Make a deep copy of competencies so we can edit them safely
         setEditedCompetencies(JSON.parse(JSON.stringify(data.competencies || [])));
       } catch (err) {
         console.error("Error fetching job title details:", err);
@@ -51,12 +52,12 @@ const JobTitleDetails = () => {
     fetchJobDetails();
   }, [department, jobTitle, jobLevel]);
 
-  // Toggle edit mode
+  // Toggle edit
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
   };
 
-  // Handle saving updates
+  // Save
   const handleSave = async () => {
     try {
       const response = await fetch(
@@ -67,7 +68,7 @@ const JobTitleDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            salaryMin: Number(editedSalaryMin) || 0, // or parse them properly
+            salaryMin: Number(editedSalaryMin) || 0,
             salaryMax: Number(editedSalaryMax) || 0,
             competencies: editedCompetencies,
           }),
@@ -75,12 +76,12 @@ const JobTitleDetails = () => {
       );
 
       if (!response.ok) {
-        const errorResp = await response.json();
-        throw new Error(errorResp.detail || "Failed to update job details");
+        const errData = await response.json();
+        throw new Error(errData.detail || "Failed to update job details.");
       }
 
       const updatedData = await response.json();
-      // Update local state with the response
+      // Update local state
       setJobDetails((prev) => ({
         ...prev,
         salary_min: updatedData.salary_min,
@@ -88,52 +89,48 @@ const JobTitleDetails = () => {
         competencies: updatedData.competencies,
       }));
 
-      // Exit edit mode
       setIsEditing(false);
     } catch (err) {
-      console.error("Error saving job details:", err);
+      console.error("Error updating job details:", err);
       alert(`Error: ${err.message}`);
     }
   };
 
-  // Handle exporting to CSV
+  // Export to CSV
   const handleExportToCSV = () => {
     if (!jobDetails) return;
 
-    // Construct CSV content
     let csvContent = "data:text/csv;charset=utf-8,";
 
-    // Add a header row (customize as needed)
+    // Headers
     csvContent += `Department,Job Title,Job Level,Salary Min,Salary Max\n`;
     csvContent += `${department},${jobTitle},${jobLevel},${jobDetails.salary_min || ""},${jobDetails.salary_max || ""}\n\n`;
 
     // Competencies
-    csvContent += `Competency Name,Level,Description\n`;
+    csvContent += "Competency Name,Level,Description\n";
     jobDetails.competencies.forEach((comp) => {
-      Object.entries(comp.descriptions).forEach(([level, description]) => {
-        csvContent += `${comp.name},${level},${description}\n`;
+      Object.entries(comp.descriptions).forEach(([lvl, desc]) => {
+        csvContent += `${comp.name},${lvl},${desc}\n`;
       });
     });
 
-    // Encode & download
+    // Download
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", `${department}-${jobTitle}-${jobLevel}.csv`);
-    document.body.appendChild(link); // for Firefox
+    document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  // If editing competencies, we need an onChange handler
-  // If your data structure is more complex (levels, etc.), you'll need nested forms
+  // Competency editing handlers
   const handleCompetencyNameChange = (index, newName) => {
     const updated = [...editedCompetencies];
     updated[index].name = newName;
     setEditedCompetencies(updated);
   };
 
-  // For nested descriptions, we could do something like this
   const handleCompetencyDescriptionChange = (compIndex, levelKey, newDesc) => {
     const updated = [...editedCompetencies];
     updated[compIndex].descriptions[levelKey] = newDesc;
@@ -149,9 +146,9 @@ const JobTitleDetails = () => {
       {loading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
 
-      {/* Action Buttons if not loading/error */}
+      {/* Action buttons */}
       {!loading && !error && jobDetails && (
-        <div style={{ marginBottom: "1rem" }}>
+        <div className="buttons-container">
           <button onClick={handleExportToCSV}>Export to CSV</button>
           {isEditing ? (
             <button onClick={handleSave}>Save</button>
@@ -165,9 +162,18 @@ const JobTitleDetails = () => {
         <div className="job-details-content">
           <h2>Job Level: {jobLevel}</h2>
 
-          {/* SALARY BANDING SECTION */}
+          {/* SALARY BANDING */}
           <h3>Salary Banding</h3>
-          {isEditing ? (
+          {!isEditing ? (
+            <div className="salary-banding-section">
+              <p>
+                <strong>Min: </strong>
+                {jobDetails.salary_min ?? "N/A"}{" "}
+                <strong>Max: </strong>
+                {jobDetails.salary_max ?? "N/A"}
+              </p>
+            </div>
+          ) : (
             <div className="salary-banding-edit">
               <label>
                 Min Salary:
@@ -186,40 +192,30 @@ const JobTitleDetails = () => {
                 />
               </label>
             </div>
-          ) : (
-            <p>
-              <strong>Min: </strong>
-              {jobDetails.salary_min ?? "N/A"}{" "}
-              <strong>Max: </strong>
-              {jobDetails.salary_max ?? "N/A"}
-            </p>
           )}
 
-          {/* COMPETENCIES SECTION */}
           <h3>Competencies</h3>
           {!isEditing ? (
-            // View mode
+            // VIEW MODE
             <ul>
-              {jobDetails.competencies.map((competency, index) => (
-                <li key={index}>
-                  <strong>{competency.name}</strong>
+              {jobDetails.competencies.map((comp, i) => (
+                <li key={i}>
+                  <strong>{comp.name}</strong>
                   <ul>
-                    {Object.entries(competency.descriptions).map(
-                      ([level, description], idx) => (
-                        <li key={idx}>
-                          <strong>{level}:</strong> {description}
-                        </li>
-                      )
-                    )}
+                    {Object.entries(comp.descriptions).map(([lvl, desc], idx) => (
+                      <li key={idx}>
+                        <strong>{lvl}:</strong> {desc}
+                      </li>
+                    ))}
                   </ul>
                 </li>
               ))}
             </ul>
           ) : (
-            // Edit mode
-            <div>
+            // EDIT MODE
+            <div className="edit-competencies-container">
               {editedCompetencies.map((comp, compIndex) => (
-                <div key={compIndex} style={{ margin: "1rem 0" }}>
+                <div key={compIndex} style={{ marginBottom: "1rem" }}>
                   <label>
                     Competency Name:
                     <input
@@ -231,24 +227,22 @@ const JobTitleDetails = () => {
                     />
                   </label>
                   <div style={{ marginLeft: "2rem" }}>
-                    {Object.entries(comp.descriptions).map(
-                      ([levelKey, levelDesc]) => (
-                        <div key={levelKey} style={{ marginTop: "0.5rem" }}>
-                          <strong>{levelKey}:</strong>{" "}
-                          <input
-                            type="text"
-                            value={levelDesc}
-                            onChange={(e) =>
-                              handleCompetencyDescriptionChange(
-                                compIndex,
-                                levelKey,
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
-                      )
-                    )}
+                    {Object.entries(comp.descriptions).map(([lvlKey, descVal]) => (
+                      <div key={lvlKey} style={{ marginTop: "0.5rem" }}>
+                        <strong>{lvlKey}:</strong>{" "}
+                        <input
+                          type="text"
+                          value={descVal}
+                          onChange={(e) =>
+                            handleCompetencyDescriptionChange(
+                              compIndex,
+                              lvlKey,
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
