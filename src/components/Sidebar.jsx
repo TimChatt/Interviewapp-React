@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import { AuthContext } from "../contexts/AuthContext";
-import { FaEye } from "react-icons/fa"; // Adding a futuristic icon
+import { FaEye } from "react-icons/fa"; // Futuristic icon
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -18,7 +18,7 @@ const Sidebar = () => {
   return (
     <nav className="sidebar">
       <div className="sidebar-container">
-        {/* Futuristic App Logo */}
+        {/* Logo */}
         <div className="sidebar-logo">
           <FaEye className="logo-icon" />
           <span className="futuristic-text">TA Vision</span>
@@ -58,7 +58,7 @@ const Sidebar = () => {
             </Link>
           </li>
 
-          {/* Collapsible Admin Section - Styled like a Link */}
+          {/* Admin Section (Collapsible) */}
           <li className="collapsible-section">
             <button
               className={`collapsible-toggle ${isAdminOpen ? "active" : ""}`}
@@ -66,16 +66,14 @@ const Sidebar = () => {
             >
               Admin
             </button>
-            {isAdminOpen && (
-              <div className="collapsible-links">
-                <Link
-                  to="/admin"
-                  className={location.pathname === "/admin" ? "active" : ""}
-                >
-                  Admin Panel
-                </Link>
-              </div>
-            )}
+            <div className={`collapsible-links ${isAdminOpen ? "open" : ""}`}>
+              <Link
+                to="/admin"
+                className={location.pathname === "/admin" ? "active" : ""}
+              >
+                Admin Panel
+              </Link>
+            </div>
           </li>
 
           <li>
