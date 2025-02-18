@@ -1,55 +1,111 @@
+/* ============================ */
 /* index.css - Minimal Global Base Styles */
+/* ============================ */
 
 body {
   margin: 0;
-  padding: 0; /* Ensure no padding by default */
-  font-family: "Inter", sans-serif; /* Use the modern font */
-  background-color: #f4f5f7; /* Subtle SaaS background */
-  color: #333; /* Neutral text color for readability */
-  line-height: 1.6; /* Comfortable line height */
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc; /* Softer SaaS background */
+  color: #333;
+  line-height: 1.6;
 }
 
+/* ============================ */
+/* Links */
+/* ============================ */
 a {
-  text-decoration: none; /* Remove underline from all links */
-  color: inherit; /* Inherit text color for links by default */
-  transition: color 0.2s ease; /* Add smooth color transitions for hover states */
+  text-decoration: none;
+  color: #6366f1; /* SaaS primary blue */
+  transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #3498db; /* Accent color for hover states */
+  color: #4f46e5; /* Darker hover effect */
 }
 
+/* ============================ */
+/* Lists */
+/* ============================ */
 ul, ol {
   margin: 0;
   padding: 0;
-  list-style: none; /* Remove default bullet points and numbering */
+  list-style: none;
 }
 
+/* ============================ */
+/* Buttons */
+/* ============================ */
 button {
-  font-family: inherit; /* Ensure buttons use the same font as the rest of the app */
-  border: none; /* Remove default browser styles */
-  outline: none; /* Remove focus outlines */
-  cursor: pointer; /* Indicate interactivity */
-  background: none; /* Neutral base background */
-  padding: 0; /* Remove padding by default */
-  transition: all 0.2s ease; /* Smooth transition for hover effects */
+  font-family: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background: none;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
 }
 
 button:focus {
-  outline: 2px solid #3498db; /* Add focus outline for accessibility */
+  outline: 2px solid #6366f1; /* Lighter, modern focus outline */
 }
 
+button.primary {
+  background: #6366f1;
+  color: white;
+}
+
+button.primary:hover {
+  background: #4f46e5;
+}
+
+button.secondary {
+  background: #e5e7eb;
+  color: #333;
+}
+
+button.secondary:hover {
+  background: #d1d5db;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================ */
+/* Inputs & Textareas */
+/* ============================ */
 input, textarea {
-  font-family: inherit; /* Match the app's font */
-  border-radius: 4px; /* Add subtle rounding */
-  border: 1px solid #ddd; /* Neutral border for inputs */
-  padding: 8px; /* Default padding for inputs */
+  font-family: inherit;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
   font-size: 16px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
 }
 
 input:focus, textarea:focus {
-  border-color: #3498db; /* Accent color for focused state */
-  box-shadow: 0 0 8px rgba(52, 152, 219, 0.2); /* Subtle focus shadow */
-  outline: none; /* Remove default outline */
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+  outline: none;
+}
+
+/* ============================ */
+/* Scrollbar (For Webkit Browsers) */
+/* ============================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
