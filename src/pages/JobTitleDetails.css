@@ -1,139 +1,112 @@
-/* Main container */
+/* Global Styles */
 .job-title-details-container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+  color: #ffffff;
+  background: linear-gradient(135deg, #1e1e2f, #2a2a40);
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  min-height: 100vh;
 }
 
-/* Title */
-.job-title-details-container h1 {
+/* Header Title */
+h1 {
   font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  color: #2c3e50;
+  font-weight: 600;
   margin-bottom: 20px;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Job levels section */
-.job-details-content h2 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #34495e;
-  margin-bottom: 10px;
-}
-
-.job-details-content ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.job-details-content ul li {
-  font-size: 1.1rem;
-  padding: 8px 0;
-  border-bottom: 1px solid #ddd;
-  color: #2c3e50;
-}
-
-/* Competencies Section */
-.job-details-content ul {
-  margin-top: 20px;
-}
-
-.job-details-content ul li {
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  transition: all 0.2s ease;
-}
-
-.job-details-content ul li:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.job-details-content ul li strong {
-  font-weight: bold;
-  color: #2980b9;
-}
-
-.job-details-content ul li ul {
-  margin-top: 10px;
-  padding-left: 20px;
-}
-
-.job-details-content ul li ul li {
-  font-size: 1rem;
-  color: #7f8c8d;
-}
-
-.job-details-content ul li ul li strong {
-  font-weight: normal;
-  color: #34495e;
-}
-
-/* Loading spinner and error messages */
+/* Loading & Error Messages */
 .loading-spinner {
-  text-align: center;
   font-size: 1.2rem;
-  color: #3498db;
-  margin-top: 20px;
+  font-weight: 500;
+  color: #00c6ff;
+  animation: pulse 1.5s infinite ease-in-out;
 }
 
 .error-message {
-  text-align: center;
-  color: red;
-  font-size: 1.1rem;
-  margin-top: 20px;
-}
-
-/* Button Styles (if you have buttons for editing, etc.) */
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background-color: #4f46e5;
-  color: white;
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff5c5c;
+  padding: 15px;
+  border-radius: 8px;
   font-size: 1rem;
+}
+
+/* Job Details Content */
+.job-details-content {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   margin-top: 20px;
-  transition: background 0.3s ease;
 }
 
-button:hover {
-  background-color: #3730a3;
+/* Job Level */
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #ffffff;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .job-title-details-container {
-    padding: 15px;
-  }
+/* Competencies Section */
+h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #00c6ff;
+  margin-bottom: 10px;
+}
 
-  .job-title-details-container h1 {
-    font-size: 1.8rem;
-  }
+/* Competency List */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
 
-  .job-details-content h2 {
-    font-size: 1.4rem;
-  }
+/* Main Competency Items */
+ul li {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #ffffff;
+}
 
-  .job-details-content ul li {
-    font-size: 1rem;
-    padding: 6px 0;
-  }
+/* Nested Levels */
+ul ul {
+  margin-top: 8px;
+  padding-left: 20px;
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+}
 
-  .job-details-content ul li strong {
-    font-size: 1rem;
-  }
+/* Nested Level Items */
+ul ul li {
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 1rem;
+  padding: 8px;
+  border-radius: 6px;
+  margin: 5px 0;
+}
 
-  button {
-    width: 100%;
-    font-size: 1.1rem;
+/* Keyframes for Loading Animation */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
   }
 }
