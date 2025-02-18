@@ -67,7 +67,7 @@
   width: 100%;
 }
 
-/* Style for Sidebar Links & Admin Button */
+/* Sidebar Links */
 .sidebar-links a,
 .collapsible-toggle {
   width: 100%;
@@ -85,35 +85,35 @@
   cursor: pointer;
 }
 
-/* Hover effect for both links & Admin button */
+/* Hover Effects */
 .sidebar-links a:hover,
 .collapsible-toggle:hover {
   background-color: #2d3748;
   color: #f8f9fa;
 }
 
-/* Active link & active Admin button */
+/* Active Link */
 .sidebar-links .active,
 .collapsible-toggle.active {
   background-color: #4a5568;
   color: #f8f9fa;
 }
 
-/* Collapsible Admin Links */
+/* Admin Dropdown */
 .collapsible-links {
   display: flex;
   flex-direction: column;
   padding-left: 1rem;
   overflow: hidden;
   transition: max-height 0.3s ease-in-out;
-  max-height: 0; /* Initially collapsed */
+  max-height: 0;
 }
 
 .collapsible-links.open {
-  max-height: 100px; /* Expand smoothly */
+  max-height: 100px;
 }
 
-/* Dropdown Admin Links */
+/* Admin Dropdown Links */
 .collapsible-links a {
   text-decoration: none;
   color: #f8f9fa;
@@ -121,10 +121,16 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Ensure Admin dropdown links also have hover effect */
 .collapsible-links a:hover {
   background-color: #2d3748;
   color: #f8f9fa;
+}
+
+/* Fix for Sidebar Text Wrapping */
+.sidebar-links a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Logout Button */
@@ -137,7 +143,7 @@
   width: 100%;
   padding: 0.75rem;
   background-color: #e53e3e;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 4px;
   text-align: center;
@@ -149,14 +155,4 @@
 
 .logout-button:hover {
   background-color: #c53030;
-}
-
-/* Fix for Sidebar Overlapping */
-.sidebar-links .collapsible-section {
-  position: relative;
-}
-
-/* Fix for sidebar links not wrapping */
-.sidebar-links a {
-  white-space: nowrap;
 }
