@@ -1,5 +1,5 @@
 // src/App.js
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Sidebar from "./components/Sidebar";
@@ -15,8 +15,8 @@ import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
 import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
-import DepartmentFrameworks from "./pages/DepartmentFrameworks"; // Import DepartmentFrameworks page
-import JobTitleDetails from "./pages/JobTitleDetails"; // Import JobTitleDetails page
+import DepartmentFrameworks from "./pages/DepartmentFrameworks";
+import JobTitleDetails from "./pages/JobTitleDetails";
 
 // Import CSS files
 import "./index.css"; // Global resets and minimal base styles
@@ -25,17 +25,30 @@ import "./styles.css"; // Shared styles (grid, buttons, cards, etc.)
 
 const AppContent = () => {
   const location = useLocation();
+  const [sidebarVisible, setSidebarVisible] = useState(true);
 
-  // Define paths where the Sidebar should be hidden
+  // Paths where sidebar should be hidden (Login & Signup pages)
   const hideSidebarPaths = ["/login", "/signup"];
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
 
   return (
     <div className={`app-container ${shouldHideSidebar ? "no-sidebar" : ""}`}>
-      {/* Conditionally render Sidebar */}
-      {!shouldHideSidebar && <Sidebar />}
-      {/* Main content area */}
-      <div className={`main-content ${shouldHideSidebar ? "expanded" : ""}`}>
+      {/* Sidebar (Hidden on Login/Signup pages) */}
+      {!shouldHideSidebar && <Sidebar isVisible={sidebarVisible} />}
+
+      {/* Main Content Area */}
+      <div className={`main-content ${shouldHideSidebar ? "expanded" : sidebarVisible ? "" : "collapsed"}`}>
+        {/* Header with Sidebar Toggle */}
+        {!shouldHideSidebar && (
+          <header className="app-header">
+            <button className="sidebar-toggle" onClick={() => setSidebarVisible(!sidebarVisible)}>
+              ☰
+            </button>
+            <span>Interview Analysis App</span>
+          </header>
+        )}
+
+        {/* Routes */}
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
@@ -48,10 +61,13 @@ const AppContent = () => {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
           <Route path="/frameworks" element={<SavedFrameworks />} />
-          <Route path="/frameworks/:department" element={<DepartmentFrameworks />} /> {/* Add route for DepartmentFrameworks */}
-          <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} /> {/* Add route for JobTitleDetails */}
+          <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
+          <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
           <Route path="/edit-framework/:id" element={<EditFramework />} />
         </Routes>
+
+        {/* Footer */}
+        {!shouldHideSidebar && <footer className="app-footer">&copy; {new Date().getFullYear()} Interview Analysis App. All rights reserved.</footer>}
       </div>
     </div>
   );
@@ -66,4 +82,3 @@ const App = () => (
 );
 
 export default App;
-
