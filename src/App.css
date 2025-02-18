@@ -1,5 +1,5 @@
 /* ============================ */
-/* Main App Layout */
+/* Main App Layout Fix */
 /* ============================ */
 
 .app-container {
@@ -10,15 +10,26 @@
 }
 
 /* ============================ */
-/* Sidebar Styling */
+/* Sidebar Fix */
 /* ============================ */
 
 .sidebar {
   width: 250px;
   background-color: #111827; /* Dark sidebar */
-  color: #ffffff; /* White text */
+  color: #ffffff;
   padding: 20px;
   transition: transform 0.3s ease-in-out;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+/* Sidebar + Main Content Fix */
+.sidebar + .main-content {
+  margin-left: 250px;
 }
 
 /* Sidebar Links */
@@ -32,7 +43,7 @@
 }
 
 .sidebar a:hover {
-  background: #374151; /* Slightly lighter hover effect */
+  background: #374151;
 }
 
 /* Active Sidebar Item */
@@ -42,49 +53,81 @@
 }
 
 /* ============================ */
-/* Main Content Styling */
+/* Main Content Layout Fix */
 /* ============================ */
 
 .main-content {
   flex-grow: 1;
   padding: 2rem;
-  background-color: #262837; /* Darker content background */
-  color: white; /* White text */
+  background-color: #262837;
+  color: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: calc(100% - 250px); /* Prevents content from stretching beyond sidebar */
+  overflow-x: hidden; /* Prevents horizontal scroll issues */
 }
 
 /* No sidebar adjustments */
 .no-sidebar .main-content {
-  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
 }
 
 /* ============================ */
-/* Header Styling */
+/* Admin Panel Content Fix */
+/* ============================ */
+
+.admin-panel-container {
+  max-width: 1100px; /* Restricts content width */
+  margin: 0 auto; /* Centers content */
+  padding: 2rem;
+  background: #2c2f40;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Fix Overflow for Admin Sections */
+.admin-section {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: #2c2f40;
+  border: 1px solid #4f46e5;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================ */
+/* Header Fix */
 /* ============================ */
 
 .app-header {
-  background-color: #111827; /* Match sidebar */
+  background-color: #111827;
   color: white;
   padding: 1rem;
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
   border-bottom: 3px solid #4f46e5;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 900;
 }
 
 /* ============================ */
-/* Footer Styling */
+/* Footer Fix */
 /* ============================ */
 
 .app-footer {
-  background-color: #111827; /* Darker footer */
+  background-color: #111827;
   color: white;
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
   margin-top: auto;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
   border-top: 2px solid #374151;
 }
 
@@ -124,14 +167,13 @@
     padding: 1rem;
     border-radius: 0;
     box-shadow: none;
+    max-width: 100%;
+    margin-left: 0;
   }
 
-  .app-header {
-    font-size: 1.2rem;
-  }
-
-  .app-footer {
-    font-size: 0.8rem;
+  .admin-panel-container {
+    width: 95%;
+    padding: 1.5rem;
   }
 
   /* Sidebar Overlay for Small Screens */
@@ -144,5 +186,15 @@
     width: 250px;
     background-color: #111827;
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.visible {
+    transform: translateX(0);
+  }
+
+  .sidebar + .main-content {
+    margin-left: 0;
   }
 }
