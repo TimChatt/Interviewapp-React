@@ -74,14 +74,6 @@ const Sidebar = () => {
                 >
                   Admin Panel
                 </Link>
-                <Link
-                  to="/admin-dashboard"
-                  className={
-                    location.pathname === "/admin-dashboard" ? "active" : ""
-                  }
-                >
-                  Admin Dashboard
-                </Link>
               </div>
             )}
           </li>
