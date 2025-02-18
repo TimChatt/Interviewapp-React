@@ -1,65 +1,97 @@
-/* Main app container */
+/* ============================ */
+/* Main App Layout */
+/* ============================ */
+
 .app-container {
   display: flex;
-  flex-direction: row; /* Ensures sidebar and content are side by side */
-  min-height: 100vh; /* Full viewport height */
-  background-color: #f9fafb; /* Subtle light blue-gray background */
-  overflow: hidden; /* Prevent horizontal scrolling */
+  flex-direction: row;
+  min-height: 100vh;
+  background-color: #f8fafc; /* Lighter SaaS background */
+  overflow: hidden;
 }
 
-/* Main content area */
+/* ============================ */
+/* Main Content Styling */
+/* ============================ */
+
 .main-content {
   flex-grow: 1;
   padding: 2rem;
-  transition: margin-left 0.3s ease; /* Smooth transition for sidebar toggling */
-  background-color: #ffffff; /* White background for content */
-  border-radius: 8px; /* Rounded corners for a modern look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: margin-left 0.3s ease;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softened shadow */
 }
 
 .main-content.no-sidebar {
-  margin-left: 0; /* No margin if the sidebar is hidden */
+  margin-left: 0;
 }
 
-/* Header styling */
+/* ============================ */
+/* Header Styling */
+/* ============================ */
+
 .app-header {
-  background-color: #1d4ed8; /* Vibrant blue */
+  background-color: #6366f1; /* Updated SaaS blue */
   color: white;
   padding: 1rem;
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  border-bottom: 3px solid #1abc9c; /* Add a modern accent line */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-bottom: 3px solid #4f46e5; /* Soft accent */
 }
 
-/* Footer styling */
+/* ============================ */
+/* Footer Styling */
+/* ============================ */
+
 .app-footer {
-  background-color: #374151; /* Dark gray */
-  color: white;
+  background-color: #e5e7eb; /* Light gray footer */
+  color: #333;
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
-  margin-top: auto; /* Push footer to the bottom */
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  border-top: 3px solid #3498db; /* Add a modern accent line */
+  margin-top: auto;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+  border-top: 2px solid #cbd5e0; /* Softer divider */
 }
 
-/* Sidebar compatibility */
+/* ============================ */
+/* Sidebar Styling */
+/* ============================ */
+
+.sidebar {
+  width: 250px;
+  background-color: #ffffff; /* Keep sidebar clean */
+  border-right: 1px solid #e5e7eb; /* Subtle border */
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  transition: transform 0.3s ease-in-out;
+}
+
 .sidebar + .main-content {
-  margin-left: 250px; /* Account for sidebar width */
+  margin-left: 250px;
 }
 
+/* Sidebar Collapsed */
+.sidebar.hidden {
+  transform: translateX(-100%);
+}
+
+/* ============================ */
 /* Responsive Adjustments */
+/* ============================ */
+
 @media (max-width: 768px) {
   .app-container {
-    flex-direction: column; /* Stack sidebar and content vertically */
+    flex-direction: column;
   }
 
   .main-content {
     padding: 1rem;
-    border-radius: 0; /* Remove rounded corners on small screens */
-    box-shadow: none; /* Simplify layout on mobile */
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .app-header {
@@ -68,5 +100,23 @@
 
   .app-footer {
     font-size: 0.8rem;
+  }
+
+  /* Make sidebar overlay on small screens */
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    z-index: 1000;
+    width: 250px;
+    background-color: #ffffff;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.visible {
+    transform: translateX(0);
   }
 }
