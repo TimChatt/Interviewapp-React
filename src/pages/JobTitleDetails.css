@@ -45,8 +45,8 @@ h1 {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   margin-top: 20px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 /* Job Level */
@@ -96,6 +96,75 @@ ul ul li {
   padding: 8px;
   border-radius: 6px;
   margin: 5px 0;
+}
+
+/* Action Buttons Container (Export, Edit, Save) */
+.action-buttons,
+.buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.action-buttons button,
+.buttons-container button {
+  background-color: #00c6ff;
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.action-buttons button:hover,
+.buttons-container button:hover {
+  background-color: #0072ff;
+}
+
+/* Salary Banding Section */
+.salary-banding-section,
+.salary-banding-edit {
+  margin: 1rem 0;
+  text-align: left; /* If you'd prefer, keep center or other alignment */
+}
+
+.salary-banding-edit label {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #cccccc;
+}
+
+.salary-banding-edit input {
+  margin-left: 0.5rem;
+  width: 100px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #999999;
+  background-color: #2a2a40;
+  color: #ffffff;
+}
+
+/* Competency Editing */
+.edit-competencies-container {
+  text-align: left; /* Or keep center, up to your design */
+}
+
+.edit-competencies-container input[type="text"] {
+  margin-left: 0.5rem;
+  margin-top: 0.3rem;
+  width: 80%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #999999;
+  background-color: #2a2a40;
+  color: #ffffff;
 }
 
 /* Keyframes for Loading Animation */
