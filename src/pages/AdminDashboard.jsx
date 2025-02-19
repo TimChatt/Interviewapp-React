@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext"; // Assuming you have admin token in context
 import { useNavigate } from "react-router-dom";
-import "./AdminDashboard.css";
+import '../styles.css';
 
 const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
