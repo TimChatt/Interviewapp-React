@@ -20,7 +20,7 @@ import JobTitleDetails from "./pages/JobTitleDetails";
 
 // Import CSS files
 import "./index.css"; // Global resets and base styles
-import "./App.css"; // Layout styles
+import "./App.css";   // Layout styles
 import "./styles.css"; // Shared styles
 
 const AppContent = () => {
@@ -35,24 +35,25 @@ const AppContent = () => {
       {/* Sidebar (Visible except on Login/Signup pages) */}
       {!shouldHideSidebar && <Sidebar />}
 
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/candidates" element={<Candidate />} />
-          <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-          <Route path="/insights" element={<Insights />} />
-          <Route path="/recommendations" element={<Recommendations />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
-          <Route path="/frameworks" element={<SavedFrameworks />} />
-          <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
-          <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
-          <Route path="/edit-framework/:id" element={<EditFramework />} />
-        </Routes>
-
-      </div>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/candidates" element={<Candidate />} />
+        <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
+        <Route path="/insights" element={<Insights />} />
+        <Route path="/recommendations" element={<Recommendations />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+        <Route path="/frameworks" element={<SavedFrameworks />} />
+        <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
+        <Route
+          path="/frameworks/:department/:jobTitle/:jobLevel"
+          element={<JobTitleDetails />}
+        />
+        <Route path="/edit-framework/:id" element={<EditFramework />} />
+      </Routes>
     </div>
   );
 };
