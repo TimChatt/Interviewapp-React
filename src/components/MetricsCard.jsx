@@ -1,5 +1,5 @@
 import React from "react";
-import "./MetricsCard.css"; // Import CSS for styling the metrics card
+import '../styles.css';
 
 const MetricsCard = ({ title, value, icon }) => {
   return (
