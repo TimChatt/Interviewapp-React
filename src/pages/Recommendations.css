@@ -25,7 +25,35 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
+/* Ensure the recommendation card has a readable background */
+.recommendation-card {
+  background-color: #ffffff !important; /* White background */
+  color: #1e1e1e !important; /* Dark text */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+/* Ensure list items are visible */
+.recommendation-card ul {
+  list-style-type: disc !important; /* Add bullet points */
+  padding-left: 20px; /* Add spacing */
+}
+
+.recommendation-card li {
+  color: #1e1e1e !important; /* Dark text */
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.95) !important; /* Light background for contrast */
+  padding: 8px;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Ensure headings are readable */
+.recommendation-card h2 {
+  color: #222222 !important;
+  font-weight: bold;
+}
 .recommendation-filters label {
   display: flex;
   align-items: center;
