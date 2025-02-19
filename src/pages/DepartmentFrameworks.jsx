@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "./DepartmentFrameworks.css";
+import '../styles.css';
 
 const DepartmentFrameworks = () => {
   const { department } = useParams(); // Get the department name from the URL
