@@ -1,57 +1,40 @@
 /* =========================================
    App.css - Main App Layout (Pastel SaaS)
+   Flex-based Sidebar + Main Content
    ========================================= */
 
 /* Main App Container */
 .app-container {
-  display: flex;
+  display: flex;              /* Use flexbox to place sidebar + content side-by-side */
   min-height: 100vh;
-  background-color: #f0f2f8; /* Subtle off-white/pastel background */
+  background-color: #f0f2f8;  /* Subtle off-white/pastel background */
   overflow: hidden;
 }
 
-/* Header */
-.app-header {
-  background-color: #ffffff;
-  color: #333333;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  border-bottom: 2px solid #ececec;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: 900;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+/* (Optional) If using a .no-sidebar class:
+   We can hide the sidebar or skip rendering it in the JSX 
+   for pages like /login, /signup. 
+   In that case, the .app-container might not have a sidebar at all. */
+.no-sidebar .sidebar {
+  display: none;  /* Hide the sidebar entirely if needed */
+}
+.no-sidebar .main-content {
+  flex: 1;        /* Take full width */
+  margin-left: 0;
+  max-width: 100%;
 }
 
-/* Footer */
-.app-footer {
-  background-color: #ffffff;
-  color: #666666;
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.9rem;
-  margin-top: auto;
-  border-top: 1px solid #eaeaea;
-}
-
-/* Sidebar (Updated with pastel look) */
+/* Sidebar (removed position: fixed) */
 .sidebar {
   width: 250px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
+  background-color: #ffffff;  /* Light background */
+  color: #333333;             /* Darker text */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1rem;
-  background-color: #ffffff;    /* Light background */
-  color: #333333;              /* Darker text */
   box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+  /* No longer fixed or absolute; it just takes up space on the left in a flex container */
   overflow-y: auto;
   transition: transform 0.3s ease-in-out;
   z-index: 1000;
@@ -69,7 +52,7 @@
   color: #6366f1;
 }
 
-/* Futuristic Text (Kept for effect, but softened color) */
+/* Futuristic Text */
 .futuristic-text {
   background: linear-gradient(90deg, #84c5f4, #c084fc);
   -webkit-background-clip: text;
@@ -81,7 +64,7 @@
   font-weight: bold;
 }
 
-/* Keyframes for Futuristic Glow */
+/* Glow Keyframes */
 @keyframes glow {
   0% {
     text-shadow: 0 0 5px rgba(132, 197, 244, 0.8);
@@ -154,7 +137,7 @@
   background-color: #f0f2f8;
 }
 
-/* Fix for Sidebar Text Wrapping */
+/* Text Wrapping in Links */
 .sidebar-links a {
   white-space: nowrap;
   overflow: hidden;
@@ -183,23 +166,13 @@
   background-color: #c53030;
 }
 
-/* Sidebar + Main Content */
-.sidebar + .main-content {
-  margin-left: 250px;
-}
-
-/* Main Content */
+/* Main Content (flex: 1 so it expands to fill remaining space) */
 .main-content {
-  flex-grow: 1;
+  flex: 1;
   padding: 2rem;
   background-color: #f8f9fa;
   color: #333333;
-  max-width: calc(100% - 250px);
   overflow-x: hidden;
-}
-.no-sidebar .main-content {
-  margin-left: 0;
-  max-width: 100%;
 }
 
 /* Admin Panel Container */
@@ -224,31 +197,24 @@
   margin-bottom: 1.5rem;
 }
 
-/* Responsive: Sidebar Overlay for Small Screens */
+/* Responsive Adjustments for smaller screens */
 @media (max-width: 768px) {
   .app-container {
-    flex-direction: column;
+    flex-direction: column; /* Stack sidebar above main content */
   }
 
   .sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 250px;
-    transform: translateX(-100%);
-  }
-  .sidebar.visible {
-    transform: translateX(0);
-  }
-  .sidebar + .main-content {
-    margin-left: 0;
+    width: 100%;
+    box-shadow: none;
+    height: auto; /* Let it size naturally */
+    position: static; /* No longer absolute/fixed */
+    transform: none;  /* Remove transform overlay approach */
   }
 
   .main-content {
-    padding: 1rem;
+    margin-left: 0; /* No offset needed since sidebar is on top now */
     max-width: 100%;
-    margin-left: 0;
+    padding: 1rem;
   }
 
   .admin-panel-container {
