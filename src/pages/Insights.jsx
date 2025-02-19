@@ -1,6 +1,6 @@
 // src/pages/Insights.jsx
 import React, { useState } from "react";
-import "./Insights.css";
+import '../styles.css';
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 
 // Recharts components
