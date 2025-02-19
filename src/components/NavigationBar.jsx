@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./NavigationBar.css"; // Ensure this file exists
+import '../styles.css';
 
 const NavigationBar = () => {
   return (
