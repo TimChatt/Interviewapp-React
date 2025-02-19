@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import CandidateTable from "../components/CandidateTable";
 import candidateData from "../mockdata/ashbyMockData.json"; // Your candidate data
-import "./Candidate.css";
+import '../styles.css';
 
 const Candidate = () => {
   // Transform candidate data so that keys match CandidateTable's expectations
