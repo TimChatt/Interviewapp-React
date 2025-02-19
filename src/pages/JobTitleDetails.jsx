@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import "./JobTitleDetails.css";
+import '../styles.css';
 
 const JobTitleDetails = () => {
   const { department, jobTitle, jobLevel } = useParams();
