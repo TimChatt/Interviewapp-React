@@ -420,7 +420,8 @@ ul {
 }
 
 /* ---------- Login/SignUp Pages ---------- */
-.login-page {
+.login-page,
+.signup-page {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -430,7 +431,9 @@ ul {
   background-color: #eaf4fc;
   box-sizing: border-box;
 }
-.login-container {
+
+.login-container,
+.signup-container {
   background-color: #fff;
   padding: 2rem;
   border-radius: 12px;
@@ -440,17 +443,24 @@ ul {
   text-align: center;
   box-sizing: border-box;
 }
-.login-header {
+
+/* Optional: Headers for both pages */
+.login-header,
+.signup-header {
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 1rem;
   color: #333;
 }
-.login-form {
+
+/* Forms */
+.login-form,
+.signup-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
+
 .form-group input {
   width: 100%;
   padding: 0.8rem;
@@ -459,7 +469,10 @@ ul {
   font-size: 1rem;
   box-sizing: border-box;
 }
-.login-button {
+
+/* Buttons */
+.login-button,
+.signup-button {
   background-color: #007bff;
   color: #fff;
   padding: 0.8rem;
@@ -469,20 +482,37 @@ ul {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-.login-button:hover {
+
+.login-button:hover,
+.signup-button:hover {
   background-color: #0056b3;
 }
-.login-footer {
+
+/* Footer links */
+.login-footer,
+.signup-footer {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.9rem;
 }
-.login-footer a {
+
+.login-footer a,
+.signup-footer a {
   color: #007bff;
   text-decoration: none;
 }
-.login-footer a:hover {
+
+.login-footer a:hover,
+.signup-footer a:hover {
   text-decoration: underline;
+}
+
+/* Message styling for SignUp page */
+.signup-message {
+  margin-top: 1rem;
+  color: #333;
+}
+
 }
 
 /* ---------- Job Title / Framework Details ---------- */
