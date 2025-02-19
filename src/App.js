@@ -1,4 +1,3 @@
-// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -17,6 +16,7 @@ import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
 import DepartmentFrameworks from "./pages/DepartmentFrameworks";
 import JobTitleDetails from "./pages/JobTitleDetails";
+import PrivateRoute from "./components/PrivateRoute"; // Import the PrivateRoute
 
 // Import CSS files
 import "./index.css"; // Global resets and base styles
@@ -32,27 +32,25 @@ const AppContent = () => {
 
   return (
     <div className={`app-container ${shouldHideSidebar ? "no-sidebar" : ""}`}>
-      {/* Sidebar (Visible except on Login/Signup pages) */}
       {!shouldHideSidebar && <Sidebar />}
-
       <Routes>
+        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/candidates" element={<Candidate />} />
-        <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-        <Route path="/insights" element={<Insights />} />
-        <Route path="/recommendations" element={<Recommendations />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
-        <Route path="/frameworks" element={<SavedFrameworks />} />
-        <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
-        <Route
-          path="/frameworks/:department/:jobTitle/:jobLevel"
-          element={<JobTitleDetails />}
-        />
-        <Route path="/edit-framework/:id" element={<EditFramework />} />
+
+        {/* Protected Routes */}
+        <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+        <Route path="/candidates" element={<PrivateRoute><Candidate /></PrivateRoute>} />
+        <Route path="/candidate/:candidateId" element={<PrivateRoute><CandidateProfile /></PrivateRoute>} />
+        <Route path="/insights" element={<PrivateRoute><Insights /></PrivateRoute>} />
+        <Route path="/recommendations" element={<PrivateRoute><Recommendations /></PrivateRoute>} />
+        <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
+        <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+        <Route path="/competency-framework-planner" element={<PrivateRoute><CompetencyFrameworkPlanner /></PrivateRoute>} />
+        <Route path="/frameworks" element={<PrivateRoute><SavedFrameworks /></PrivateRoute>} />
+        <Route path="/frameworks/:department" element={<PrivateRoute><DepartmentFrameworks /></PrivateRoute>} />
+        <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<PrivateRoute><JobTitleDetails /></PrivateRoute>} />
+        <Route path="/edit-framework/:id" element={<PrivateRoute><EditFramework /></PrivateRoute>} />
       </Routes>
     </div>
   );
