@@ -1,6 +1,7 @@
 /* ============================ */
 /* Global Styling */
 /* ============================ */
+
 body {
   font-family: "Inter", sans-serif;
   margin: 0;
@@ -10,7 +11,7 @@ body {
 }
 
 h1, h2, h3 {
-  color: #222222 !important; /* Dark grey to make it readable */
+  color: #222222 !important; /* Dark grey for readability */
   margin-bottom: 15px;
   line-height: 1.3;
 }
@@ -22,6 +23,7 @@ p {
 /* ============================ */
 /* Loading & Error Messages */
 /* ============================ */
+
 .loading-spinner,
 .error-message,
 .no-frameworks-message {
@@ -42,42 +44,27 @@ p {
   font-weight: 500;
 }
 
-/* Fix for dynamically loaded white text */
-.recommendation-box, 
-.recommendation-section, 
-.recommendation-text,
-.recommendation-box p, 
-.recommendation-section p,
-.recommendation-box li,
-.recommendation-section li,
-.recommendation-box span, 
-.recommendation-section span,
-.recommendation-box div, 
-.recommendation-section div {
-  color: #1e1e1e !important; /* Dark text */
-  background-color: rgba(255, 255, 255, 0.9) !important; /* Light background */
-  font-weight: 500;
-}
-
 /* ============================ */
 /* Fix Text Visibility in Cards and Sections */
 /* ============================ */
+
 .card, .light-section {
-  background-color: #ffffff; /* Ensure light backgrounds */
+  background-color: #ffffff; /* Light backgrounds */
   color: #1e1e1e !important; /* Dark text */
 }
 
 .card-title, .section-title {
-  color: #222222 !important; /* Ensures specific card headers are dark */
+  color: #222222 !important; /* Ensure headers are dark */
 }
 
 .card p, .light-section p {
-  color: #333333 !important; /* Ensures paragraph text is dark */
+  color: #333333 !important; /* Dark text for readability */
 }
 
 /* ============================ */
-/* Sidebar Styling (Updated with Gradient) */
+/* Sidebar Styling */
 /* ============================ */
+
 .sidebar {
   width: 250px;
   background: linear-gradient(to bottom, #0084ff, #000000); /* Blue to Black */
@@ -102,26 +89,100 @@ p {
   background: #6366f1;
   color: white;
 }
+
 /* ============================ */
-/* Fix for White Text in Recommendations List Items */
+/* Fix for White Text in Interview Timeline & Scorecard */
 /* ============================ */
+
+.interview-timeline, .scorecard {
+  background-color: #ffffff !important; /* Ensure white background */
+  color: #1e1e1e !important; /* Dark text */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interview-timeline p, .scorecard p,
+.interview-timeline span, .scorecard span,
+.interview-timeline b, .scorecard b {
+  color: #222 !important; /* Ensure dark readable text */
+  font-weight: 500;
+}
+
+.interview-timeline div, .scorecard div {
+  background-color: #ffffff !important;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================ */
+/* Fix for White Text in Recommendations Section */
+/* ============================ */
+
+.recommendation-box, 
+.recommendation-section, 
+.recommendation-text,
+.recommendation-box p, 
+.recommendation-section p,
+.recommendation-box li, 
+.recommendation-section li,
+.recommendation-box span, 
+.recommendation-section span,
+.recommendation-box div, 
+.recommendation-section div {
+  color: #1e1e1e !important; /* Dark text */
+  background-color: rgba(255, 255, 255, 0.95) !important; /* Light background */
+  font-weight: 500;
+}
+
+/* Ensure recommendation list items are visible */
 .recommendation-box ul, 
 .recommendation-section ul {
   list-style-type: disc !important; /* Ensure bullets are visible */
-  padding-left: 20px; /* Add spacing */
+  padding-left: 20px;
 }
-.recommendation-box li, 
-.recommendation-section li {
-  color: #1e1e1e !important; /* Dark text for visibility */
+
+.recommendation-card {
+  background-color: #ffffff !important;
+  color: #1e1e1e !important;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-card li {
+  color: #1e1e1e !important;
   font-weight: 500;
-  background-color: rgba(255, 255, 255, 0.9) !important; /* Light background for contrast */
+  background-color: rgba(255, 255, 255, 0.9) !important;
   padding: 8px;
   border-radius: 6px;
   display: block;
 }
+
+/* Ensure headings are readable */
+.recommendation-card h2 {
+  color: #222222 !important;
+  font-weight: bold;
+}
+
+/* ============================ */
+/* Fix for Scorecards & Charts */
+/* ============================ */
+
+.scorecard-item {
+  background-color: #1e1e2f; /* Darker contrast */
+  color: #ffffff !important; /* Keeps text white */
+}
+
+.radar-chart-label {
+  fill: #222 !important; /* Darken radar chart labels */
+}
+
 /* ============================ */
 /* Main Content Styling */
 /* ============================ */
+
 .main-content {
   flex-grow: 1;
   padding: 2rem;
@@ -134,72 +195,9 @@ p {
 }
 
 /* ============================ */
-/* Fix for Scorecards & Charts */
-/* ============================ */
-.scorecard-item {
-  background-color: #1e1e2f; /* Darker contrast */
-  color: #ffffff !important; /* Keeps text white */
-}
-
-.radar-chart-label {
-  fill: #222222 !important; /* Darkens the radar chart labels */
-}
-
-/* ============================ */
-/* Fix for White Text in Recommendations Page */
-/* ============================ */
-.recommendation-box, .recommendation-section, .recommendation-text {
-  color: #1e1e1e !important; /* Dark text for visibility */
-  background-color: #ffffff !important; /* Ensure white background */
-}
-
-.recommendation-box p, .recommendation-section p {
-  color: #333333 !important; /* Slightly softer black for readability */
-}
-
-.recommendation-box li {
-  color: #222222 !important; /* Dark list items */
-}
-
-/* Ensure dropdowns and input fields are visible */
-.recommendation-box select, .recommendation-box input {
-  color: #1e1e1e !important;
-  background-color: #ffffff !important;
-  border: 1px solid #dcdcdc;
-}
-
-/* Ensure headings in recommendation sections are visible */
-.recommendation-section h2 {
-  color: #222222 !important;
-}
-
-/* ============================ */
-/* Fix for White Text in Interview Timeline & Scorecard */
-/* ============================ */
-.interview-timeline, .scorecard {
-  color: #1e1e1e !important; /* Ensure text is dark */
-}
-
-.interview-timeline p, .scorecard p, 
-.interview-timeline span, .scorecard span {
-  color: #333333 !important; /* Slightly darker for better readability */
-}
-
-.interview-timeline b, .scorecard b {
-  color: #222222 !important;
-  font-weight: bold;
-}
-
-.interview-timeline div, .scorecard div {
-  background-color: #ffffff !important; /* White background */
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for contrast */
-}
-
-/* ============================ */
 /* Responsive Adjustments */
 /* ============================ */
+
 @media (max-width: 768px) {
   .main-content {
     padding: 1rem;
