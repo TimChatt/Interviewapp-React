@@ -1026,3 +1026,128 @@ ul ul li {
     grid-template-columns: 1fr; /* Single-column on smaller screens */
   }
 }
+
+/* ============================
+   Saved Frameworks Page
+   ============================ */
+
+.saved-frameworks-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #ffffff; /* Off-white card background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.saved-frameworks-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 1.5rem;
+}
+
+/* Search Bar */
+.search-bar {
+  margin-bottom: 1.5rem;
+}
+.search-bar input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-bar input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+/* Loading & Error Messages */
+.loading-spinner {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #6366f1;
+  margin-top: 1rem;
+}
+.error-message {
+  color: #e53e3e; /* Red for errors */
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+/* No Frameworks Message */
+.no-frameworks-message {
+  font-size: 1rem;
+  color: #444444;
+  margin-top: 2rem;
+  line-height: 1.5;
+}
+
+/* Create New Framework Button */
+.create-framework-button {
+  background-color: #6366f1;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+.create-framework-button:hover {
+  background-color: #4f46e5;
+}
+
+/* Grid Container for Draggable Departments */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Department Container Card */
+.department-container {
+  background-color: #f9fafb; /* Light card background */
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: grab;
+  text-align: left; /* So content is left-aligned inside */
+}
+
+.department-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.department-container:active {
+  cursor: grabbing;
+}
+
+.department-container h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  color: #333333;
+}
+
+/* Department Job Titles List */
+.department-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.department-container li {
+  font-size: 0.95rem;
+  color: #555555;
+  margin-bottom: 0.3rem;
+}
