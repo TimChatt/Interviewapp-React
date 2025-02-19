@@ -42,6 +42,23 @@ p {
   font-weight: 500;
 }
 
+/* Fix for dynamically loaded white text */
+.recommendation-box, 
+.recommendation-section, 
+.recommendation-text,
+.recommendation-box p, 
+.recommendation-section p,
+.recommendation-box li,
+.recommendation-section li,
+.recommendation-box span, 
+.recommendation-section span,
+.recommendation-box div, 
+.recommendation-section div {
+  color: #1e1e1e !important; /* Dark text */
+  background-color: rgba(255, 255, 255, 0.9) !important; /* Light background */
+  font-weight: 500;
+}
+
 /* ============================ */
 /* Fix Text Visibility in Cards and Sections */
 /* ============================ */
