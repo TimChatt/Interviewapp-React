@@ -1,0 +1,101 @@
+/* =========================================
+   index.css - Global Base Styles (Pastel SaaS)
+   ========================================= */
+
+/* Basic Reset & Body */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f8f9fa; /* Off-white background */
+  color: #333333;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: #6366f1; /* Primary accent color */
+  transition: color 0.2s ease;
+}
+a:hover {
+  color: #4f46e5;
+}
+
+/* Lists */
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background: none;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+button:focus {
+  outline: 2px solid #6366f1; /* Accessible focus outline */
+}
+
+button.primary {
+  background: #6366f1;
+  color: #ffffff;
+}
+button.primary:hover {
+  background: #4f46e5;
+}
+
+button.secondary {
+  background: #e5e7eb;
+  color: #333333;
+}
+button.secondary:hover {
+  background: #d1d5db;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Inputs & Textareas */
+input, textarea {
+  font-family: inherit;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  font-size: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
+  color: #333333;
+}
+input:focus, textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+  outline: none;
+}
+
+/* Scrollbar (WebKit) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
