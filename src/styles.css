@@ -1,240 +1,648 @@
-/* ============================ */
-/* Global Styling */
-/* ============================ */
+/* =========================================
+   styles.css - Page & Component Styles
+   =========================================
 
-body {
-  font-family: "Inter", sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f5f5f5; /* Off-white */
-  color: #1e1e1e; /* Dark text for contrast */
+   Includes:
+   - Admin pages
+   - Candidate pages
+   - Home/Insights/Recommendations
+   - Login/SignUp
+   - Job Title Details
+   - CandidateTable
+   - Insights Chart
+*/
+
+/* ===== Admin Pages ===== */
+.admin-page {
+  padding: 2rem;
+  background-color: #fafafa;
+  color: #333333;
 }
-
-h1, h2, h3 {
-  color: #222222 !important; /* Dark grey for readability */
-  margin-bottom: 15px;
-  line-height: 1.3;
-}
-
-p {
-  color: #333333; /* Darker gray for better readability */
-}
-
-/* ============================ */
-/* Loading & Error Messages */
-/* ============================ */
-
-.loading-spinner,
-.error-message,
-.no-frameworks-message {
+.admin-page h1 {
+  color: #6366f1;
   text-align: center;
-  font-size: 1.2rem;
-  color: #1e1e1e;
-  padding: 20px;
+  margin-bottom: 2rem;
+}
+.admin-section h2 {
+  color: #444444;
+  margin-bottom: 1rem;
 }
 
-.error-message {
-  color: #e74c3c;
+/* Admin Cards */
+.admin-card {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+.admin-card h3 {
+  color: #444444;
+  margin-bottom: 0.5rem;
+}
+.admin-card p {
+  margin-bottom: 1rem;
+}
+.admin-card button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #6366f1;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.admin-card button:hover {
+  background-color: #4f46e5;
+}
+
+/* Admin Dashboard */
+.admin-dashboard {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  color: #333333;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.admin-dashboard h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.admin-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+.admin-dashboard th,
+.admin-dashboard td {
+  padding: 0.75rem;
+  border: 1px solid #cccccc;
+  text-align: left;
+}
+.admin-dashboard button {
+  padding: 0.5rem 1rem;
+  background-color: #6366f1;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.admin-dashboard button:hover {
+  background-color: #4f46e5;
+}
+.back-button {
+  display: block;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+/* ===== Candidate Page ===== */
+.candidate-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333333;
+}
+.candidate-page h1 {
+  margin-bottom: 1.5rem;
+  color: #444444;
+}
+
+/* Candidate Summary */
+.candidate-summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: space-around;
+}
+.stat-card {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  flex: 1;
+}
+.stat-card h2 {
+  margin: 0;
+  color: #666666;
+}
+.stat-card p {
+  font-size: 1.5rem;
+  margin: 0.5rem 0 0;
+}
+
+/* Filter Controls */
+.filter-controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.filter-controls select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+}
+
+/* Candidate List Container */
+.candidate-list-container {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ===== CandidateTable (from CandidateTable.css) ===== */
+.candidate-table {
+  width: 100%;
+}
+.table-controls {
+  margin-bottom: 1rem;
+}
+.table-controls input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+/* Basic Table */
+.candidate-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.candidate-table thead {
+  background-color: #e2e8f0; /* Light pastel background for header */
+  color: #333333;
+}
+.candidate-table th,
+.candidate-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+.candidate-table th {
+  cursor: pointer;
+  user-select: none;
+}
+.candidate-table tr:hover {
+  background-color: #f1f1f1;
+}
+/* Table Action Buttons */
+.candidate-table button {
+  background-color: #f6ad55; /* Pastel orange accent */
+  border: none;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.candidate-table button:hover {
+  background-color: #dd8a3c;
+}
+
+/* ===== Home Page ===== */
+.home-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333333;
+}
+.home-page h1 {
+  margin-bottom: 1rem;
+  color: #444444;
+}
+.home-intro {
+  margin-bottom: 2rem;
+  color: #555555;
+}
+/* Stats Grid for total/hired/archived */
+.stats-grid {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card h2 {
+  margin-top: 0;
+  color: #666666;
+}
+.stat-card p {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 0.5rem 0 0;
+}
+/* Links Grid */
+.links-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.link-card {
+  flex: 1 1 220px;
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.2s;
+}
+.link-card h3 {
+  margin-top: 0;
+  color: #666666;
+}
+.link-card p {
+  margin-bottom: 0;
+  color: #555555;
+}
+.link-card:hover {
+  background-color: #efefef;
+}
+
+/* ===== Insights Page ===== */
+.insights-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333333;
+}
+.insights-page h1 {
+  color: #444444;
+}
+/* Date filter controls */
+.date-filter-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.date-filter-controls label {
+  font-weight: 500;
+}
+.date-filter-controls input[type="date"] {
+  margin-left: 0.5rem;
+  padding: 0.3rem;
+}
+/* Stats Overview */
+.stats-overview {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stats-overview .stat-card p {
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
+/* Insights Chart (added from snippet) */
+.insights-chart {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #ffffff; /* Pastel approach */
+  color: #333333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.insights-chart h3 {
+  margin-bottom: 1rem;
+  color: #6366f1; /* Match accent color */
+  text-align: center;
+}
+.chart-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.chart-controls button {
+  background-color: #e2e8f0; /* Light gray */
+  color: #333333;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.chart-controls button.active,
+.chart-controls button:hover {
+  background-color: #f6ad55; /* Orange accent */
+  color: #ffffff;
+}
+.metric-filters {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.metric-filters label {
+  margin: 0 1rem;
+  cursor: pointer;
+}
+
+/* Chart Wrapper */
+.chart-section {
+  margin-bottom: 2rem;
+}
+.chart-section h2 {
+  margin-bottom: 0.5rem;
+  color: #555555;
+}
+.chart-wrapper {
+  width: 100%;
+  height: 300px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* ===== Recommendations Page ===== */
+.recommendations-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333333;
+}
+.recommendations-page h1 {
+  margin-bottom: 1rem;
+  color: #444444;
+}
+.intro-text {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  color: #555555;
+}
+.recommendation-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.recommendation-filters label {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+.recommendation-filters input[type="date"],
+.recommendation-filters select {
+  margin-left: 0.5rem;
+  padding: 0.3rem;
+  font-size: 1rem;
+}
+.recommendation-card {
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+.recommendation-card h2 {
+  margin-top: 0;
+  color: #666666;
+}
+.recommendation-card ul {
+  margin-top: 0.5rem;
+  margin-left: 1.2rem;
+  list-style: disc;
+}
+
+/* ===== Login/SignUp Pages ===== */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #eaf4fc; /* Light subtle blue background */
+  box-sizing: border-box;
+}
+.login-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-sizing: border-box;
+}
+.login-header {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333333;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.login-button {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.login-button:hover {
+  background-color: #0056b3;
+}
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+.login-footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+.login-footer a:hover {
+  text-decoration: underline;
+}
+.error-message {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* ===== Job Title / Framework Details ===== */
+.job-title-details-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.job-title-details-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333333;
+}
+.job-details-content {
+  background: #f9fafb;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+.job-details-content:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+/* Competencies */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+ul li {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333333;
+  border: 1px solid #e2e8f0;
+}
+ul ul {
+  margin-top: 8px;
+  padding-left: 20px;
+  border-left: 2px solid #d1d5db;
+}
+ul ul li {
+  background: #f3f4f6;
+  font-size: 0.95rem;
+  border: 1px solid #e2e8f0;
+}
+/* Action Buttons (Edit, Save, etc.) */
+.action-buttons,
+.buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.action-buttons button,
+.buttons-container button {
+  background-color: #6366f1;
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+.action-buttons button:hover,
+.buttons-container button:hover {
+  background-color: #4f46e5;
+}
+
+/* Salary Banding Section */
+.salary-banding-section,
+.salary-banding-edit {
+  margin: 1rem 0;
+  text-align: left;
+}
+.salary-banding-edit label {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555555;
+}
+.salary-banding-edit input {
+  margin-left: 0.5rem;
+  width: 100px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #999999;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Competency Editing */
+.edit-competencies-container {
+  text-align: left;
+}
+.edit-competencies-container input[type="text"] {
+  margin-left: 0.5rem;
+  margin-top: 0.3rem;
+  width: 80%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #999999;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Loading Spinner & Messages */
+.loading-spinner {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #6366f1;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+.no-job-titles-message,
 .no-frameworks-message {
   font-size: 1rem;
   color: #6366f1;
   font-weight: 500;
+  margin-top: 20px;
 }
 
-/* ============================ */
-/* Fix Text Visibility in Cards and Sections */
-/* ============================ */
-
-.card, .light-section {
-  background-color: #ffffff; /* Light backgrounds */
-  color: #1e1e1e !important; /* Dark text */
+/* ===== Saved Frameworks Drag & Drop ===== */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
 }
-
-.card-title, .section-title {
-  color: #222222 !important; /* Ensure headers are dark */
-}
-
-.card p, .light-section p {
-  color: #333333 !important; /* Dark text for readability */
-}
-
-/* ============================ */
-/* Sidebar Styling */
-/* ============================ */
-
-.sidebar {
-  width: 250px;
-  background: linear-gradient(to bottom, #0084ff, #000000); /* Blue to Black */
-  color: #ffffff;
-  padding: 20px;
-}
-
-.sidebar a {
-  display: block;
-  color: #e5e7eb;
-  padding: 12px 15px;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-.sidebar a:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar .active {
-  background: #6366f1;
-  color: white;
-}
-
-/* ============================ */
-/* Fix for White Text in Interview Timeline & Scorecard */
-/* ============================ */
-
-.interview-timeline, .scorecard {
-  background-color: #ffffff !important; /* Ensure white background */
-  color: #1e1e1e !important; /* Dark text */
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.interview-timeline p, .scorecard p,
-.interview-timeline span, .scorecard span,
-.interview-timeline b, .scorecard b {
-  color: #222 !important; /* Ensure dark readable text */
-  font-weight: 500;
-}
-
-.interview-timeline div, .scorecard div {
-  background-color: #ffffff !important;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* ============================ */
-/* Fix for White Text in Recommendations Section */
-/* ============================ */
-
-.recommendation-box, 
-.recommendation-section, 
-.recommendation-text,
-.recommendation-box p, 
-.recommendation-section p,
-.recommendation-box li, 
-.recommendation-section li,
-.recommendation-box span, 
-.recommendation-section span,
-.recommendation-box div, 
-.recommendation-section div {
-  color: #1e1e1e !important; /* Dark text */
-  background-color: rgba(255, 255, 255, 0.95) !important; /* Light background */
-  font-weight: 500;
-}
-
-/* Ensure recommendation list items are visible */
-.recommendation-box ul, 
-.recommendation-section ul {
-  list-style-type: disc !important; /* Ensure bullets are visible */
-  padding-left: 20px;
-}
-
-.recommendation-card {
-  background-color: #ffffff !important;
-  color: #1e1e1e !important;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.recommendation-card li {
-  color: #1e1e1e !important;
-  font-weight: 500;
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  padding: 8px;
-  border-radius: 6px;
-  display: block;
-}
-
-/* Ensure headings are readable */
-.recommendation-card h2 {
-  color: #222222 !important;
-  font-weight: bold;
-}
-
-/* ============================ */
-/* Fix for Scorecards & Charts */
-/* ============================ */
-
-.scorecard-item {
-  background-color: #1e1e2f; /* Darker contrast */
-  color: #ffffff !important; /* Keeps text white */
-}
-
-.radar-chart-label {
-  fill: #222 !important; /* Darken radar chart labels */
-}
-
-/* ============================ */
-/* Main Content Styling */
-/* ============================ */
-
-.main-content {
-  flex-grow: 1;
-  padding: 2rem;
-  background-color: #f5f5f5; /* Off-white */
-  color: #1e1e1e; /* Darker text */
+.department-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  max-width: calc(100% - 250px);
-  overflow-x: hidden;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease-in-out;
+  cursor: grab;
 }
-
-/* ============================ */
-/* Responsive Adjustments */
-/* ============================ */
-
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-    max-width: 100%;
-  }
-
-  .job-title-details-container {
-    padding: 20px;
-  }
-
-  .job-title-details-container h1 {
-    font-size: 1.8rem;
-  }
-
-  .competency-card {
-    padding: 15px;
-  }
-
-  /* Sidebar Overlay for Small Screens */
-  .sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    z-index: 1000;
-    width: 250px;
-    background: linear-gradient(to bottom, #0084ff, #000000);
-    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .sidebar.visible {
-    transform: translateX(0);
-  }
-
-  .sidebar + .main-content {
-    margin-left: 0;
-  }
+.department-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+.department-container:active {
+  cursor: grabbing;
 }
