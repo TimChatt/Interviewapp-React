@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./EditFramework.css";
+import '../styles.css';
 
 const EditFramework = () => {
   const { id } = useParams(); // Get framework ID from the URL
