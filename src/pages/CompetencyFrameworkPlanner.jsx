@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Assuming you're using react-router for navigation
-import "./CompetencyFrameworkPlanner.css";
+import '../styles.css';
 
 const CompetencyFramework = () => {
   const [framework, setFramework] = useState({
