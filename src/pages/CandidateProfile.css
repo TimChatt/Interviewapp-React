@@ -228,7 +228,34 @@ hr {
   margin: 0.5rem 0 0;
   padding-left: 1.2rem;
 }
+/* Ensure Interview Timeline & Scorecard have a white background and dark text */
+.grid-card {
+  background-color: #ffffff !important; /* White background */
+  color: #1e1e1e !important; /* Dark text */
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+/* Ensure text inside the timeline and scorecard is visible */
+.timeline-section ul, .score-list {
+  list-style-type: disc !important; /* Ensure bullets are visible */
+  padding-left: 20px;
+}
+
+.timeline-section li, .score-list li {
+  color: #1e1e1e !important; /* Dark text */
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.95) !important; /* Light background for contrast */
+  padding: 8px;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Ensure bold text inside timeline & scorecard is readable */
+.timeline-section strong, .score-list strong {
+  color: #000 !important;
+}
 /* AUTO SUMMARY */
 .auto-summary-section {
   background-color: #f9f9f9;
