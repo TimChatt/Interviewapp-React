@@ -1,6 +1,6 @@
 // src/pages/Recommendations.jsx
 import React, { useState, useEffect } from "react";
-import "./Recommendations.css";
+import '../styles.css';
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 
 /**
