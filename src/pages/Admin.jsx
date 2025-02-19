@@ -14,9 +14,10 @@ const Admin = () => {
         <div className="admin-card">
           <h3>Pending User Approvals</h3>
           <p>Review pending user registrations and approve them.</p>
-          <Link to="/admin-dashboard">
+          <Link to="/admin/dashboard">
             <button>View Pending Approvals</button>
           </Link>
+
         </div>
       </section>
       
