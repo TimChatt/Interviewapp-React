@@ -890,3 +890,139 @@ ul ul li {
     font-size: 1rem;
   }
 }
+
+/* ============================ */
+/* Candidate Profile Page Grid */
+/* ============================ */
+.candidate-profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333;
+  font-family: "Inter", sans-serif; /* or whichever font you use */
+}
+
+/* Overall Container */
+.candidate-grid-container {
+  margin-top: 2rem;
+  background-color: #ffffff; /* Off-white card background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+/* Responsive Grid Layout */
+.candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Each Card in the Grid */
+.grid-card {
+  background-color: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Headings inside Cards */
+.grid-card h2,
+.grid-card h3,
+.grid-card h4 {
+  margin-top: 0;
+  color: #444444;
+  margin-bottom: 0.75rem;
+}
+
+/* Score List, Transcript, or Other Lists */
+.score-list,
+.keyword-section ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.score-list li,
+.keyword-section li {
+  margin-bottom: 0.5rem;
+}
+
+/* Transcript Entries */
+.transcript-entry {
+  margin-bottom: 1rem;
+}
+.transcript-entry p {
+  margin: 0.3rem 0;
+}
+
+/* Divider Line */
+.transcript-entry hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 0.75rem 0;
+}
+
+/* Buttons */
+.back-button {
+  background-color: #e2e8f0;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s ease;
+}
+.back-button:hover {
+  background-color: #cbd5e0;
+}
+
+/* Red Flags & Other Sections */
+.red-flags-section {
+  background-color: #fff4f4; /* Light pastel red background for emphasis */
+  border: 1px solid #fca5a5;
+}
+.red-flags-section h3 {
+  color: #b91c1c; /* Darker red heading */
+}
+
+.culture-fit-section {
+  background-color: #f9f9ff; /* Very light pastel purple/blue */
+  border: 1px solid #e5e7eb;
+}
+
+.next-steps-section,
+.ai-advice-section {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.score-comparison-card {
+  background-color: #fffaf0; /* Light pastel yellow */
+  border: 1px solid #fde68a;
+}
+
+/* Auto Summary Card */
+.auto-summary-section {
+  background-color: #fafcff;
+  border: 1px solid #e0e7ff;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .candidate-profile-page {
+    padding: 1rem;
+  }
+  .candidate-grid-container {
+    padding: 1rem;
+  }
+  .candidate-grid {
+    grid-template-columns: 1fr; /* Single-column on smaller screens */
+  }
+}
