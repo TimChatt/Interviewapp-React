@@ -1151,3 +1151,158 @@ ul ul li {
   color: #555555;
   margin-bottom: 0.3rem;
 }
+
+/* ============================
+   Job Title Details Page Styles
+   ============================ */
+
+.job-title-details-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;  /* Light off-white background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.job-title-details-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333333;
+}
+
+/* Buttons Container for actions like Export, Edit, Save */
+.buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.buttons-container button {
+  background-color: #6366f1;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.buttons-container button:hover {
+  background-color: #4f46e5;
+}
+
+/* Job Details Content Card */
+.job-details-content {
+  background-color: #f9fafb;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease-in-out;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.job-details-content:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Salary Banding Sections */
+.salary-banding-section,
+.salary-banding-edit {
+  margin: 1rem 0;
+  text-align: left;
+  padding: 0 10px;
+}
+
+.salary-banding-section p {
+  font-size: 1rem;
+  color: #333333;
+}
+
+.salary-banding-edit label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 0.5rem;
+}
+
+.salary-banding-edit input {
+  width: 100px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #333333;
+  margin-left: 0.5rem;
+}
+
+/* Competencies Section */
+.job-details-content h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+  color: #333333;
+}
+
+.job-details-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.job-details-content ul li {
+  font-size: 1rem;
+  color: #555555;
+  margin-bottom: 0.5rem;
+}
+
+/* Edit Competencies Mode */
+.edit-competencies-container {
+  text-align: left;
+  padding: 10px;
+}
+
+.edit-competencies-container label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #333333;
+}
+
+.edit-competencies-container input[type="text"] {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #333333;
+  margin-top: 5px;
+}
+
+/* Loading and Error Messages */
+.loading-spinner {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #6366f1;
+  margin-top: 20px;
+}
+
+.error-message {
+  background-color: #ffe5e5;
+  color: #e53e3e;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-top: 20px;
+}
+
