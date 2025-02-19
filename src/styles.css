@@ -85,7 +85,23 @@ p {
   background: #6366f1;
   color: white;
 }
-
+/* ============================ */
+/* Fix for White Text in Recommendations List Items */
+/* ============================ */
+.recommendation-box ul, 
+.recommendation-section ul {
+  list-style-type: disc !important; /* Ensure bullets are visible */
+  padding-left: 20px; /* Add spacing */
+}
+.recommendation-box li, 
+.recommendation-section li {
+  color: #1e1e1e !important; /* Dark text for visibility */
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.9) !important; /* Light background for contrast */
+  padding: 8px;
+  border-radius: 6px;
+  display: block;
+}
 /* ============================ */
 /* Main Content Styling */
 /* ============================ */
