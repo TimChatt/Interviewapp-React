@@ -50,6 +50,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Render a fallback loading state while checking auth status
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
