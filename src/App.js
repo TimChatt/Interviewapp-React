@@ -35,10 +35,6 @@ const AppContent = () => {
       {/* Sidebar (Visible except on Login/Signup pages) */}
       {!shouldHideSidebar && <Sidebar />}
 
-      {/* Main Content Area */}
-      <div className={`main-content ${shouldHideSidebar ? "expanded" : ""}`}>
-        <header className="app-header">Interview Analysis App</header>
-
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
@@ -56,8 +52,6 @@ const AppContent = () => {
           <Route path="/edit-framework/:id" element={<EditFramework />} />
         </Routes>
 
-        {/* Footer */}
-        {!shouldHideSidebar && <footer className="app-footer">&copy; {new Date().getFullYear()} Interview Analysis App. All rights reserved.</footer>}
       </div>
     </div>
   );
