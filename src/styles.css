@@ -576,6 +576,44 @@ ul {
   color: #333;
   margin-top: 5px;
 }
+/* ---------- Department Frameworks Page ---------- */
+.department-frameworks-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff; /* Off-white background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.job-titles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.job-title-card {
+  background-color: #f9fafb;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.job-title-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.no-job-titles-message {
+  font-size: 1rem;
+  color: #444;
+  margin-top: 2rem;
+  line-height: 1.5;
+}
 
 /* ---------- Saved Frameworks Page ---------- */
 .saved-frameworks-container {
