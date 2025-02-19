@@ -1,7 +1,7 @@
 // src/components/CandidateTable.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./CandidateTable.css";
+import '../styles.css';
 
 const CandidateTable = ({ candidates }) => {
   const [filter, setFilter] = useState("");
