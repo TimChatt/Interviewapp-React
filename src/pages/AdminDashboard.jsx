@@ -1,4 +1,3 @@
-// src/pages/AdminDashboard.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext"; // Assuming you have admin token in context
 import { useNavigate } from "react-router-dom";
@@ -10,15 +9,21 @@ const AdminDashboard = () => {
   const { user } = useContext(AuthContext); // Admin user should be logged in
   const navigate = useNavigate();
 
-  // Fetch pending users from backend
   useEffect(() => {
+    console.log("AdminDashboard user:", user); // Debug: check if user exists
+    // If no user is logged in, stop loading and show message
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     const fetchPendingUsers = async () => {
       try {
         const response = await fetch("https://interviewappbe-production.up.railway.app/api/users/pending", {
           headers: {
             "Content-Type": "application/json",
             // Include the admin JWT token in the Authorization header:
-            "Authorization": `Bearer ${user?.token}`
+            "Authorization": `Bearer ${user.token}`
           }
         });
         if (!response.ok) {
@@ -34,34 +39,16 @@ const AdminDashboard = () => {
       }
     };
 
-    if (user) {
-      fetchPendingUsers();
-    }
+    fetchPendingUsers();
   }, [user]);
-
-  // Approve a user by username
-  const handleApprove = async (username) => {
-    try {
-      const response = await fetch(`https://interviewappbe-production.up.railway.app/api/users/${username}/approve`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${user?.token}`
-        }
-      });
-      if (!response.ok) {
-        console.error("Failed to approve user");
-        return;
-      }
-      // Remove the approved user from the pending list
-      setPendingUsers((prev) => prev.filter((u) => u.username !== username));
-    } catch (error) {
-      console.error("Error approving user:", error);
-    }
-  };
 
   if (loading) {
     return <div>Loading pending users...</div>;
+  }
+
+  // If there's no user, prompt to log in
+  if (!user) {
+    return <div>Please log in as an admin to access this page.</div>;
   }
 
   return (
