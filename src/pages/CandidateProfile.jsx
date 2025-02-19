@@ -14,7 +14,7 @@ import {
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
 import competencyFramework from "../mockdata/CompetencyFrameworkMock.json"; // if needed elsewhere
-import "./CandidateProfile.css";
+import '../styles.css';
 
 const QUESTION_BANK = {
   q1: "System Design",
