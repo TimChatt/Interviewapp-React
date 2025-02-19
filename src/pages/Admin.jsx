@@ -1,7 +1,7 @@
 // src/pages/Admin.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Admin.css"; // Add CSS for styling the admin page
+import '../styles.css';
 
 const Admin = () => {
   return (
