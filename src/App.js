@@ -39,18 +39,20 @@ const AppContent = () => {
         <Route path="/signup" element={<SignUp />} />
 
         {/* Protected Routes */}
-        <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
-        <Route path="/candidates" element={<PrivateRoute><Candidate /></PrivateRoute>} />
-        <Route path="/candidate/:candidateId" element={<PrivateRoute><CandidateProfile /></PrivateRoute>} />
-        <Route path="/insights" element={<PrivateRoute><Insights /></PrivateRoute>} />
-        <Route path="/recommendations" element={<PrivateRoute><Recommendations /></PrivateRoute>} />
-        <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
-        <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-        <Route path="/competency-framework-planner" element={<PrivateRoute><CompetencyFrameworkPlanner /></PrivateRoute>} />
-        <Route path="/frameworks" element={<PrivateRoute><SavedFrameworks /></PrivateRoute>} />
-        <Route path="/frameworks/:department" element={<PrivateRoute><DepartmentFrameworks /></PrivateRoute>} />
-        <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<PrivateRoute><JobTitleDetails /></PrivateRoute>} />
-        <Route path="/edit-framework/:id" element={<PrivateRoute><EditFramework /></PrivateRoute>} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/candidates" element={<Candidate />} />
+          <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+          <Route path="/frameworks" element={<SavedFrameworks />} />
+          <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
+          <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
+          <Route path="/edit-framework/:id" element={<EditFramework />} />
+        </Route>
       </Routes>
     </div>
   );
