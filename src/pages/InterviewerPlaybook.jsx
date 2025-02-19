@@ -1,7 +1,7 @@
 // src/pages/InterviewerPlaybook.jsx
 import React, { useState } from "react";
 import trainingData from "../mockdata/InterviewerTrainingMock.json";
-import "./InterviewerPlaybook.css";
+import '../styles.css';
 
 const InterviewerPlaybook = () => {
   const [selectedJob, setSelectedJob] = useState("Frontend Engineer");
