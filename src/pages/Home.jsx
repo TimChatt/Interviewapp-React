@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import '../styles.css';
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 
 /**
