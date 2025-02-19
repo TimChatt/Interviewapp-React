@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Cell } from "recharts";
+import '../styles.css';
 
 const Insights = () => {
   const [consistencyData, setConsistencyData] = useState([]);
