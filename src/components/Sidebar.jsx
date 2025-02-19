@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "./Sidebar.css";
+import '../styles.css';
 import { AuthContext } from "../contexts/AuthContext";
 import { FaEye } from "react-icons/fa"; // Futuristic icon
 
