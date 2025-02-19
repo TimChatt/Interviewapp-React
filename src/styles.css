@@ -1,3 +1,4 @@
+
 /* ============================ */
 /* Global Styling */
 /* ============================ */
@@ -10,7 +11,7 @@ body {
 }
 
 h1, h2, h3 {
-  color: #000000; /* Black text for headings */
+  color: #222222 !important; /* Dark grey to make it readable */
   margin-bottom: 15px;
   line-height: 1.3;
 }
@@ -43,36 +44,19 @@ p {
 }
 
 /* ============================ */
-/* Job Title Details */
+/* Fix Text Visibility in Cards and Sections */
 /* ============================ */
-.job-title-details-container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 30px;
-  background-color: #ffffff; /* Pure white for contrast */
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
+.card, .light-section {
+  background-color: #ffffff; /* Ensure light backgrounds */
+  color: #1e1e1e !important; /* Dark text */
 }
 
-.job-title-details-container h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #000000;
+.card-title, .section-title {
+  color: #222222 !important; /* Ensures specific card headers are dark */
 }
 
-.job-details-content {
-  background: #f0f0f0; /* Light gray for subtle contrast */
-  border: 1px solid #dcdcdc;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease-in-out;
-}
-
-.job-details-content:hover {
-  transform: translateY(-3px);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+.card p, .light-section p {
+  color: #333333 !important; /* Ensures paragraph text is dark */
 }
 
 /* ============================ */
@@ -118,63 +102,15 @@ p {
 }
 
 /* ============================ */
-/* Buttons */
+/* Fix for Scorecards & Charts */
 /* ============================ */
-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
+.scorecard-item {
+  background-color: #1e1e2f; /* Darker contrast */
+  color: #ffffff !important; /* Keeps text white */
 }
 
-button:hover {
-  transform: scale(1.05);
-}
-
-button.primary {
-  background: #0044cc;
-  color: white;
-}
-
-button.primary:hover {
-  background: #0033aa;
-}
-
-button.secondary {
-  background: #e5e7eb;
-  color: #1e1e1e;
-}
-
-button.secondary:hover {
-  background: #dcdcdc;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* ============================ */
-/* Logout Button */
-/* ============================ */
-
-.logout-button {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 12px;
-  width: 100%;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  text-align: center;
-  transition: background 0.3s ease;
-}
-
-.logout-button:hover {
-  background: #c0392b;
+.radar-chart-label {
+  fill: #222222 !important; /* Darkens the radar chart labels */
 }
 
 /* ============================ */
