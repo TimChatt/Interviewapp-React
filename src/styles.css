@@ -420,20 +420,15 @@ ul {
 }
 
 /* ---------- Login/SignUp Pages ---------- */
-.login-page,
-.signup-page {
+.login-page, .signup-page {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0;
-  padding: 0;
-  background-color: #eaf4fc;
-  box-sizing: border-box;
+  width: 100%;
 }
 
-.login-container,
-.signup-container {
+.login-container, .signup-container {
   background-color: #fff;
   padding: 2rem;
   border-radius: 12px;
@@ -442,6 +437,7 @@ ul {
   max-width: 400px;
   text-align: center;
   box-sizing: border-box;
+  margin: auto;
 }
 
 /* Optional: Headers for both pages */
@@ -657,7 +653,8 @@ ul {
 
 /* ---------- Saved Frameworks Page ---------- */
 .saved-frameworks-container {
-  max-width: 1600px;
+  max-width: 1400px; /* Increase max width */
+  width: 90%; /* Ensure it stretches wider */
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -713,6 +710,7 @@ ul {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
   margin-top: 2rem;
+  width: 100%;
 }
 .department-container {
   background-color: #f9fafb;
