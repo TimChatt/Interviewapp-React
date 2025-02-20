@@ -5,16 +5,16 @@
 
 /* Main App Container */
 .app-container {
-  display: flex; /* Use flexbox to place sidebar + content side-by-side */
+  display: flex;              
   min-height: 100vh;
-  background-color: #f0f2f8; /* Subtle off-white/pastel background */
+  background-color: #f0f2f8;  
   overflow: hidden;
 }
 
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: #ffffff;
+  background-color: #ffffff;  
   color: #6366f1;
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   z-index: 1000;
 }
 
-/* Sidebar Logo with Glow Effect */
+/* Sidebar Logo */
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -36,9 +36,7 @@
   text-transform: uppercase;
   margin-bottom: 1.5rem;
   color: #6366f1;
-  text-shadow: 0px 0px 10px rgba(99, 102, 241, 0.8),
-               0px 0px 20px rgba(150, 80, 255, 0.5),
-               0px 0px 30px rgba(255, 80, 200, 0.5);
+  text-shadow: 0px 0px 10px rgba(99, 102, 241, 0.8);
 }
 
 /* Sidebar Links */
@@ -52,32 +50,65 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Remove ONLY the Admin Button (not Admin Panel) */
-.sidebar a[href*="admin"]:not([href*="admin-panel"]) {
-  display: none;
-}
-
-/* Ensure "Admin Panel" Remains */
-.sidebar a[href*="admin-panel"] {
-  display: block;
-}
-
-/* Fix Logout Button Styling */
-.sidebar a[href*="logout"] {
-  color: #6366f1;
-  font-weight: bold;
-  transition: color 0.3s ease;
-}
-
-.sidebar a[href*="logout"]:hover {
-  color: #4338ca;
-}
-
-/* Active & Hover States */
 .sidebar a:hover, .sidebar a.active {
   background-color: #e0e7ff;
   color: #4338ca;
   font-weight: bold;
+}
+
+/* Fix for Admin Link Styling */
+.sidebar .admin-link {
+  color: #6366f1;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0.5rem 1rem;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar .admin-link:hover {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Dropdown for Admin Panel */
+.admin-dropdown {
+  display: none;
+  padding-left: 1.5rem;
+}
+
+.admin-dropdown a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: #6366f1;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-dropdown a:hover {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Show Admin Dropdown when Active */
+.admin-active .admin-dropdown {
+  display: block;
+}
+
+/* Logout Button Fix */
+.sidebar a.logout {
+  color: #6366f1;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+}
+
+.sidebar a.logout:hover {
+  background-color: #e0e7ff;
+  color: #4338ca;
 }
 
 /* Main Content */
@@ -94,58 +125,7 @@
   align-items: center;
 }
 
-/* Admin Panel Page Fix */
-.admin-panel-page {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Admin Panel Title */
-.admin-panel-page h1 {
-  color: #6366f1;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Fix for Admin Panel Buttons */
-.admin-panel-page button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 6px;
-  background-color: #6366f1;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.admin-panel-page button:hover {
-  background-color: #4f46e5;
-}
-
-/* Responsive Adjustments for Large Screens */
-@media (max-width: 1200px) {
-  .main-content {
-    max-width: 100%;
-    padding: 1.5rem;
-  }
-}
-
-/* Responsive Adjustments for Medium Screens */
-@media (max-width: 1024px) {
-  .main-content {
-    max-width: 100%;
-    padding: 1.5rem;
-  }
-}
-
-/* Responsive Adjustments for Small Screens */
+/* Responsive Adjustments for smaller screens */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -160,15 +140,5 @@
     margin-left: 0;
     max-width: 100%;
     padding: 1rem;
-  }
-}
-
-/* Fix for Page Content Being Too Narrow */
-@media (min-width: 1400px) {
-  .main-content {
-    max-width: 1400px;
-  }
-  .admin-panel-page {
-    max-width: 1200px;
   }
 }
