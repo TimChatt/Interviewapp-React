@@ -198,6 +198,18 @@
   margin-bottom: 1.5rem;
 }
 
+/* Ensure main content expands properly but stays contained */
+.main-content {
+  flex-grow: 1;
+  max-width: 100%;
+  width: calc(100% - 250px); /* Adjust width dynamically based on sidebar */
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  color: #333333;
+  overflow-x: hidden;
+}
+
 /* Responsive Adjustments for smaller screens */
 @media (max-width: 768px) {
   .app-container {
