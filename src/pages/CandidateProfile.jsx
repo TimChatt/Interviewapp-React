@@ -1,18 +1,14 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider
+  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider, Tooltip
 } from "@chakra-ui/react";
 import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
 } from "recharts";
-
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
-
-// Debugging logs
-console.log("Ashby Mock Data:", ashbyMockData);
-console.log("Metaview Mock Data:", metaviewMockData);
+import interviewerTrainingMock from "../mockdata/interviewerTrainingMock.json";
 
 // Helper function to get speaking ratio
 function getSpeakingRatio(transcriptEntries) {
@@ -29,15 +25,9 @@ const CandidateProfile = () => {
   const { candidateId } = useParams();
   const navigate = useNavigate();
 
-  // Find the candidate in Ashby mock data
-  const candidate = ashbyMockData.find((item) => item.id === parseInt(candidateId));
-  console.log("Selected Candidate:", candidate);
-
-  // Find corresponding interview transcript from Metaview mock data
-  const transcriptData = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName);
-  console.log("Transcript Data:", transcriptData);
-
-  const transcript = transcriptData ? transcriptData.transcript : [];
+  // Merge Ashby & Metaview data
+  const candidate = ashbyMockData.find((_, index) => index + 1 === parseInt(candidateId));
+  const transcript = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName)?.transcript || [];
 
   if (!candidate) {
     return (
@@ -83,29 +73,21 @@ const CandidateProfile = () => {
         </CardBody>
       </Card>
 
-      {/* Grid Layout for Sections */}
-      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mb="6">
-        {/* Interview Timeline */}
-        <GridItem>
-          <StatCard title="Interview Timeline" content={
-            candidate.timeline?.length > 0 ? (
-              candidate.timeline.map((t, idx) => (
-                <Text key={idx}><strong>{t.stage}</strong> - {t.date}</Text>
-              ))
-            ) : <Text>No timeline data available.</Text>
-          } />
-        </GridItem>
-
-        {/* Speaking Ratio */}
-        <GridItem>
-          <StatCard title="Speaking Ratio" content={
-            <>
-              <Text><strong>Candidate:</strong> {candidateRatio}%</Text>
-              <Text><strong>Interviewer:</strong> {interviewerRatio}%</Text>
-            </>
-          } />
-        </GridItem>
-      </Grid>
+      {/* AI Insights & Feedback */}
+      <Card mb="6" p="6" bg="white" shadow="md">
+        <CardBody>
+          <Heading size="md" mb="4">AI Review & Feedback</Heading>
+          <Text fontSize="md" color="gray.600" mb="2">{candidate.aiAdvice.general}</Text>
+          <Heading size="sm" mt="3">Strengths</Heading>
+          {candidate.aiAdvice.didWell.map((item, index) => (
+            <Text key={index}><strong>{item.point}</strong> ({item.citation})</Text>
+          ))}
+          <Heading size="sm" mt="3">Areas for Improvement</Heading>
+          {candidate.aiAdvice.couldImprove.map((item, index) => (
+            <Text key={index}><strong>{item.point}</strong> ({item.citation})</Text>
+          ))}
+        </CardBody>
+      </Card>
 
       {/* Scorecard */}
       <Card mb="6" p="6" bg="white" shadow="md">
@@ -118,6 +100,23 @@ const CandidateProfile = () => {
               ))}
             </VStack>
           ) : <Text>No scores available.</Text>}
+        </CardBody>
+      </Card>
+
+      {/* Radar Chart */}
+      <Card mb="6" p="6" bg="white" shadow="md">
+        <CardBody>
+          <Heading size="md" mb="4">Competency Radar</Heading>
+          {radarData.length > 0 ? (
+            <RadarChart outerRadius={90} width={400} height={300} data={radarData}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="skill" />
+              <PolarRadiusAxis angle={30} domain={[0, 5]} />
+              <Radar name="Candidate" dataKey="candidateScore" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+              <Tooltip />
+              <Legend />
+            </RadarChart>
+          ) : <Text>No radar data available.</Text>}
         </CardBody>
       </Card>
 
@@ -137,18 +136,6 @@ const CandidateProfile = () => {
         </CardBody>
       </Card>
     </Box>
-  );
-};
-
-// Reusable StatCard Component
-const StatCard = ({ title, content }) => {
-  return (
-    <Card bg="white" shadow="md" borderRadius="lg">
-      <CardBody>
-        <Heading size="md" mb="2">{title}</Heading>
-        {content}
-      </CardBody>
-    </Card>
   );
 };
 
