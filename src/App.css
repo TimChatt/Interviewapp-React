@@ -26,29 +26,37 @@
   z-index: 1000;
 }
 
-/* Sidebar Logo - Restored Pastel Glow */
+/* Sidebar Logo - TA Vision Glowing Pastel Text */
 .sidebar-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem; /* Reduced size */
+  font-size: 1.4rem; /* Lighter size */
   font-weight: bold;
   text-transform: uppercase;
   margin-bottom: 1.2rem;
-  color: #7b61ff; /* Soft pastel purple */
+  background: linear-gradient(90deg, 
+    #ff66b2, /* Soft pink */
+    #7b61ff, /* Pastel purple */
+    #63f5ff, /* Cyan glow */
+    #ffcc66  /* Light orange */
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-shadow: 
-    0px 0px 8px rgba(123, 97, 255, 0.8),  /* Purple glow */
-    0px 0px 12px rgba(99, 245, 255, 0.6), /* Cyan glow */
-    0px 0px 15px rgba(255, 192, 203, 0.5); /* Pink glow */
-  letter-spacing: 0.8px;
+    0px 0px 8px rgba(255, 102, 178, 0.8),  /* Pink glow */
+    0px 0px 12px rgba(99, 245, 255, 0.6),  /* Cyan glow */
+    0px 0px 16px rgba(123, 97, 255, 0.5);  /* Purple glow */
+  letter-spacing: 1px;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Sidebar Logo Icon */
+/* Sidebar Logo Icon (No Change) */
 .logo-icon {
-  font-size: 1.2rem;
-  margin-right: 6px;
-  color: #63f5ff; /* Cyan */
-  text-shadow: 0px 0px 10px rgba(99, 245, 255, 0.8);
+  font-size: 1.6rem;
+  margin-right: 8px;
+  color: #63f5ff; /* Cyan glow */
+  text-shadow: 0px 0px 12px rgba(99, 245, 255, 0.8);
 }
 
 /* Sidebar Links */
