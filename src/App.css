@@ -162,4 +162,22 @@
     max-width: 100%;
     padding: 1rem;
   }
+/* Logout Button - With Red Box */
+.logout-button {
+  background-color: transparent;
+  color: #6366f1;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border: 2px solid #e53e3e; /* Red border added */
+  border-radius: 6px; /* Rounded corners */
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #ffe5e5; /* Light red hover */
+  color: #e53e3e; /* Red text */
 }
