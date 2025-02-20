@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, useDisclosure
+  Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack
 } from "@chakra-ui/react";
-import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Import the modal
+import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Import the modal component
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
   const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedDetails, setSelectedDetails] = useState(null);
-  const [competencies, setCompetencies] = useState([]); // ✅ Store competencies for the selected job
+  // ✅ Modal State for Job Details
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJobTitle, setSelectedJobTitle] = useState(null);
+  const [selectedJobLevel, setSelectedJobLevel] = useState(null);
 
   useEffect(() => {
     const fetchDepartmentJobTitles = async () => {
@@ -23,14 +25,12 @@ const DepartmentFrameworks = () => {
           `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
         );
         if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
+          throw new Error("Failed to fetch job titles.");
         }
         const data = await response.json();
-        console.log("✅ Fetched Job Titles:", data.job_titles); // Debugging log
         setJobTitles(data.job_titles || []);
-        setError(null);
       } catch (err) {
-        setError("Failed to fetch job titles for this department. Please try again.");
+        setError("Failed to fetch job titles for this department.");
       } finally {
         setLoading(false);
       }
@@ -38,39 +38,29 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // ✅ Extracts the job level (L1, L2, etc.) correctly
+  // ✅ Extracts job category (e.g., "Machine Learning" from "Machine Learning L1")
+  const extractJobCategory = (jobTitle) => jobTitle.replace(/L\d+/, "").trim();
+
+  // ✅ Extracts the job level (e.g., "L1" from "Machine Learning L1")
   const extractJobLevel = (jobTitle) => {
     const match = jobTitle.match(/L\d+/);
-    return match ? match[0] : "L1"; // Default to L1 if no match found
+    return match ? match[0] : "L1";
   };
 
-  // ✅ Fetch competencies when clicking "View Details"
-  const openModal = async (jobTitle) => {
-    const jobLevel = extractJobLevel(jobTitle);
-    const details = { department, jobTitle, jobLevel };
-    console.log("📌 Opening Modal with Details:", details);
+  // ✅ Open the modal and pass job details
+  const openModal = (jobTitle) => {
+    setSelectedJobTitle(jobTitle);
+    setSelectedJobLevel(extractJobLevel(jobTitle));
+    setIsModalOpen(true);
+  };
 
-    try {
-      const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/get-job-title-details/${department}/${jobTitle}/${jobLevel}`
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch job title details.");
-
-      const data = await response.json();
-      console.log("✅ Fetched Competencies:", data.competencies);
-
-      setSelectedDetails(details);
-      setCompetencies(data.competencies || []); // ✅ Store competencies for the modal
-      onOpen();
-    } catch (error) {
-      console.error("❌ Error fetching competencies:", error);
-    }
+  const handleEdit = (jobTitle) => {
+    navigate(`/edit-framework/${jobTitle}`);
   };
 
   // ✅ Groups job titles by category
   const groupedTitles = jobTitles.reduce((acc, job) => {
-    const category = job.job_title.replace(/L\d+/, "").trim(); // Extracts category
+    const category = extractJobCategory(job.job_title);
     if (!acc[category]) acc[category] = [];
     acc[category].push(job);
     return acc;
@@ -115,6 +105,9 @@ const DepartmentFrameworks = () => {
                         <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
                           View Details
                         </Button>
+                        <Button colorScheme="purple" size="sm" onClick={() => handleEdit(job.job_title)}>
+                          Edit Framework
+                        </Button>
                       </CardBody>
                     </Card>
                   </GridItem>
@@ -125,15 +118,14 @@ const DepartmentFrameworks = () => {
         </>
       )}
 
-      {/* ✅ Ensure modal correctly receives competencies */}
-      {selectedDetails && (
+      {/* ✅ Use JobTitleDetailsModal Instead of Manual Modal */}
+      {isModalOpen && (
         <JobTitleDetailsModal
-          isOpen={isOpen}
-          onClose={onClose}
-          department={selectedDetails.department}
-          jobTitle={selectedDetails.jobTitle}
-          jobLevel={selectedDetails.jobLevel}
-          competencies={competencies} // ✅ Pass competencies to modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          department={department}
+          jobTitle={selectedJobTitle}
+          jobLevel={selectedJobLevel}
         />
       )}
     </Box>
