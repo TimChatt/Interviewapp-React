@@ -1332,6 +1332,126 @@ ul {
   .stats-overview {
     flex-direction: column;
   }
+/* ===== Fix Sidebar & Content Alignment ===== */
+
+/* Ensure the main app layout remains correct */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f0f2f8;
+}
+
+/* Sidebar - Ensure it stays fixed */
+.sidebar {
+  width: 250px;
+  height: 100vh; /* Full height */
+  background-color: #ffffff;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Sidebar Links - Ensure readability */
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links a {
+  display: block;
+  padding: 0.75rem;
+  color: #6366f1;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.sidebar-links a:hover {
+  background-color: #e2e8f0;
+  border-radius: 6px;
+}
+
+/* Main Content - Adjust spacing to fit next to sidebar */
+.main-content {
+  flex-grow: 1;
+  margin-left: 250px; /* Ensure it does not overlap with sidebar */
+  padding: 2rem;
+  max-width: calc(100% - 250px); /* Prevents it from stretching too much */
+  background-color: #f8f9fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Fix Dashboard Cards Alignment */
+.stats-overview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* Fix Card Layout */
+.stat-card {
+  flex: 1 1 280px;
+  min-width: 280px;
+  max-width: 320px;
+  background: #ffffff;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure Insights Page Stays Centered */
+.insights-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Responsive Fixes */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 250px;
+    max-width: calc(100% - 250px);
+    padding: 1.5rem;
+  }
+  .stats-overview {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+  .main-content {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 1rem;
+  }
 }
 /* =========================================
    End of styles.css
