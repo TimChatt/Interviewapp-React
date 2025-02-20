@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext"; 
+import React, { useEffect, useState, useContext, useRef } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { 
-  Box, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Spinner, Flex, VStack, useToast 
+  Box, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Spinner, Flex, VStack, useToast, 
+  AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay
 } from "@chakra-ui/react";
 
 const AdminDashboard = () => {
@@ -12,9 +13,12 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  useEffect(() => {
-    console.log("AdminDashboard user:", user);
+  // Modal state
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const cancelRef = useRef();
 
+  useEffect(() => {
     if (!user) {
       setLoading(false);
       return;
@@ -44,14 +48,25 @@ const AdminDashboard = () => {
     fetchPendingUsers();
   }, [user]);
 
-  const handleApprove = (username) => {
+  // Handle opening confirmation modal
+  const handleOpenConfirm = (username) => {
+    setSelectedUser(username);
+    setIsOpen(true);
+  };
+
+  // Handle approving a user
+  const handleApprove = () => {
     toast({
       title: "User Approved",
-      description: `${username} has been approved.`,
+      description: `${selectedUser} has been approved.`,
       status: "success",
       duration: 3000,
       isClosable: true,
     });
+
+    // Remove approved user from the pending list
+    setPendingUsers(pendingUsers.filter(user => user.username !== selectedUser));
+    setIsOpen(false);
   };
 
   if (loading) {
@@ -94,7 +109,11 @@ const AdminDashboard = () => {
                   <Td>{pendingUser.username}</Td>
                   <Td>{pendingUser.email}</Td>
                   <Td>
-                    <Button colorScheme="green" size="sm" onClick={() => handleApprove(pendingUser.username)}>
+                    <Button 
+                      colorScheme="green" 
+                      size="sm" 
+                      onClick={() => handleOpenConfirm(pendingUser.username)}
+                    >
                       Approve
                     </Button>
                   </Td>
@@ -110,6 +129,30 @@ const AdminDashboard = () => {
           Back to Admin Home
         </Button>
       </VStack>
+
+      {/* Confirmation Modal */}
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={() => setIsOpen(false)}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Approve User
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to approve <strong>{selectedUser}</strong>? This action cannot be undone.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+                Cancel
+              </Button>
+              <Button colorScheme="green" onClick={handleApprove} ml={3}>
+                Approve
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 };
