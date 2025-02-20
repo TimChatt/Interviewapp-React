@@ -47,17 +47,34 @@ function Insights() {
     { name: "Archived", value: archivedCount }
   ];
 
-  const pieColors = ["#A0C4FF", "#FFADAD"]; // Pastel blue & red
-  const skillColors = ["#A0C4FF", "#BDB2FF", "#FFC6FF", "#FFADAD", "#CAFFBF"];
+  const pieColors = ["#A0C4FF", "#FFADAD"];
+  const lineChartColor = "#FFD700";
 
+  // Interviews Over Time
+  const monthlyCountMap = {};
+  filteredData.forEach((candidate) => {
+    const dt = parseDate(candidate.interviewDate);
+    if (dt) {
+      const monthKey = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
+      monthlyCountMap[monthKey] = (monthlyCountMap[monthKey] || 0) + 1;
+    }
+  });
+
+  const monthlyData = Object.entries(monthlyCountMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, count]) => ({ month, count }));
+
+  // Average Scores by Skill
   const allSkillsSet = new Set();
   filteredData.forEach((candidate) => {
     if (candidate.scores) {
       Object.keys(candidate.scores).forEach((skill) => allSkillsSet.add(skill));
     }
   });
-  
+
   const allSkills = Array.from(allSkillsSet);
+  const skillColors = ["#A0C4FF", "#BDB2FF", "#FFC6FF", "#FFADAD", "#CAFFBF"];
+
   const skillAverages = allSkills.map((skill) => {
     let totalScore = 0;
     let count = 0;
@@ -74,7 +91,6 @@ function Insights() {
     <div className="insights-page">
       <h1>📊 Insights Dashboard</h1>
 
-      {/* Date Filters */}
       <div className="date-filter-controls">
         <label>
           Start Date:
@@ -86,7 +102,6 @@ function Insights() {
         </label>
       </div>
 
-      {/* Stats Overview */}
       <div className="stats-overview">
         <div className="stat-card">
           <h2>Total Candidates</h2>
@@ -102,7 +117,6 @@ function Insights() {
         </div>
       </div>
 
-      {/* PieChart: Hired vs. Archived */}
       <div className="chart-section">
         <h2>Hired vs. Archived</h2>
         <div className="chart-wrapper">
@@ -128,21 +142,18 @@ function Insights() {
         </div>
       </div>
 
-      {/* BarChart: Average Scores by Skill */}
       <div className="chart-section">
-        <h2>Average Scores by Skill</h2>
+        <h2>📅 Interviews Over Time</h2>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={skillAverages}>
+            <LineChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="skill" />
-              <YAxis domain={[0, 5]} />
+              <XAxis dataKey="month" />
+              <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              {allSkills.map((skill, index) => (
-                <Bar key={skill} dataKey="averageScore" fill={skillColors[index % skillColors.length]} name={skill} />
-              ))}
-            </BarChart>
+              <Line type="monotone" dataKey="count" stroke={lineChartColor} strokeWidth={3} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
