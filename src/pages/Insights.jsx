@@ -47,7 +47,23 @@ function Insights() {
     { name: "Archived", value: archivedCount }
   ];
 
-  const pastelColors = ["#A0C4FF", "#FFADAD", "#FFD6A5", "#FDFFB6", "#9BF6FF", "#BDB2FF"];
+  // 🎨 **Unique Pastel Colors**
+  const pieColors = ["#A0C4FF", "#FFADAD"]; // Hired = Blue, Archived = Light Red
+  const lineChartColor = "#FFD700"; // **Distinct Gold-Yellow for Interviews Over Time**
+
+  // **Interviews Over Time Calculation**
+  const monthlyCountMap = {};
+  filteredData.forEach((candidate) => {
+    const dt = parseDate(candidate.interviewDate);
+    if (dt) {
+      const monthKey = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
+      monthlyCountMap[monthKey] = (monthlyCountMap[monthKey] || 0) + 1;
+    }
+  });
+
+  const monthlyData = Object.entries(monthlyCountMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, count]) => ({ month, count }));
 
   return (
     <div className="insights-page">
@@ -115,7 +131,7 @@ function Insights() {
                 }}
               >
                 {statusPieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={pastelColors[index % pastelColors.length]} />
+                  <Cell key={`cell-${index}`} fill={pieColors[index]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -125,35 +141,24 @@ function Insights() {
         </div>
       </div>
 
-      {/* BarChart: Average Scores by Skill */}
+      {/* LineChart: Interviews Over Time (FIXED COLORS) */}
       <div className="chart-section">
-        <h2>Average Scores by Skill</h2>
+        <h2>📅 Interviews Over Time</h2>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={statusPieData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" fill={pastelColors[1]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* LineChart: Interviews Over Time (Restored) */}
-      <div className="chart-section">
-        <h2>Interviews Over Time</h2>
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={350}>
-            <LineChart>
+            <LineChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis />
+              <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="value" stroke={pastelColors[2]} strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke={lineChartColor} // **Gold Yellow**
+                strokeWidth={3}
+                dot={{ fill: lineChartColor, r: 5 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
