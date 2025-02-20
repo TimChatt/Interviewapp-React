@@ -168,7 +168,8 @@
 
 /* Main Content (flex: 1 so it expands to fill remaining space) */
 .main-content {
-  flex: 1;
+  max-width: 1200px; /* Adjust width to ensure it is not too thin */
+  margin: 0 auto;
   padding: 2rem;
   background-color: #f8f9fa;
   color: #333333;
