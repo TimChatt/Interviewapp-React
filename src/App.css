@@ -5,58 +5,41 @@
 
 /* Main App Container */
 .app-container {
-  display: flex; /* Use flexbox to place sidebar + content side-by-side */
+  display: flex;
   min-height: 100vh;
-  background-color: #f0f2f8; /* Subtle off-white/pastel background */
+  background-color: #f0f2f8;
   overflow: hidden;
 }
 
-/* (Optional) If using a .no-sidebar class:
-   We can hide the sidebar or skip rendering it in JSX 
-   for pages like /login, /signup. */
-.no-sidebar .sidebar {
-  display: none;  /* Hide the sidebar entirely if needed */
-}
-.no-sidebar .main-content {
-  flex: 1;        /* Take full width */
-  margin-left: 0;
-  max-width: 100%;
-}
-
-/* Sidebar (Fixed to the left so it stays visible) */
+/* Sidebar */
 .sidebar {
   width: 250px;
-  height: 100vh; /* Ensures full height */
   background-color: #ffffff;
-  color: #333333;
+  color: #333;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
-  position: fixed; /* Fix it to the left */
+  position: fixed;
   left: 0;
   top: 0;
+  bottom: 0;
   overflow-y: auto;
   z-index: 1000;
 }
 
-/* TA Vision Branding (Shiny Effect) */
+/* Sidebar Logo - Restoring multicolor glow */
 .sidebar-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: bold;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
   color: #6366f1;
-  text-shadow: 2px 2px 8px rgba(99, 102, 241, 0.5);
-  transition: text-shadow 0.3s ease-in-out;
-}
-
-.sidebar-logo:hover {
-  text-shadow: 4px 4px 12px rgba(99, 102, 241, 0.8);
+  text-shadow: 0px 0px 6px rgba(99, 102, 241, 0.6), 0px 0px 12px rgba(165, 94, 234, 0.5), 0px 0px 18px rgba(255, 78, 255, 0.4);
 }
 
 /* Sidebar Links */
@@ -72,7 +55,8 @@
   color: #6366f1;
   text-decoration: none;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 6px;
 }
 
 .sidebar-links a:hover {
@@ -80,29 +64,38 @@
   border-radius: 6px;
 }
 
-/* Main Content (Ensure it properly takes up available space) */
+.sidebar-links .active {
+  font-weight: bold;
+  background-color: #e2e8f0;
+  border-radius: 6px;
+}
+
+/* Main Content */
 .main-content {
   flex-grow: 1;
-  margin-left: 250px; /* Prevents overlapping with sidebar */
+  margin-left: 250px;
   padding: 2rem;
-  max-width: calc(100% - 250px); /* Adjust to fit next to sidebar */
+  max-width: calc(100% - 250px);
   background-color: #f8f9fa;
-  color: #333333;
+  color: #333;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centers elements horizontally */
+  align-items: center;
 }
 
-/* Ensure sections do not stretch unnecessarily */
-.section-container {
+/* Admin Panel Fix */
+.admin-panel-container {
+  max-width: 1000px;
   width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+  margin: 2rem auto;
 }
 
-/* Dashboard Cards should be on the same row */
+/* Dashboard Cards */
 .dashboard-cards {
   display: flex;
   flex-wrap: wrap;
@@ -112,9 +105,8 @@
   max-width: 1200px;
 }
 
-/* Individual Card Styling */
 .dashboard-card {
-  flex: 1 1 calc(33.33% - 1rem); /* Three per row */
+  flex: 1 1 calc(33.33% - 1rem);
   min-width: 280px;
   max-width: 320px;
   background: #ffffff;
@@ -124,37 +116,11 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Ensure charts and visuals do not stretch excessively */
-.chart-container {
-  width: 100%;
-  max-width: 900px;
-  display: flex;
-  justify-content: center;
-}
-
-/* Ensure Charts and Insights are Centered */
-.chart-section {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-/* Fix Insights Page Stretch Issue */
-.insights-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-/* Responsive Adjustments for larger screens */
+/* Responsive Adjustments */
 @media (max-width: 1024px) {
   .main-content {
-    max-width: 100%;
+    margin-left: 250px;
+    max-width: calc(100% - 250px);
     padding: 1.5rem;
   }
   .dashboard-cards {
@@ -165,12 +131,8 @@
     max-width: 100%;
     width: 90%;
   }
-  .chart-container {
-    max-width: 100%;
-  }
 }
 
-/* Responsive Adjustments for smaller screens */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -180,7 +142,6 @@
     box-shadow: none;
     height: auto;
     position: static;
-    transform: none;
   }
   .main-content {
     margin-left: 0;
@@ -188,9 +149,6 @@
     padding: 1rem;
   }
   .dashboard-card {
-    width: 100%;
-  }
-  .chart-container {
     width: 100%;
   }
 }
