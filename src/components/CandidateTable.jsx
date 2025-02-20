@@ -1,7 +1,20 @@
-// src/components/CandidateTable.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '../styles.css';
+import {
+  Box,
+  Input,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  IconButton,
+  TableContainer,
+  Flex,
+  Button,
+} from "@chakra-ui/react";
+import { ArrowUpIcon, ArrowDownIcon, SearchIcon } from "@chakra-ui/icons";
 
 const CandidateTable = ({ candidates }) => {
   const [filter, setFilter] = useState("");
@@ -31,48 +44,65 @@ const CandidateTable = ({ candidates }) => {
   };
 
   return (
-    <div className="candidate-table">
-      <div className="table-controls">
-        <input
-          type="text"
+    <Box p={6} bg="white" shadow="md" borderRadius="lg">
+      {/* Search Bar */}
+      <Flex mb={4} align="center">
+        <Input
           placeholder="Search by name..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
+          bg="gray.100"
+          width="300px"
+          mr={2}
         />
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th onClick={() => handleSort("name")}>
-              Name {sortKey === "name" && (sortOrder === "asc" ? "▲" : "▼")}
-            </th>
-            <th onClick={() => handleSort("department")}>
-              Department {sortKey === "department" && (sortOrder === "asc" ? "▲" : "▼")}
-            </th>
-            <th onClick={() => handleSort("interview_date")}>
-              Interview Date {sortKey === "interview_date" && (sortOrder === "asc" ? "▲" : "▼")}
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedCandidates.map((candidate) => (
-            <tr key={candidate.candidate_id}>
-              <td>{candidate.name}</td>
-              <td>{candidate.department}</td>
-              <td>{new Date(candidate.interview_date).toLocaleDateString()}</td>
-              <td>
-                <button onClick={() => navigate(`/candidate/${candidate.candidate_id}`)}>
-                  View
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        <SearchIcon color="gray.500" />
+      </Flex>
+
+      {/* Table Container */}
+      <TableContainer>
+        <Table variant="simple">
+          <Thead bg="gray.100">
+            <Tr>
+              <Th cursor="pointer" onClick={() => handleSort("name")}>
+                Name{" "}
+                {sortKey === "name" &&
+                  (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
+              </Th>
+              <Th cursor="pointer" onClick={() => handleSort("department")}>
+                Department{" "}
+                {sortKey === "department" &&
+                  (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
+              </Th>
+              <Th cursor="pointer" onClick={() => handleSort("interview_date")}>
+                Interview Date{" "}
+                {sortKey === "interview_date" &&
+                  (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
+              </Th>
+              <Th>Actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {sortedCandidates.map((candidate) => (
+              <Tr key={candidate.candidate_id} _hover={{ bg: "gray.50" }}>
+                <Td>{candidate.name}</Td>
+                <Td>{candidate.department}</Td>
+                <Td>{new Date(candidate.interview_date).toLocaleDateString()}</Td>
+                <Td>
+                  <Button
+                    colorScheme="blue"
+                    size="sm"
+                    onClick={() => navigate(`/candidate/${candidate.candidate_id}`)}
+                  >
+                    View
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 
 export default CandidateTable;
-
