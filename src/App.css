@@ -34,7 +34,6 @@
   justify-content: space-between;
   padding: 1rem;
   box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
-  /* No longer fixed or absolute; it just takes up space on the left in a flex container */
   overflow-y: auto;
   transition: transform 0.3s ease-in-out;
   z-index: 1000;
@@ -52,163 +51,6 @@
   color: #6366f1;
 }
 
-/* Futuristic Text */
-.futuristic-text {
-  background: linear-gradient(90deg, #84c5f4, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  animation: glow 1.5s infinite alternate;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-/* Glow Keyframes */
-@keyframes glow {
-  0% {
-    text-shadow: 0 0 5px rgba(132, 197, 244, 0.8);
-  }
-  100% {
-    text-shadow: 0 0 15px rgba(192, 132, 252, 1);
-  }
-}
-
-/* Logo Icon */
-.logo-icon {
-  font-size: 2rem;
-  margin-right: 8px;
-  color: #84c5f4;
-}
-
-/* Navigation Links */
-.sidebar-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.sidebar-links li {
-  width: 100%;
-}
-.sidebar-links a,
-.collapsible-toggle {
-  width: 100%;
-  text-align: left;
-  padding: 0.75rem 1rem;
-  color: #333333;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: background 0.3s ease, color 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-.sidebar-links a:hover,
-.collapsible-toggle:hover {
-  background-color: #f0f2f8;
-}
-.sidebar-links .active,
-.collapsible-toggle.active {
-  background-color: #cfd2f6;
-  color: #333333;
-}
-
-/* Admin Dropdown */
-.collapsible-links {
-  display: flex;
-  flex-direction: column;
-  padding-left: 1rem;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  max-height: 0;
-}
-.collapsible-links.open {
-  max-height: 100px;
-}
-.collapsible-links a {
-  text-decoration: none;
-  color: #333333;
-  padding: 0.5rem 1.5rem;
-}
-.collapsible-links a:hover {
-  background-color: #f0f2f8;
-}
-
-/* Text Wrapping in Links */
-.sidebar-links a {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Sidebar Footer / Logout */
-.sidebar-footer {
-  margin-top: auto;
-  padding-top: 1rem;
-}
-.logout-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #e53e3e;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer;
-  display: block;
-  text-decoration: none;
-  transition: background 0.3s ease-in-out;
-}
-.logout-button:hover {
-  background-color: #c53030;
-}
-
-/* Main Content (flex: 1 so it expands to fill remaining space) */
-.main-content {
-  max-width: 1200px; /* Adjust width to ensure it is not too thin */
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #f8f9fa;
-  color: #333333;
-  overflow-x: hidden;
-}
-
-/* Admin Panel Container */
-.admin-panel-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-/* Admin Section */
-.admin-section {
-  max-width: 100%;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem;
-}
-
-/* Ensure main content expands properly but stays contained */
-.main-content {
-  flex-grow: 1;
-  max-width: 100%;
-  width: calc(100% - 250px); /* Adjust width dynamically based on sidebar */
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #f8f9fa;
-  color: #333333;
-  overflow-x: hidden;
-}
 /* Main Content (Ensure it properly takes up available space) */
 .main-content {
   flex-grow: 1;
@@ -227,18 +69,18 @@
 /* Ensure sections do not stretch unnecessarily */
 .section-container {
   width: 100%;
-  max-width: 1200px; /* Keeps elements centered and not too wide */
+  max-width: 1200px;
   display: flex;
-  flex-wrap: wrap; /* Allows elements to wrap properly */
-  justify-content: space-between; /* Distributes items evenly */
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 /* Dashboard Cards should be on the same row */
 .dashboard-cards {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* Spread out elements */
-  gap: 1rem; /* Adds spacing between cards */
+  justify-content: space-between;
+  gap: 1rem;
   width: 100%;
   max-width: 1200px;
 }
@@ -246,8 +88,8 @@
 /* Individual Card Styling */
 .dashboard-card {
   flex: 1 1 calc(33.33% - 1rem); /* Three per row */
-  min-width: 280px; /* Prevents cards from shrinking too much */
-  max-width: 320px; /* Prevents cards from stretching too much */
+  min-width: 280px;
+  max-width: 320px;
   background: #ffffff;
   padding: 1rem;
   text-align: center;
@@ -258,32 +100,69 @@
 /* Ensure charts and visuals do not stretch excessively */
 .chart-container {
   width: 100%;
-  max-width: 800px; /* Controls chart width */
+  max-width: 900px;
   display: flex;
   justify-content: center;
+}
+
+/* Ensure Charts and Insights are Centered */
+.chart-section {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Fix Insights Page Stretch Issue */
+.insights-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Responsive Adjustments for larger screens */
+@media (max-width: 1024px) {
+  .main-content {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  .dashboard-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .dashboard-card {
+    max-width: 100%;
+    width: 90%;
+  }
+  .chart-container {
+    max-width: 100%;
+  }
 }
 
 /* Responsive Adjustments for smaller screens */
 @media (max-width: 768px) {
   .app-container {
-    flex-direction: column; /* Stack sidebar above main content */
+    flex-direction: column;
   }
-
   .sidebar {
     width: 100%;
     box-shadow: none;
-    height: auto; /* Let it size naturally */
-    position: static; /* No longer absolute/fixed */
-    transform: none;  /* Remove transform overlay approach */
+    height: auto;
+    position: static;
+    transform: none;
   }
-
   .main-content {
-    margin-left: 0; /* No offset needed since sidebar is on top now */
+    margin-left: 0;
     max-width: 100%;
     padding: 1rem;
   }
-
-  .admin-panel-container {
-    width: 95%;
-    padding: 1.5rem;
+  .dashboard-card {
+    width: 100%;
+  }
+  .chart-container {
+    width: 100%;
   }
