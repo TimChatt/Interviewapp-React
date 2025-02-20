@@ -3,15 +3,15 @@ import { useParams } from "react-router-dom";
 import {
   Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, useDisclosure
 } from "@chakra-ui/react";
-import JobTitleDetailsModal from "./JobTitleDetailsModal"; // Ensure correct import
+import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Ensure correct import
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
   const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Modal control
+
+  const { isOpen, onOpen, onClose } = useDisclosure(); // ✅ Chakra modal control
   const [selectedDetails, setSelectedDetails] = useState(null);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const DepartmentFrameworks = () => {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Fetched Job Titles:", data.job_titles); // ✅ Debugging log
+        console.log("Fetched Job Titles:", data.job_titles); // ✅ Debug log
         setJobTitles(data.job_titles || []);
         setError(null);
       } catch (err) {
@@ -37,7 +37,7 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // ✅ Fix: Open modal only after state is updated
+  // ✅ Ensure correct jobTitle and jobLevel are passed before opening modal
   const openModal = (jobTitle) => {
     const levels = ["L1", "L2", "L3", "L4"];
     const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1";
@@ -47,16 +47,16 @@ const DepartmentFrameworks = () => {
 
     setSelectedDetails(details);
 
-    // ✅ Open modal after state update
+    // ✅ Ensure modal opens after state update
     setTimeout(() => {
       onOpen();
       console.log("Modal isOpen state:", isOpen);
     }, 100);
   };
 
-  // ✅ Group job titles by main category (e.g., "Machine Learning", "Data Science")
+  // ✅ Group job titles by category (e.g., "Machine Learning", "Data Science")
   const groupedTitles = jobTitles.reduce((acc, job) => {
-    const category = job.job_title.replace(/L\d+/, "").trim(); // Extract main category
+    const category = job.job_title.replace(/L\d+/, "").trim(); // Extracts category
     if (!acc[category]) acc[category] = [];
     acc[category].push(job);
     return acc;
@@ -111,7 +111,7 @@ const DepartmentFrameworks = () => {
         </>
       )}
 
-      {/* ✅ Attach modal at the bottom of the page */}
+      {/* ✅ Ensure modal correctly receives props and opens */}
       {selectedDetails && (
         <JobTitleDetailsModal
           isOpen={isOpen}
