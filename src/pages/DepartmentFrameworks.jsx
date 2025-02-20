@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, useDisclosure
 } from "@chakra-ui/react";
+import JobTitleDetailsModal from "./JobTitleDetailsModal"; // Ensure this is imported
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
   const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  
+  const { isOpen, onOpen, onClose } = useDisclosure(); // Modal control
   const [selectedDetails, setSelectedDetails] = useState(null);
 
   useEffect(() => {
@@ -21,8 +22,7 @@ const DepartmentFrameworks = () => {
           `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
         );
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || `Error: ${response.status}`);
+          throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
         setJobTitles(data.job_titles || []);
@@ -39,23 +39,17 @@ const DepartmentFrameworks = () => {
   const openModal = (jobTitle) => {
     const levels = ["L1", "L2", "L3", "L4"];
     const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1";
+
     setSelectedDetails({ department, jobTitle, jobLevel });
-    onOpen();
   };
 
-  const handleEdit = (jobTitle) => {
-    navigate(`/edit-framework/${jobTitle}`);
-  };
-
-  // Group job titles by category (e.g., "Machine Learning" → L1, L2)
-  const groupedJobTitles = jobTitles.reduce((acc, job) => {
-    const baseTitle = job.job_title.replace(/ L[0-9]+$/, "");
-    if (!acc[baseTitle]) {
-      acc[baseTitle] = [];
+  // Use Effect to open modal when selectedDetails is set
+  useEffect(() => {
+    if (selectedDetails) {
+      console.log("Opening modal with details:", selectedDetails); // Debugging
+      onOpen();
     }
-    acc[baseTitle].push(job);
-    return acc;
-  }, {});
+  }, [selectedDetails, onOpen]);
 
   return (
     <Box maxW="1000px" mx="auto" py="6">
@@ -76,35 +70,38 @@ const DepartmentFrameworks = () => {
         </Alert>
       )}
 
-      {!loading && !error && Object.keys(groupedJobTitles).length === 0 && (
+      {!loading && !error && jobTitles.length === 0 && (
         <Box textAlign="center" color="gray.600" mt="4">
           <Text>No job titles found for this department.</Text>
         </Box>
       )}
 
-      {!loading && !error && Object.keys(groupedJobTitles).length > 0 && (
-        Object.entries(groupedJobTitles).map(([category, jobs]) => (
-          <Box key={category} mb={8}>
-            <Heading size="lg" color="purple.700" mb={4}>{category}</Heading>
-            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
-              {jobs.map((job, index) => (
-                <GridItem key={index}>
-                  <Card bg="white" shadow="md" borderRadius="lg">
-                    <CardBody textAlign="center">
-                      <Heading size="md" mb="2">{job.job_title}</Heading>
-                      <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
-                        View Details
-                      </Button>
-                      <Button colorScheme="purple" size="sm" onClick={() => handleEdit(job.job_title)}>
-                        Edit Framework
-                      </Button>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-              ))}
-            </Grid>
-          </Box>
-        ))
+      {!loading && !error && jobTitles.length > 0 && (
+        <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+          {jobTitles.map((job, index) => (
+            <GridItem key={index}>
+              <Card bg="white" shadow="md" borderRadius="lg">
+                <CardBody textAlign="center">
+                  <Heading size="md" mb="2">{job.job_title}</Heading>
+                  <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
+                    View Details
+                  </Button>
+                </CardBody>
+              </Card>
+            </GridItem>
+          ))}
+        </Grid>
+      )}
+
+      {/* Attach Modal here so it correctly gets state values */}
+      {selectedDetails && (
+        <JobTitleDetailsModal
+          isOpen={isOpen}
+          onClose={onClose}
+          department={selectedDetails.department}
+          jobTitle={selectedDetails.jobTitle}
+          jobLevel={selectedDetails.jobLevel}
+        />
       )}
     </Box>
   );
