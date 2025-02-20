@@ -5,9 +5,9 @@
 
 /* Main App Container */
 .app-container {
-  display: flex;              /* Use flexbox to place sidebar + content side-by-side */
+  display: flex; /* Use flexbox to place sidebar + content side-by-side */
   min-height: 100vh;
-  background-color: #f0f2f8;  /* Subtle off-white/pastel background */
+  background-color: #f0f2f8; /* Subtle off-white/pastel background */
   overflow: hidden;
 }
 
@@ -36,7 +36,9 @@
   text-transform: uppercase;
   margin-bottom: 1.5rem;
   color: #6366f1;
-  text-shadow: 0px 0px 10px rgba(99, 102, 241, 0.8);
+  text-shadow: 0px 0px 10px rgba(99, 102, 241, 0.8),
+               0px 0px 20px rgba(150, 80, 255, 0.5),
+               0px 0px 30px rgba(255, 80, 200, 0.5);
 }
 
 /* Sidebar Links */
@@ -50,18 +52,19 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Active & Hover States */
 .sidebar a:hover, .sidebar a.active {
   background-color: #e0e7ff;
   color: #4338ca;
   font-weight: bold;
 }
 
+/* Fix for Admin Link Styling */
 .sidebar a:focus {
   outline: none;
   border: 2px solid #6366f1;
 }
 
-/* Fix for Admin Link Styling */
 .sidebar a.active {
   background-color: #e0e7ff;
   color: #4338ca;
@@ -89,15 +92,19 @@
   margin: 0 auto;
   text-align: center;
   padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Admin Panel Title */
 .admin-panel-page h1 {
   color: #6366f1;
   font-size: 2rem;
   margin-bottom: 1.5rem;
 }
 
-/* Fix Unclickable Buttons */
+/* Fix for Admin Panel Buttons */
 .admin-panel-page button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
@@ -113,15 +120,62 @@
   background-color: #4f46e5;
 }
 
-/* Responsive Adjustments for larger screens */
-@media (max-width: 1024px) {
+/* Dashboard Cards Fix */
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Individual Card Styling */
+.dashboard-card {
+  flex: 1 1 calc(33.33% - 1rem);
+  min-width: 280px;
+  max-width: 320px;
+  background: #ffffff;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Admin Content Centering */
+.admin-content {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Responsive Adjustments for Large Screens */
+@media (max-width: 1200px) {
   .main-content {
     max-width: 100%;
     padding: 1.5rem;
   }
 }
 
-/* Responsive Adjustments for smaller screens */
+/* Responsive Adjustments for Medium Screens */
+@media (max-width: 1024px) {
+  .main-content {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  .dashboard-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .dashboard-card {
+    max-width: 100%;
+    width: 90%;
+  }
+}
+
+/* Responsive Adjustments for Small Screens */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -136,5 +190,22 @@
     margin-left: 0;
     max-width: 100%;
     padding: 1rem;
+  }
+  .dashboard-card {
+    width: 100%;
+  }
+  .admin-panel-page {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
+
+/* Fix for Page Content Being Too Narrow */
+@media (min-width: 1400px) {
+  .main-content {
+    max-width: 1400px;
+  }
+  .admin-panel-page {
+    max-width: 1200px;
   }
 }
