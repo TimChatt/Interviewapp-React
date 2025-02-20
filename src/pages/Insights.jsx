@@ -49,8 +49,8 @@ function Insights() {
 
   const pieColors = ["#A0C4FF", "#FFADAD"]; // Pastel blue & red
   const lineChartColor = "#FFD700"; // Gold yellow for interviews over time
-
-  // 📊 **Interviews Over Time Calculation**
+  
+  // Interviews Over Time Calculation
   const monthlyCountMap = {};
   filteredData.forEach((candidate) => {
     const dt = parseDate(candidate.interviewDate);
@@ -64,7 +64,7 @@ function Insights() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([month, count]) => ({ month, count }));
 
-  // 📊 **Average Scores by Skill**
+  // Average Scores by Skill
   const allSkillsSet = new Set();
   filteredData.forEach((candidate) => {
     if (candidate.scores) {
@@ -73,6 +73,7 @@ function Insights() {
   });
 
   const allSkills = Array.from(allSkillsSet);
+  const skillColors = ["#A0C4FF", "#BDB2FF", "#FFC6FF", "#FFADAD", "#CAFFBF"];
 
   const skillAverages = allSkills.map((skill) => {
     let totalScore = 0;
@@ -84,32 +85,6 @@ function Insights() {
       }
     });
     return { skill, averageScore: count > 0 ? parseFloat((totalScore / count).toFixed(2)) : 0 };
-  });
-
-  // 📊 **Grouped Bar Chart for Team Fit & Other Scores**
-  const jobTitleMap = {};
-  filteredData.forEach((candidate) => {
-    const jt = candidate.jobTitle || "Unknown";
-    if (!jobTitleMap[jt]) {
-      jobTitleMap[jt] = { jobTitle: jt, counts: {}, totals: {} };
-    }
-    if (candidate.scores) {
-      for (let skill of Object.keys(candidate.scores)) {
-        jobTitleMap[jt].totals[skill] =
-          (jobTitleMap[jt].totals[skill] || 0) + candidate.scores[skill];
-        jobTitleMap[jt].counts[skill] = (jobTitleMap[jt].counts[skill] || 0) + 1;
-      }
-    }
-  });
-
-  const jobTitleData = Object.values(jobTitleMap).map((jtRecord) => {
-    const row = { jobTitle: jtRecord.jobTitle };
-    allSkills.forEach((skill) => {
-      const total = jtRecord.totals[skill] || 0;
-      const count = jtRecord.counts[skill] || 0;
-      row[skill] = count > 0 ? parseFloat((total / count).toFixed(2)) : 0;
-    });
-    return row;
   });
 
   return (
@@ -157,7 +132,8 @@ function Insights() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label
+                labelLine={false}
+                label={({ name, value }) => `${name}: ${value}`}
               >
                 {statusPieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={pieColors[index]} />
@@ -170,36 +146,19 @@ function Insights() {
         </div>
       </div>
 
-      {/* Interviews Over Time (Line Chart) */}
+      {/* BarChart: Average Scores by Skill */}
       <div className="chart-section">
-        <h2>📅 Interviews Over Time</h2>
+        <h2>Average Scores by Skill</h2>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={monthlyData}>
+            <BarChart data={skillAverages}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="count" stroke={lineChartColor} strokeWidth={3} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Grouped Bar Chart for Team Fit & Other Scores */}
-      <div className="chart-section">
-        <h2>⭐ Team Fit & Other Scores</h2>
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={jobTitleData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="jobTitle" />
+              <XAxis dataKey="skill" />
               <YAxis domain={[0, 5]} />
               <Tooltip />
               <Legend />
               {allSkills.map((skill, index) => (
-                <Bar key={skill} dataKey={skill} fill="#A0C4FF" name={skill} />
+                <Bar key={skill} dataKey="averageScore" fill={skillColors[index % skillColors.length]} name={skill} />
               ))}
             </BarChart>
           </ResponsiveContainer>
