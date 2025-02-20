@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import {
   Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, useDisclosure
 } from "@chakra-ui/react";
-import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Ensure correct import
+import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Import the modal
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
@@ -11,8 +11,9 @@ const DepartmentFrameworks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { isOpen, onOpen, onClose } = useDisclosure(); // ✅ Chakra modal control
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDetails, setSelectedDetails] = useState(null);
+  const [competencies, setCompetencies] = useState([]); // ✅ Store competencies for the selected job
 
   useEffect(() => {
     const fetchDepartmentJobTitles = async () => {
@@ -25,7 +26,7 @@ const DepartmentFrameworks = () => {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Fetched Job Titles:", data.job_titles); // ✅ Debug log
+        console.log("✅ Fetched Job Titles:", data.job_titles); // Debugging log
         setJobTitles(data.job_titles || []);
         setError(null);
       } catch (err) {
@@ -37,24 +38,37 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // ✅ Ensure correct jobTitle and jobLevel are passed before opening modal
-  const openModal = (jobTitle) => {
-    const levels = ["L1", "L2", "L3", "L4"];
-    const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1";
-
-    const details = { department, jobTitle, jobLevel };
-    console.log("Opening Modal with Details:", details); // ✅ Debugging log
-
-    setSelectedDetails(details);
-
-    // ✅ Ensure modal opens after state update
-    setTimeout(() => {
-      onOpen();
-      console.log("Modal isOpen state:", isOpen);
-    }, 100);
+  // ✅ Extracts the job level (L1, L2, etc.) correctly
+  const extractJobLevel = (jobTitle) => {
+    const match = jobTitle.match(/L\d+/);
+    return match ? match[0] : "L1"; // Default to L1 if no match found
   };
 
-  // ✅ Group job titles by category (e.g., "Machine Learning", "Data Science")
+  // ✅ Fetch competencies when clicking "View Details"
+  const openModal = async (jobTitle) => {
+    const jobLevel = extractJobLevel(jobTitle);
+    const details = { department, jobTitle, jobLevel };
+    console.log("📌 Opening Modal with Details:", details);
+
+    try {
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/get-job-title-details/${department}/${jobTitle}/${jobLevel}`
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch job title details.");
+
+      const data = await response.json();
+      console.log("✅ Fetched Competencies:", data.competencies);
+
+      setSelectedDetails(details);
+      setCompetencies(data.competencies || []); // ✅ Store competencies for the modal
+      onOpen();
+    } catch (error) {
+      console.error("❌ Error fetching competencies:", error);
+    }
+  };
+
+  // ✅ Groups job titles by category
   const groupedTitles = jobTitles.reduce((acc, job) => {
     const category = job.job_title.replace(/L\d+/, "").trim(); // Extracts category
     if (!acc[category]) acc[category] = [];
@@ -111,7 +125,7 @@ const DepartmentFrameworks = () => {
         </>
       )}
 
-      {/* ✅ Ensure modal correctly receives props and opens */}
+      {/* ✅ Ensure modal correctly receives competencies */}
       {selectedDetails && (
         <JobTitleDetailsModal
           isOpen={isOpen}
@@ -119,6 +133,7 @@ const DepartmentFrameworks = () => {
           department={selectedDetails.department}
           jobTitle={selectedDetails.jobTitle}
           jobLevel={selectedDetails.jobLevel}
+          competencies={competencies} // ✅ Pass competencies to modal
         />
       )}
     </Box>
