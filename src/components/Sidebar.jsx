@@ -64,7 +64,7 @@ const Sidebar = () => {
               className={`collapsible-toggle ${isAdminOpen ? "active" : ""}`}
               onClick={() => setIsAdminOpen(!isAdminOpen)}
             >
-              Admin
+              Admin ▼
             </button>
             <div className={`collapsible-links ${isAdminOpen ? "open" : ""}`}>
               <Link
