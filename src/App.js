@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ChakraProvider, Box, Container } from "@chakra-ui/react"; // Chakra UI
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Candidate from "./pages/Candidate";
@@ -16,53 +17,58 @@ import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
 import DepartmentFrameworks from "./pages/DepartmentFrameworks";
 import JobTitleDetails from "./pages/JobTitleDetails";
-import PrivateRoute from "./components/PrivateRoute"; // Import the PrivateRoute
-
-// Import CSS files
-import "./index.css"; // Global resets and base styles
-import "./App.css";   // Layout styles
-import "./styles.css"; // Shared styles
+import PrivateRoute from "./components/PrivateRoute"; // Private Routes
 
 const AppContent = () => {
   const location = useLocation();
-
-  // Sidebar should be hidden on Login & Signup pages
   const hideSidebarPaths = ["/login", "/signup"];
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
 
   return (
-    <div className={`app-container ${shouldHideSidebar ? "no-sidebar" : ""}`}>
+    <Box display="flex" minH="100vh">
+      {/* Sidebar (Hidden on Login/Signup) */}
       {!shouldHideSidebar && <Sidebar />}
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
 
-        {/* Protected Routes */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/candidates" element={<Candidate />} />
-          <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-          <Route path="/insights" element={<Insights />} />
-          <Route path="/recommendations" element={<Recommendations />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
-          <Route path="/frameworks" element={<SavedFrameworks />} />
-          <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
-          <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
-          <Route path="/edit-framework/:id" element={<EditFramework />} />
-        </Route>
-      </Routes>
-    </div>
+      {/* Main Content */}
+      <Container 
+        maxW="container.xl" 
+        flex="1" 
+        p={shouldHideSidebar ? "0" : "4"} 
+        bg="gray.50"
+      >
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+
+          {/* Protected Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/candidates" element={<Candidate />} />
+            <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/recommendations" element={<Recommendations />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+            <Route path="/frameworks" element={<SavedFrameworks />} />
+            <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
+            <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
+            <Route path="/edit-framework/:id" element={<EditFramework />} />
+          </Route>
+        </Routes>
+      </Container>
+    </Box>
   );
 };
 
 const App = () => (
   <AuthProvider>
-    <Router>
-      <AppContent />
-    </Router>
+    <ChakraProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ChakraProvider>
   </AuthProvider>
 );
 
