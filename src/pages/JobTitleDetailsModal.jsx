@@ -135,7 +135,7 @@ const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="6xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
