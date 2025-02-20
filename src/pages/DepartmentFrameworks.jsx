@@ -3,14 +3,14 @@ import { useParams } from "react-router-dom";
 import {
   Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, useDisclosure
 } from "@chakra-ui/react";
-import JobTitleDetailsModal from "./JobTitleDetailsModal"; // Ensure this is imported
+import JobTitleDetailsModal from "./JobTitleDetailsModal"; // Ensure correct import
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
   const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const { isOpen, onOpen, onClose } = useDisclosure(); // Modal control
   const [selectedDetails, setSelectedDetails] = useState(null);
 
@@ -40,16 +40,12 @@ const DepartmentFrameworks = () => {
     const levels = ["L1", "L2", "L3", "L4"];
     const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1";
 
-    setSelectedDetails({ department, jobTitle, jobLevel });
-  };
+    const details = { department, jobTitle, jobLevel };
+    console.log("Opening Modal with Details:", details); // Debugging log
 
-  // Use Effect to open modal when selectedDetails is set
-  useEffect(() => {
-    if (selectedDetails) {
-      console.log("Opening modal with details:", selectedDetails); // Debugging
-      onOpen();
-    }
-  }, [selectedDetails, onOpen]);
+    setSelectedDetails(details);
+    onOpen(); // Ensure modal opens after updating state
+  };
 
   return (
     <Box maxW="1000px" mx="auto" py="6">
