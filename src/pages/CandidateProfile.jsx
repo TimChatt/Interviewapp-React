@@ -1,14 +1,18 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider, Stat, StatLabel, StatNumber
+  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider
 } from "@chakra-ui/react";
 import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip,
-  PieChart, Pie, Cell
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip
 } from "recharts";
+
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
+
+// Debugging logs
+console.log("Ashby Mock Data:", ashbyMockData);
+console.log("Metaview Mock Data:", metaviewMockData);
 
 // Helper function to get speaking ratio
 function getSpeakingRatio(transcriptEntries) {
@@ -25,10 +29,15 @@ const CandidateProfile = () => {
   const { candidateId } = useParams();
   const navigate = useNavigate();
 
-  // Merge Ashby & Metaview data
-  const candidate = ashbyMockData.find((item, index) => index + 1 === parseInt(candidateId));
-  const transcript = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName)?.transcript || [];
-  const feedback = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName)?.aiFeedback || "No AI feedback available.";
+  // Find the candidate in Ashby mock data
+  const candidate = ashbyMockData.find((item) => item.id === parseInt(candidateId));
+  console.log("Selected Candidate:", candidate);
+
+  // Find corresponding interview transcript from Metaview mock data
+  const transcriptData = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName);
+  console.log("Transcript Data:", transcriptData);
+
+  const transcript = transcriptData ? transcriptData.transcript : [];
 
   if (!candidate) {
     return (
@@ -74,25 +83,25 @@ const CandidateProfile = () => {
         </CardBody>
       </Card>
 
-      {/* AI Insights & Interview Stats */}
+      {/* Grid Layout for Sections */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mb="6">
-        {/* AI Feedback */}
+        {/* Interview Timeline */}
         <GridItem>
-          <StatCard title="AI Feedback" content={<Text>{feedback}</Text>} />
+          <StatCard title="Interview Timeline" content={
+            candidate.timeline?.length > 0 ? (
+              candidate.timeline.map((t, idx) => (
+                <Text key={idx}><strong>{t.stage}</strong> - {t.date}</Text>
+              ))
+            ) : <Text>No timeline data available.</Text>
+          } />
         </GridItem>
 
         {/* Speaking Ratio */}
         <GridItem>
           <StatCard title="Speaking Ratio" content={
             <>
-              <PieChart width={200} height={200}>
-                <Pie dataKey="value" data={[{ name: "Candidate", value: candidateWords }, { name: "Interviewer", value: interviewerWords }]} cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label>
-                  <Cell key="candidate" fill="#82ca9d" />
-                  <Cell key="interviewer" fill="#ffc658" />
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
+              <Text><strong>Candidate:</strong> {candidateRatio}%</Text>
+              <Text><strong>Interviewer:</strong> {interviewerRatio}%</Text>
             </>
           } />
         </GridItem>
@@ -112,20 +121,19 @@ const CandidateProfile = () => {
         </CardBody>
       </Card>
 
-      {/* Radar Chart */}
+      {/* Interview Transcript */}
       <Card mb="6" p="6" bg="white" shadow="md">
         <CardBody>
-          <Heading size="md" mb="4">Competency Radar</Heading>
-          {radarData.length > 0 ? (
-            <RadarChart outerRadius={90} width={400} height={300} data={radarData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="skill" />
-              <PolarRadiusAxis angle={30} domain={[0, 5]} />
-              <Radar name="Candidate" dataKey="candidateScore" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-              <Tooltip />
-              <Legend />
-            </RadarChart>
-          ) : <Text>No radar data available.</Text>}
+          <Heading size="md" mb="4">Interview Transcript</Heading>
+          {transcript.length > 0 ? (
+            transcript.map((entry, idx) => (
+              <Box key={idx} mb="4">
+                <Text><strong>Q:</strong> {entry.question}</Text>
+                <Text><em>A: {entry.candidateAnswer}</em></Text>
+                <Divider my="2" />
+              </Box>
+            ))
+          ) : <Text>No transcript available.</Text>}
         </CardBody>
       </Card>
     </Box>
