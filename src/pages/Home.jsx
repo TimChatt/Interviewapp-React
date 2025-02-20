@@ -1,21 +1,15 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '../styles.css';
+import { FiUsers, FiBarChart, FiLightbulb, FiSettings } from "react-icons/fi"; // Import icons
+import {
+  Box, Heading, Text, Grid, GridItem, Card, CardBody, Stat, StatLabel, StatNumber, VStack, Icon
+} from "@chakra-ui/react";
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 
-/**
- * A simple Home page (dashboard overview).
- * 
- * Features:
- * - Welcome header
- * - Quick overview stats (total candidates, hired, archived)
- * - Navigation cards linking to other parts of the app
- */
 function Home() {
   const navigate = useNavigate();
 
-  // 1) Basic stats from Ashby data
+  // Basic stats from Ashby data
   const [total, setTotal] = useState(0);
   const [hired, setHired] = useState(0);
   const [archived, setArchived] = useState(0);
@@ -31,52 +25,90 @@ function Home() {
   }, []);
 
   return (
-    <div className="home-page">
-      <h1>Welcome to the Interview Analysis App</h1>
-      <p className="home-intro">
+    <Box maxW="1000px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="purple.600" mb="4">
+        Welcome to the Interview Analysis App
+      </Heading>
+      <Text fontSize="lg" textAlign="center" color="gray.600" mb="6">
         This platform combines data from Ashby and Metaview to help you track, review, and improve
-        your interviewing process. Dive into the sections below to explore candidate management,
-        insights, and personalized recommendations.
-      </p>
+        your interviewing process. Explore candidate management, insights, and personalized recommendations.
+      </Text>
 
       {/* Quick Stats */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h2>Total Candidates</h2>
-          <p>{total}</p>
-        </div>
-        <div className="stat-card">
-          <h2>Hired</h2>
-          <p>{hired}</p>
-        </div>
-        <div className="stat-card">
-          <h2>Archived</h2>
-          <p>{archived}</p>
-        </div>
-      </div>
+      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6} mb="8">
+        <StatCard title="Total Candidates" value={total} />
+        <StatCard title="Hired" value={hired} />
+        <StatCard title="Archived" value={archived} />
+      </Grid>
 
-      {/* Navigation Cards / Links */}
-      <div className="links-grid">
-        <div className="link-card" onClick={() => navigate("/candidates")}>
-          <h3>Candidates</h3>
-          <p>Manage candidate data and view detailed profiles.</p>
-        </div>
-        <div className="link-card" onClick={() => navigate("/insights")}>
-          <h3>Insights</h3>
-          <p>Visualize hiring metrics, interview trends, and more.</p>
-        </div>
-        <div className="link-card" onClick={() => navigate("/recommendations")}>
-          <h3>Recommendations</h3>
-          <p>Get actionable suggestions to improve the hiring process.</p>
-        </div>
-        <div className="link-card" onClick={() => navigate("/admin")}>
-          <h3>Admin</h3>
-          <p>Manage system settings, permissions, and advanced tasks.</p>
-        </div>
-      </div>
-    </div>
+      {/* Navigation Cards with Icons */}
+      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
+        <NavCard
+          title="Candidates"
+          description="Manage candidate data and view detailed profiles."
+          icon={FiUsers}
+          onClick={() => navigate("/candidates")}
+        />
+        <NavCard
+          title="Insights"
+          description="Visualize hiring metrics, interview trends, and more."
+          icon={FiBarChart}
+          onClick={() => navigate("/insights")}
+        />
+        <NavCard
+          title="Recommendations"
+          description="Get actionable suggestions to improve the hiring process."
+          icon={FiLightbulb}
+          onClick={() => navigate("/recommendations")}
+        />
+        <NavCard
+          title="Admin"
+          description="Manage system settings, permissions, and advanced tasks."
+          icon={FiSettings}
+          onClick={() => navigate("/admin")}
+        />
+      </Grid>
+    </Box>
   );
 }
 
-export default Home;
+// Reusable Stat Card Component
+const StatCard = ({ title, value }) => {
+  return (
+    <Card bg="white" shadow="md" borderRadius="lg">
+      <CardBody>
+        <Stat textAlign="center">
+          <StatLabel fontSize="lg" color="gray.600">{title}</StatLabel>
+          <StatNumber fontSize="3xl" color="purple.600">{value}</StatNumber>
+        </Stat>
+      </CardBody>
+    </Card>
+  );
+};
 
+// Reusable Navigation Card Component with Icons
+const NavCard = ({ title, description, icon, onClick }) => {
+  return (
+    <GridItem>
+      <Card
+        bg="white"
+        shadow="md"
+        borderRadius="lg"
+        cursor="pointer"
+        transition="transform 0.2s ease, box-shadow 0.2s ease"
+        _hover={{ transform: "translateY(-3px)", boxShadow: "lg" }}
+        onClick={onClick}
+      >
+        <CardBody textAlign="center">
+          <VStack spacing={3}>
+            <Icon as={icon} boxSize={8} color="purple.500" /> {/* Added icon */}
+            <Heading size="md" color="purple.700">{title}</Heading>
+            <Text color="gray.600">{description}</Text>
+          </VStack>
+        </CardBody>
+      </Card>
+    </GridItem>
+  );
+};
+
+export default Home;
