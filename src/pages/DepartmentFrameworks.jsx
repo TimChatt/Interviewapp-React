@@ -10,7 +10,7 @@ const DepartmentFrameworks = () => {
   const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   const { isOpen, onOpen, onClose } = useDisclosure(); // Modal control
   const [selectedDetails, setSelectedDetails] = useState(null);
 
@@ -25,6 +25,7 @@ const DepartmentFrameworks = () => {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
+        console.log("Fetched Job Titles:", data.job_titles); // ✅ Debugging log
         setJobTitles(data.job_titles || []);
         setError(null);
       } catch (err) {
@@ -36,19 +37,33 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
+  // ✅ Fix: Open modal only after state is updated
   const openModal = (jobTitle) => {
     const levels = ["L1", "L2", "L3", "L4"];
     const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1";
 
     const details = { department, jobTitle, jobLevel };
-    console.log("Opening Modal with Details:", details); // Debugging log
+    console.log("Opening Modal with Details:", details); // ✅ Debugging log
 
     setSelectedDetails(details);
-    onOpen(); // Ensure modal opens after updating state
+
+    // ✅ Open modal after state update
+    setTimeout(() => {
+      onOpen();
+      console.log("Modal isOpen state:", isOpen);
+    }, 100);
   };
 
+  // ✅ Group job titles by main category (e.g., "Machine Learning", "Data Science")
+  const groupedTitles = jobTitles.reduce((acc, job) => {
+    const category = job.job_title.replace(/L\d+/, "").trim(); // Extract main category
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(job);
+    return acc;
+  }, {});
+
   return (
-    <Box maxW="1000px" mx="auto" py="6">
+    <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         {department} Frameworks
       </Heading>
@@ -73,23 +88,30 @@ const DepartmentFrameworks = () => {
       )}
 
       {!loading && !error && jobTitles.length > 0 && (
-        <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
-          {jobTitles.map((job, index) => (
-            <GridItem key={index}>
-              <Card bg="white" shadow="md" borderRadius="lg">
-                <CardBody textAlign="center">
-                  <Heading size="md" mb="2">{job.job_title}</Heading>
-                  <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
-                    View Details
-                  </Button>
-                </CardBody>
-              </Card>
-            </GridItem>
+        <>
+          {Object.entries(groupedTitles).map(([category, jobs], idx) => (
+            <Box key={idx} mb="8">
+              <Heading size="lg" color="purple.700" mb="4">{category}</Heading>
+              <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+                {jobs.map((job, index) => (
+                  <GridItem key={index}>
+                    <Card bg="white" shadow="md" borderRadius="lg">
+                      <CardBody textAlign="center">
+                        <Heading size="md" mb="2">{job.job_title}</Heading>
+                        <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
+                          View Details
+                        </Button>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                ))}
+              </Grid>
+            </Box>
           ))}
-        </Grid>
+        </>
       )}
 
-      {/* Attach Modal here so it correctly gets state values */}
+      {/* ✅ Attach modal at the bottom of the page */}
       {selectedDetails && (
         <JobTitleDetailsModal
           isOpen={isOpen}
