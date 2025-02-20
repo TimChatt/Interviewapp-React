@@ -1,7 +1,6 @@
-// src/pages/InterviewerPlaybook.jsx
 import React, { useState } from "react";
+import { Box, Heading, Select, Text, Card, CardBody, VStack } from "@chakra-ui/react";
 import trainingData from "../mockdata/InterviewerTrainingMock.json";
-import '../styles.css';
 
 const InterviewerPlaybook = () => {
   const [selectedJob, setSelectedJob] = useState("Frontend Engineer");
@@ -10,39 +9,48 @@ const InterviewerPlaybook = () => {
   const playbook = trainingData.find((job) => job.jobTitle === selectedJob);
 
   return (
-    <div className="playbook-page">
-      <h1>Interviewer Playbook</h1>
-      <div className="job-selector">
-        <label htmlFor="jobTitle">Select Job Title:</label>
-        <select
-          id="jobTitle"
-          value={selectedJob}
+    <Box maxW="800px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+        Interviewer Playbook
+      </Heading>
+
+      {/* Job Selector */}
+      <Box mb="6">
+        <Text fontSize="lg" fontWeight="bold" mb="2">Select Job Title:</Text>
+        <Select 
+          value={selectedJob} 
           onChange={(e) => setSelectedJob(e.target.value)}
+          bg="white" 
+          shadow="md"
         >
           {trainingData.map((job) => (
             <option key={job.jobTitle} value={job.jobTitle}>
               {job.jobTitle}
             </option>
           ))}
-        </select>
-      </div>
+        </Select>
+      </Box>
+
+      {/* Playbook Content */}
       {playbook ? (
-        <div className="playbook-content">
+        <VStack spacing={5}>
           {playbook.questions.map((q, idx) => (
-            <div key={idx} className="playbook-card">
-              <h2>{q.category}</h2>
-              <p><strong>Question:</strong> {q.question}</p>
-              <p><strong>Expected Answer:</strong> {q.expectedAnswer}</p>
-              <p><strong>Follow-up:</strong> {q.followUp}</p>
-            </div>
+            <Card key={idx} w="100%" bg="white" shadow="md" borderRadius="lg" transition="all 0.2s ease" 
+              _hover={{ transform: "translateY(-3px)", boxShadow: "lg" }}>
+              <CardBody>
+                <Heading size="md" color="purple.700" mb="3">{q.category}</Heading>
+                <Text><strong>Question:</strong> {q.question}</Text>
+                <Text color="gray.600"><strong>Expected Answer:</strong> {q.expectedAnswer}</Text>
+                <Text color="gray.500"><strong>Follow-up:</strong> {q.followUp}</Text>
+              </CardBody>
+            </Card>
           ))}
-        </div>
+        </VStack>
       ) : (
-        <p>No playbook available for this job title.</p>
+        <Text textAlign="center" fontSize="lg" color="gray.500">No playbook available for this job title.</Text>
       )}
-    </div>
+    </Box>
   );
 };
 
 export default InterviewerPlaybook;
-
