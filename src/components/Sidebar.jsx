@@ -18,10 +18,10 @@ const Sidebar = () => {
   return (
     <nav className="sidebar">
       <div className="sidebar-container">
-        {/* Logo */}
+        {/* Logo - Restored Pastel Glow */}
         <div className="sidebar-logo">
           <FaEye className="logo-icon" />
-          <span className="futuristic-text">TA Vision</span>
+          <span className="logo-text">TA Vision</span>
         </div>
 
         {/* Navigation Links */}
@@ -66,10 +66,7 @@ const Sidebar = () => {
             >
               Admin {isAdminOpen ? "▲" : "▼"}
             </button>
-            <div
-              className={`collapsible-links ${isAdminOpen ? "open" : ""}`}
-              style={{ display: isAdminOpen ? "block" : "none" }}
-            >
+            <div className={`collapsible-links ${isAdminOpen ? "open" : ""}`}>
               <Link
                 to="/admin"
                 className={location.pathname === "/admin" ? "active" : ""}
@@ -93,7 +90,7 @@ const Sidebar = () => {
           </li>
         </ul>
 
-        {/* Logout Button */}
+        {/* Logout Button - Styled for Consistency */}
         <div className="sidebar-footer">
           <button className="logout-button" onClick={handleLogout}>
             Logout
