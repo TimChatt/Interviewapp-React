@@ -1,4 +1,4 @@
-/* =========================================
+* =========================================
    App.css - Main App Layout (Pastel SaaS)
    Flex-based Sidebar + Main Content
    ========================================= */
@@ -31,7 +31,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem; /* Lighter size */
+  font-size: 1.3rem; /* Reduced size */
   font-weight: bold;
   text-transform: uppercase;
   margin-bottom: 1.2rem;
@@ -44,19 +44,21 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 
-    0px 0px 8px rgba(255, 102, 178, 0.8),  /* Pink glow */
-    0px 0px 12px rgba(99, 245, 255, 0.6),  /* Cyan glow */
-    0px 0px 16px rgba(123, 97, 255, 0.5);  /* Purple glow */
+    0px 0px 10px rgba(255, 102, 178, 0.8),  /* Pink glow */
+    0px 0px 14px rgba(99, 245, 255, 0.6),  /* Cyan glow */
+    0px 0px 18px rgba(123, 97, 255, 0.5);  /* Purple glow */
   letter-spacing: 1px;
   transition: all 0.3s ease-in-out;
 }
 
-/* Sidebar Logo Icon (No Change) */
+/* Sidebar Logo Icon - Soft Purple Glow */
 .logo-icon {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   margin-right: 8px;
-  color: #63f5ff; /* Cyan glow */
-  text-shadow: 0px 0px 12px rgba(99, 245, 255, 0.8);
+  color: #b19cd9; /* Soft pastel purple */
+  text-shadow: 
+    0px 0px 10px rgba(177, 156, 217, 0.8), 
+    0px 0px 14px rgba(177, 156, 217, 0.6);
 }
 
 /* Sidebar Links */
@@ -121,17 +123,17 @@
   color: #4338ca;
 }
 
-/* Logout Button - Full Red Background */
+/* Logout Button - Fully Red */
 .logout-button {
   background-color: #e53e3e; /* Red background */
   color: #ffffff; /* White text */
   font-weight: bold;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
   border: none;
   border-radius: 6px; /* Rounded corners */
   cursor: pointer;
   width: 100%;
-  text-align: left;
+  text-align: center;
   font-size: 1rem;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
