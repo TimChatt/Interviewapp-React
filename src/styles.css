@@ -281,29 +281,32 @@ ul {
 
 /* ---------- Insights Page ---------- */
 .insights-page {
-  max-width: 1400px; /* Increased width for better scaling */
-  width: 90%;
+  max-width: 1400px; /* Keeps layout wide */
+  width: 95%;
   margin: 0 auto;
   padding: 2rem;
   color: #333;
 }
 
-/* Improved Header */
+/* Header */
 .insights-page h1 {
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
+  font-weight: bold;
   margin-bottom: 1.5rem;
-  color: #444;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* -------------------------------
-   ✅ Date Filters - Centered & Spacious
+   ✅ Date Filters - Centered, Modern Look
 -------------------------------- */
 .date-filter-controls {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
   margin-bottom: 2rem;
 }
 
@@ -311,7 +314,7 @@ ul {
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .date-filter-controls input {
@@ -319,47 +322,65 @@ ul {
   font-size: 1rem;
   border-radius: 6px;
   border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.date-filter-controls input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
 /* -------------------------------
-   ✅ Stats Overview - Flexible Grid Layout
+   ✅ Stats Overview - Compact, Modern Grid
 -------------------------------- */
 .stats-overview {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Dynamic, responsive grid */
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
   gap: 1.5rem;
   justify-content: center;
   align-items: center;
   margin-bottom: 3rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Stat Cards - Improved Readability & Spacing */
+/* Stat Cards - Shorter & Sleek */
 .stat-card {
-  background-color: #fff;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 1.2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
-  min-width: 260px;
-  max-width: 320px; /* Prevents excessive stretching */
-  flex: 1;
+  min-width: 220px;
+  max-width: 260px;
+  transition: all 0.3s ease;
 }
 
-/* Bigger, Bolder Stat Headers */
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
+}
+
+/* Bigger, Bolder Stat Numbers */
 .stat-card h2 {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #444;
 }
 
 .stat-card p {
-  font-size: 2.2rem; /* Bigger for better impact */
+  font-size: 2rem;
   font-weight: bold;
   color: #222;
 }
 
 /* -------------------------------
-   ✅ Charts - Full Width & Better Visibility
+   ✅ Chart Styling - Smaller, Modern Cards
 -------------------------------- */
 .chart-section {
   text-align: center;
@@ -367,40 +388,34 @@ ul {
 }
 
 .chart-section h2 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin-bottom: 1rem;
   color: #555;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Make the Charts Properly Scale */
+/* Charts - Compact & Stylish */
 .chart-wrapper {
   width: 100%;
-  height: 350px; /* Improved height for readability */
-  max-width: 1100px;
+  height: 320px;
+  max-width: 900px;
   margin: 0 auto;
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.chart-wrapper:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.25);
 }
 
 /* -------------------------------
-   ✅ Metric Filters - Centered
--------------------------------- */
-.metric-filters {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.metric-filters label {
-  margin: 0 1rem;
-  cursor: pointer;
-}
-
-/* -------------------------------
-   ✅ Chart Controls - Styled Buttons
+   ✅ Chart Buttons - Futuristic Look
 -------------------------------- */
 .chart-controls {
   display: flex;
@@ -409,21 +424,22 @@ ul {
 }
 
 .chart-controls button {
-  background-color: #e2e8f0;
+  background-color: rgba(226, 232, 240, 0.9);
   color: #333;
   border: none;
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 1.2rem;
   margin: 0 0.5rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   font-size: 1rem;
+  backdrop-filter: blur(5px);
 }
 
-.chart-controls button.active,
 .chart-controls button:hover {
   background-color: #f6ad55;
   color: #fff;
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.2);
 }
 /* ---------- Recommendations Page ---------- */
 .recommendations-page {
