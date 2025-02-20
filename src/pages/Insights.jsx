@@ -47,11 +47,10 @@ function Insights() {
     { name: "Archived", value: archivedCount }
   ];
 
-  // 🎨 **Unique Pastel Colors**
-  const pieColors = ["#A0C4FF", "#FFADAD"]; // Hired = Blue, Archived = Light Red
-  const lineChartColor = "#FFD700"; // **Distinct Gold-Yellow for Interviews Over Time**
+  const pieColors = ["#A0C4FF", "#FFADAD"]; // Pastel blue & red
+  const lineChartColor = "#FFD700"; // Gold yellow for interviews over time
 
-  // **Interviews Over Time Calculation**
+  // 📊 **Interviews Over Time Calculation**
   const monthlyCountMap = {};
   filteredData.forEach((candidate) => {
     const dt = parseDate(candidate.interviewDate);
@@ -64,6 +63,54 @@ function Insights() {
   const monthlyData = Object.entries(monthlyCountMap)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([month, count]) => ({ month, count }));
+
+  // 📊 **Average Scores by Skill**
+  const allSkillsSet = new Set();
+  filteredData.forEach((candidate) => {
+    if (candidate.scores) {
+      Object.keys(candidate.scores).forEach((skill) => allSkillsSet.add(skill));
+    }
+  });
+
+  const allSkills = Array.from(allSkillsSet);
+
+  const skillAverages = allSkills.map((skill) => {
+    let totalScore = 0;
+    let count = 0;
+    filteredData.forEach((candidate) => {
+      if (candidate.scores && candidate.scores[skill] !== undefined) {
+        totalScore += candidate.scores[skill];
+        count++;
+      }
+    });
+    return { skill, averageScore: count > 0 ? parseFloat((totalScore / count).toFixed(2)) : 0 };
+  });
+
+  // 📊 **Grouped Bar Chart for Team Fit & Other Scores**
+  const jobTitleMap = {};
+  filteredData.forEach((candidate) => {
+    const jt = candidate.jobTitle || "Unknown";
+    if (!jobTitleMap[jt]) {
+      jobTitleMap[jt] = { jobTitle: jt, counts: {}, totals: {} };
+    }
+    if (candidate.scores) {
+      for (let skill of Object.keys(candidate.scores)) {
+        jobTitleMap[jt].totals[skill] =
+          (jobTitleMap[jt].totals[skill] || 0) + candidate.scores[skill];
+        jobTitleMap[jt].counts[skill] = (jobTitleMap[jt].counts[skill] || 0) + 1;
+      }
+    }
+  });
+
+  const jobTitleData = Object.values(jobTitleMap).map((jtRecord) => {
+    const row = { jobTitle: jtRecord.jobTitle };
+    allSkills.forEach((skill) => {
+      const total = jtRecord.totals[skill] || 0;
+      const count = jtRecord.counts[skill] || 0;
+      row[skill] = count > 0 ? parseFloat((total / count).toFixed(2)) : 0;
+    });
+    return row;
+  });
 
   return (
     <div className="insights-page">
@@ -110,25 +157,7 @@ function Insights() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                labelLine
-                label={({ name, value, cx, cy, midAngle, outerRadius }) => {
-                  const RADIAN = Math.PI / 180;
-                  const x = cx + (outerRadius + 20) * Math.cos(-midAngle * RADIAN);
-                  const y = cy + (outerRadius + 20) * Math.sin(-midAngle * RADIAN);
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#333"
-                      textAnchor={x > cx ? "start" : "end"}
-                      dominantBaseline="central"
-                      fontSize="14px"
-                      fontWeight="bold"
-                    >
-                      {name}: {value}
-                    </text>
-                  );
-                }}
+                label
               >
                 {statusPieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={pieColors[index]} />
@@ -141,7 +170,7 @@ function Insights() {
         </div>
       </div>
 
-      {/* LineChart: Interviews Over Time (FIXED COLORS) */}
+      {/* Interviews Over Time (Line Chart) */}
       <div className="chart-section">
         <h2>📅 Interviews Over Time</h2>
         <div className="chart-wrapper">
@@ -152,14 +181,27 @@ function Insights() {
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Line
-                type="monotone"
-                dataKey="count"
-                stroke={lineChartColor} // **Gold Yellow**
-                strokeWidth={3}
-                dot={{ fill: lineChartColor, r: 5 }}
-              />
+              <Line type="monotone" dataKey="count" stroke={lineChartColor} strokeWidth={3} />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Grouped Bar Chart for Team Fit & Other Scores */}
+      <div className="chart-section">
+        <h2>⭐ Team Fit & Other Scores</h2>
+        <div className="chart-wrapper">
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={jobTitleData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="jobTitle" />
+              <YAxis domain={[0, 5]} />
+              <Tooltip />
+              <Legend />
+              {allSkills.map((skill, index) => (
+                <Bar key={skill} dataKey={skill} fill="#A0C4FF" name={skill} />
+              ))}
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
