@@ -47,26 +47,7 @@ function Insights() {
     { name: "Archived", value: archivedCount }
   ];
 
-  const allSkillsSet = new Set();
-  filteredData.forEach((candidate) => {
-    if (candidate.scores) {
-      Object.keys(candidate.scores).forEach((skill) => allSkillsSet.add(skill));
-    }
-  });
-
-  const allSkills = Array.from(allSkillsSet);
-
-  const skillAverages = allSkills.map((skill) => {
-    let totalScore = 0;
-    let count = 0;
-    filteredData.forEach((candidate) => {
-      if (candidate.scores && candidate.scores[skill] !== undefined) {
-        totalScore += candidate.scores[skill];
-        count++;
-      }
-    });
-    return { skill, averageScore: count > 0 ? parseFloat((totalScore / count).toFixed(2)) : 0 };
-  });
+  const pastelColors = ["#A0C4FF", "#FFADAD", "#FFD6A5", "#FDFFB6", "#9BF6FF", "#BDB2FF"];
 
   return (
     <div className="insights-page">
@@ -84,7 +65,7 @@ function Insights() {
         </label>
       </div>
 
-      {/* Stats Overview - Modernized & Compact */}
+      {/* Stats Overview */}
       <div className="stats-overview">
         <div className="stat-card">
           <h2>Total Candidates</h2>
@@ -113,11 +94,11 @@ function Insights() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+                labelLine
+                label={({ name, value, cx, cy, midAngle, outerRadius }) => {
                   const RADIAN = Math.PI / 180;
-                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  const x = cx + (outerRadius + 20) * Math.cos(-midAngle * RADIAN);
+                  const y = cy + (outerRadius + 20) * Math.sin(-midAngle * RADIAN);
                   return (
                     <text
                       x={x}
@@ -128,13 +109,13 @@ function Insights() {
                       fontSize="14px"
                       fontWeight="bold"
                     >
-                      {statusPieData[index].value}
+                      {name}: {value}
                     </text>
                   );
                 }}
               >
                 {statusPieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={["#4f46e5", "#48bb78"][index]} />
+                  <Cell key={`cell-${index}`} fill={pastelColors[index % pastelColors.length]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -149,14 +130,31 @@ function Insights() {
         <h2>Average Scores by Skill</h2>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={skillAverages}>
+            <BarChart data={statusPieData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="skill" />
-              <YAxis domain={[0, 5]} />
+              <XAxis dataKey="name" />
+              <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="averageScore" fill="#4f46e5" name="Avg Score" />
+              <Bar dataKey="value" fill={pastelColors[1]} />
             </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* LineChart: Interviews Over Time (Restored) */}
+      <div className="chart-section">
+        <h2>Interviews Over Time</h2>
+        <div className="chart-wrapper">
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="value" stroke={pastelColors[2]} strokeWidth={2} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
