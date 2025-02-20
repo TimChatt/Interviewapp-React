@@ -40,10 +40,12 @@ const JobTitleDetails = () => {
           throw new Error("Failed to fetch job title details.");
         }
         const data = await response.json();
+        
+        // Safe assignment with deep copy
         setJobDetails(data);
         setEditedSalaryMin(data.salary_min || "");
         setEditedSalaryMax(data.salary_max || "");
-        setEditedCompetencies(data.competencies || []);
+        setEditedCompetencies(data.competencies ? [...data.competencies] : []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -107,7 +109,7 @@ const JobTitleDetails = () => {
     csvContent += "Competency Name,Level,Description\n";
 
     jobDetails.competencies.forEach((comp) => {
-      Object.entries(comp.descriptions).forEach(([lvl, desc]) => {
+      Object.entries(comp.descriptions || {}).forEach(([lvl, desc]) => {
         csvContent += `${comp.name},${lvl},${desc}\n`;
       });
     });
@@ -139,51 +141,24 @@ const JobTitleDetails = () => {
         )}
       </HStack>
 
+      {/* Salary Banding */}
       <Box bg="white" p="5" shadow="md" borderRadius="lg">
         <Heading size="md" color="gray.700" mb="3">💰 Salary Banding</Heading>
         {isEditing ? (
           <HStack spacing={4}>
-            <Input
-              placeholder="Min Salary"
-              value={editedSalaryMin}
-              onChange={(e) => setEditedSalaryMin(e.target.value)}
-            />
-            <Input
-              placeholder="Max Salary"
-              value={editedSalaryMax}
-              onChange={(e) => setEditedSalaryMax(e.target.value)}
-            />
+            <Input placeholder="Min Salary" value={editedSalaryMin} onChange={(e) => setEditedSalaryMin(e.target.value)} />
+            <Input placeholder="Max Salary" value={editedSalaryMax} onChange={(e) => setEditedSalaryMax(e.target.value)} />
           </HStack>
         ) : (
           <Text><strong>Min:</strong> {jobDetails.salary_min} | <strong>Max:</strong> {jobDetails.salary_max}</Text>
         )}
       </Box>
 
+      {/* Competencies Section */}
       <Box bg="white" p="5" shadow="md" borderRadius="lg" mt={5}>
         <Heading size="md" color="gray.700" mb="3">📌 Competencies</Heading>
-        {isEditing ? (
-          <VStack spacing={4} align="start">
-            {editedCompetencies.map((comp, compIndex) => (
-              <Box key={compIndex} w="100%">
-                <Text fontWeight="bold" color="purple.600">{comp.name}</Text>
-                {Object.entries(comp.descriptions).map(([lvlKey, descVal]) => (
-                  <HStack key={lvlKey} spacing={4} mt={2}>
-                    <Text fontWeight="bold">{lvlKey}:</Text>
-                    <Input
-                      value={descVal}
-                      onChange={(e) => {
-                        const updated = [...editedCompetencies];
-                        updated[compIndex].descriptions[lvlKey] = e.target.value;
-                        setEditedCompetencies(updated);
-                      }}
-                    />
-                  </HStack>
-                ))}
-              </Box>
-            ))}
-          </VStack>
-        ) : (
-          <Table variant="simple" mt="3">
+        {jobDetails.competencies && jobDetails.competencies.length > 0 ? (
+          <Table variant="simple">
             <Thead>
               <Tr>
                 <Th>Competency</Th>
@@ -192,18 +167,18 @@ const JobTitleDetails = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {jobDetails.competencies.map((comp, i) => (
-                Object.entries(comp.descriptions).map(([lvl, desc], idx) => (
-                  <Tr key={`${i}-${idx}`}>
+              {jobDetails.competencies.map((comp) =>
+                Object.entries(comp.descriptions || {}).map(([lvl, desc]) => (
+                  <Tr key={lvl}>
                     <Td fontWeight="bold">{comp.name}</Td>
                     <Td>{lvl}</Td>
                     <Td>{desc}</Td>
                   </Tr>
                 ))
-              ))}
+              )}
             </Tbody>
           </Table>
-        )}
+        ) : <Text>No competencies available.</Text>}
       </Box>
     </Box>
   );
