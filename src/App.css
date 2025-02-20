@@ -113,24 +113,24 @@
   color: #4338ca;
 }
 
-/* Logout Button - Now with Red Box */
+/* Logout Button - Full Red Background */
 .logout-button {
-  background-color: transparent;
-  color: #6366f1;
+  background-color: #e53e3e; /* Red background */
+  color: #ffffff; /* White text */
   font-weight: bold;
   padding: 0.5rem 1rem;
-  border: 2px solid #e53e3e; /* Red border added */
+  border: none;
   border-radius: 6px; /* Rounded corners */
   cursor: pointer;
   width: 100%;
   text-align: left;
   font-size: 1rem;
-  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .logout-button:hover {
-  background-color: #ffe5e5; /* Light red hover */
-  color: #e53e3e; /* Red text */
+  background-color: #c53030; /* Darker red on hover */
+  color: #ffffff;
 }
 
 /* Main Content */
