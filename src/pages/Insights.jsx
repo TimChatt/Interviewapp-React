@@ -47,10 +47,10 @@ function Insights() {
     { name: "Archived", value: archivedCount }
   ];
 
-  const pieColors = ["#A0C4FF", "#FFADAD"];
-  const lineChartColor = "#FFD700";
+  const pieColors = ["#A0C4FF", "#FFADAD"]; // Pastel blue & red
+  const lineChartColor = "#FFD700"; // Gold yellow for interviews over time
 
-  // Interviews Over Time
+  // Interviews Over Time Calculation
   const monthlyCountMap = {};
   filteredData.forEach((candidate) => {
     const dt = parseDate(candidate.interviewDate);
@@ -91,6 +91,7 @@ function Insights() {
     <div className="insights-page">
       <h1>📊 Insights Dashboard</h1>
 
+      {/* Date Filters */}
       <div className="date-filter-controls">
         <label>
           Start Date:
@@ -102,6 +103,7 @@ function Insights() {
         </label>
       </div>
 
+      {/* Stats Overview */}
       <div className="stats-overview">
         <div className="stat-card">
           <h2>Total Candidates</h2>
@@ -117,6 +119,7 @@ function Insights() {
         </div>
       </div>
 
+      {/* PieChart: Hired vs. Archived */}
       <div className="chart-section">
         <h2>Hired vs. Archived</h2>
         <div className="chart-wrapper">
@@ -129,6 +132,7 @@ function Insights() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
+                labelLine={false}
                 label={({ name, value }) => `${name}: ${value}`}
               >
                 {statusPieData.map((entry, index) => (
@@ -142,6 +146,7 @@ function Insights() {
         </div>
       </div>
 
+      {/* LineChart: Interviews Over Time */}
       <div className="chart-section">
         <h2>📅 Interviews Over Time</h2>
         <div className="chart-wrapper">
