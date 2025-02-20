@@ -1257,8 +1257,82 @@ ul {
   cursor: pointer;
   color: #333;
 }
+/* ===== Fix Long Page Stretch Issue ===== */
 
+/* Ensure insights-page is centered & does not stretch */
+.insights-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
 
+/* Ensure sections are not too wide */
+.chart-section,
+.stats-overview {
+  max-width: 1000px;
+  width: 100%;
+}
+
+/* Make sure chart-wrapper doesn't stretch */
+.chart-wrapper {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Ensure dashboard cards are aligned properly */
+.stats-overview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Reduce excessive spacing */
+.chart-section {
+  margin-bottom: 1rem;
+}
+
+/* Ensure charts and text stay centered */
+.insights-chart {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .insights-page {
+    max-width: 95%;
+    padding: 1rem;
+  }
+  .stats-overview {
+    flex-direction: column;
+    align-items: center;
+  }
+  .chart-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-wrapper,
+  .insights-chart {
+    max-width: 100%;
+    padding: 1rem;
+  }
+  .stats-overview {
+    flex-direction: column;
+  }
+}
 /* =========================================
    End of styles.css
    ========================================= */
