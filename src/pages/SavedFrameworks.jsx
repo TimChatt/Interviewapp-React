@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import '../styles.css';
+import {
+  Box,
+  Heading,
+  Input,
+  Button,
+  Grid,
+  Card,
+  CardBody,
+  IconButton,
+  Spinner,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 const SavedFrameworks = () => {
   const [allFrameworks, setAllFrameworks] = useState([]);
@@ -27,20 +40,15 @@ const SavedFrameworks = () => {
         const data = await response.json();
         console.log("Fetched all frameworks:", data.frameworks);
 
-        // Group frameworks by department
         const frameworksByDepartment = data.frameworks.reduce((acc, framework) => {
-          if (!acc[framework.department]) {
-            acc[framework.department] = [];
-          }
-          // If job_titles is included in the framework, add them to the department group
+          if (!acc[framework.department]) acc[framework.department] = [];
           acc[framework.department].push({
             ...framework,
-            jobTitles: framework.job_titles || [], // Ensure job_titles exist
+            jobTitles: framework.job_titles || [],
           });
           return acc;
         }, {});
 
-        // Convert the grouped data to an array for rendering
         const groupedFrameworks = Object.entries(frameworksByDepartment).map(
           ([department, frameworks]) => ({
             department,
@@ -74,14 +82,11 @@ const SavedFrameworks = () => {
   }, [searchQuery, allFrameworks]);
 
   const handleDepartmentClick = (department) => {
-    // Navigate to the department's detailed page
     navigate(`/frameworks/${department}`);
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this framework?"
-    );
+    const confirmDelete = window.confirm("Are you sure you want to delete this framework?");
     if (!confirmDelete) return;
 
     try {
@@ -107,7 +112,6 @@ const SavedFrameworks = () => {
     navigate(`/edit-framework/${id}`);
   };
 
-  // Drag and drop handler
   const onDragEnd = (result) => {
     if (!result.destination) return;
 
@@ -120,76 +124,102 @@ const SavedFrameworks = () => {
   };
 
   return (
-    <div className="saved-frameworks-container">
-      <h1 className="saved-frameworks-title">Saved Competency Frameworks</h1>
+    <Box minH="100vh" p={8} bg="gray.50">
+      <Heading size="xl" textAlign="center" mb={6}>
+        Saved Competency Frameworks
+      </Heading>
 
-      {/* Search Bar */}
-      <div className="search-bar">
-        <input
-          type="text"
+      <VStack spacing={4} mb={6} align="center">
+        <Input
           placeholder="Search by department"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          width="300px"
+          bg="white"
+          borderRadius="md"
+          shadow="sm"
         />
-      </div>
+      </VStack>
 
-      {loading && <div className="loading-spinner">Loading...</div>}
-      {error && <div className="error-message">{error}</div>}
+      {loading && (
+        <Box display="flex" justifyContent="center">
+          <Spinner size="xl" />
+        </Box>
+      )}
+      {error && <Text color="red.500" textAlign="center">{error}</Text>}
 
       {!loading && !error && displayedFrameworks.length === 0 && (
-        <div className="no-frameworks-message">
-          <p>No saved frameworks found. Start by generating a new framework.</p>
-          <button
-            className="create-framework-button"
-            onClick={() => navigate("/competency-framework-planner")}
-          >
+        <Box textAlign="center">
+          <Text>No saved frameworks found. Start by generating a new framework.</Text>
+          <Button mt={4} colorScheme="blue" onClick={() => navigate("/competency-framework-planner")}>
             Generate New Framework
-          </button>
-        </div>
+          </Button>
+        </Box>
       )}
 
-      {/* Drag and Drop Enabled Frameworks Grid */}
       {!loading && !error && displayedFrameworks.length > 0 && (
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="frameworks">
             {(provided) => (
-              <div
-                className="grid-container"
+              <Grid
+                templateColumns={{ base: "1fr", md: "1fr 1fr" }}
+                gap={6}
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
                 {displayedFrameworks.map((group, index) => (
                   <Draggable key={group.department} draggableId={group.department} index={index}>
                     {(provided) => (
-                      <div
+                      <Card
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="department-container"
-                        onClick={() => handleDepartmentClick(group.department)} // Navigate to department page
+                        p={6}
+                        shadow="md"
+                        borderRadius="lg"
+                        bg="white"
+                        cursor="grab"
                       >
-                        <h3>{group.department}</h3> {/* Only show the department name */}
-                        {/* Show job titles */}
-                        <ul>
-                          {group.frameworks.map((framework, idx) => (
-                            <li key={idx}>
-                              {framework.jobTitles.map((title, titleIndex) => (
-                                <div key={titleIndex}>{title.job_title}</div>
-                              ))}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                        <CardBody>
+                          <Heading size="md" color="blue.600" onClick={() => handleDepartmentClick(group.department)}>
+                            {group.department}
+                          </Heading>
+                          <Text mt={2} fontSize="sm" color="gray.600">
+                            {group.frameworks.length} Job Titles
+                          </Text>
+
+                          <VStack mt={4} spacing={2} align="start">
+                            {group.frameworks.map((framework, idx) => (
+                              <Text key={idx} fontSize="sm" color="gray.500">
+                                {framework.jobTitles.map((title) => title.job_title).join(", ")}
+                              </Text>
+                            ))}
+                          </VStack>
+
+                          <VStack mt={4} spacing={2} align="start">
+                            <Button size="sm" colorScheme="blue" onClick={() => handleEdit(group.department)}>
+                              Edit Framework
+                            </Button>
+                            <IconButton
+                              size="sm"
+                              colorScheme="red"
+                              icon={<DeleteIcon />}
+                              aria-label="Delete Framework"
+                              onClick={() => handleDelete(group.department)}
+                            />
+                          </VStack>
+                        </CardBody>
+                      </Card>
                     )}
                   </Draggable>
                 ))}
                 {provided.placeholder}
-              </div>
+              </Grid>
             )}
           </Droppable>
         </DragDropContext>
       )}
-    </div>
+    </Box>
   );
 };
 
