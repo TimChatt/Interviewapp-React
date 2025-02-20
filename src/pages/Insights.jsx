@@ -132,7 +132,6 @@ function Insights() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                labelLine={false}
                 label={({ name, value }) => `${name}: ${value}`}
               >
                 {statusPieData.map((entry, index) => (
@@ -146,7 +145,7 @@ function Insights() {
         </div>
       </div>
 
-      {/* LineChart: Interviews Over Time */}
+      {/* Interviews Over Time (Line Chart) */}
       <div className="chart-section">
         <h2>📅 Interviews Over Time</h2>
         <div className="chart-wrapper">
@@ -159,6 +158,25 @@ function Insights() {
               <Legend />
               <Line type="monotone" dataKey="count" stroke={lineChartColor} strokeWidth={3} />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Grouped Bar Chart for Team Fit & Other Scores */}
+      <div className="chart-section">
+        <h2>⭐ Team Fit & Other Scores</h2>
+        <div className="chart-wrapper">
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={skillAverages}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="skill" />
+              <YAxis domain={[0, 5]} />
+              <Tooltip />
+              <Legend />
+              {allSkills.map((skill, index) => (
+                <Bar key={skill} dataKey="averageScore" fill={skillColors[index % skillColors.length]} name={skill} />
+              ))}
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
