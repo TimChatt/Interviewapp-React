@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import '../styles.css';
+import {
+  Box, Heading, Input, Button, VStack, FormControl, FormLabel, Textarea, Alert, AlertIcon,
+  Spinner, Card, CardBody, Flex
+} from "@chakra-ui/react";
 
 const EditFramework = () => {
   const { id } = useParams(); // Get framework ID from the URL
   const navigate = useNavigate();
-  const [framework, setFramework] = useState(null); // Store framework details
+  const [framework, setFramework] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [updatedFramework, setUpdatedFramework] = useState({
@@ -36,7 +39,6 @@ const EditFramework = () => {
         });
         setError(null);
       } catch (err) {
-        console.error("Error fetching framework:", err);
         setError("Failed to fetch framework details. Please try again.");
       } finally {
         setLoading(false);
@@ -70,82 +72,97 @@ const EditFramework = () => {
       }
       navigate("/frameworks"); // Redirect to the frameworks page after successful update
     } catch (err) {
-      console.error("Error updating framework:", err);
       setError("Failed to update framework. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div className="loading-spinner">Loading...</div>;
-  if (error) return <div className="error-message">{error}</div>;
+  if (loading) {
+    return (
+      <Flex height="100vh" justify="center" align="center">
+        <Spinner size="xl" color="purple.500" />
+      </Flex>
+    );
+  }
 
   return (
-    <div className="edit-framework-container">
-      <h1>Edit Framework</h1>
-      {framework && (
-        <form onSubmit={handleSubmit} className="edit-framework-form">
-          <div className="form-group">
-            <label htmlFor="department">Department:</label>
-            <input
-              type="text"
-              id="department"
-              name="department"
-              value={updatedFramework.department}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="job_title">Job Title:</label>
-            <input
-              type="text"
-              id="job_title"
-              name="job_title"
-              value={updatedFramework.job_title}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="job_levels">Job Levels:</label>
-            <input
-              type="text"
-              id="job_levels"
-              name="job_levels"
-              value={updatedFramework.job_levels}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="competencies">Competencies (JSON format):</label>
-            <textarea
-              id="competencies"
-              name="competencies"
-              value={JSON.stringify(updatedFramework.competencies, null, 2)}
-              onChange={(e) =>
-                setUpdatedFramework((prev) => ({
-                  ...prev,
-                  competencies: JSON.parse(e.target.value),
-                }))
-              }
-              required
-            />
-          </div>
-          <button type="submit" className="save-button">
-            Save Changes
-          </button>
-          <button
-            type="button"
-            className="cancel-button"
-            onClick={() => navigate("/frameworks")}
-          >
-            Cancel
-          </button>
-        </form>
+    <Box maxW="800px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+        Edit Framework
+      </Heading>
+
+      {error && (
+        <Alert status="error" mb="4">
+          <AlertIcon />
+          {error}
+        </Alert>
       )}
-    </div>
+
+      {framework && (
+        <Card bg="white" shadow="md" borderRadius="lg">
+          <CardBody>
+            <form onSubmit={handleSubmit}>
+              <VStack spacing="4" align="stretch">
+                <FormControl isRequired>
+                  <FormLabel>Department</FormLabel>
+                  <Input
+                    type="text"
+                    name="department"
+                    value={updatedFramework.department}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>Job Title</FormLabel>
+                  <Input
+                    type="text"
+                    name="job_title"
+                    value={updatedFramework.job_title}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>Job Levels</FormLabel>
+                  <Input
+                    type="text"
+                    name="job_levels"
+                    value={updatedFramework.job_levels}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>Competencies (JSON format)</FormLabel>
+                  <Textarea
+                    name="competencies"
+                    value={JSON.stringify(updatedFramework.competencies, null, 2)}
+                    onChange={(e) =>
+                      setUpdatedFramework((prev) => ({
+                        ...prev,
+                        competencies: JSON.parse(e.target.value),
+                      }))
+                    }
+                    rows={5}
+                  />
+                </FormControl>
+
+                <Flex justify="space-between" mt="4">
+                  <Button colorScheme="green" type="submit" isLoading={loading}>
+                    Save Changes
+                  </Button>
+                  <Button colorScheme="gray" onClick={() => navigate("/frameworks")}>
+                    Cancel
+                  </Button>
+                </Flex>
+              </VStack>
+            </form>
+          </CardBody>
+        </Card>
+      )}
+    </Box>
   );
 };
 
