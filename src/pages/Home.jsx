@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiUsers, FiBarChart, FiLightbulb, FiSettings } from "react-icons/fi"; // Import icons
+import { FiUsers, FiBarChart, FiSettings } from "react-icons/fi"; // Import icons
+import { MdLightbulb } from "react-icons/md"; // Use Material Design Lightbulb
 import {
   Box, Heading, Text, Grid, GridItem, Card, CardBody, Stat, StatLabel, StatNumber, VStack, Icon
 } from "@chakra-ui/react";
@@ -58,7 +59,7 @@ function Home() {
         <NavCard
           title="Recommendations"
           description="Get actionable suggestions to improve the hiring process."
-          icon={FiLightbulb}
+          icon={MdLightbulb} // Replaced with Material Design version
           onClick={() => navigate("/recommendations")}
         />
         <NavCard
