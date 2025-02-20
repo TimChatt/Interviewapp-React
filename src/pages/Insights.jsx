@@ -1,27 +1,15 @@
 import React, { useState } from "react";
-import "../styles.css";
-import ashbyMockData from "../mockdata/ashbyMockData.json";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Tooltip,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  LineChart,
-  Line
+  Box, Heading, Stat, StatLabel, StatNumber, Grid, VStack, Input, Card, CardBody, Text
+} from "@chakra-ui/react";
+import {
+  PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  ResponsiveContainer, LineChart, Line
 } from "recharts";
+import ashbyMockData from "../mockdata/ashbyMockData.json";
 
 // Helper to parse date
-function parseDate(dateString) {
-  if (!dateString) return null;
-  return new Date(dateString);
-}
+const parseDate = (dateString) => dateString ? new Date(dateString) : null;
 
 function Insights() {
   const [startDate, setStartDate] = useState("");
@@ -47,7 +35,7 @@ function Insights() {
     { name: "Archived", value: archivedCount }
   ];
 
-  const pieColors = ["#A0C4FF", "#FFADAD"]; // Pastel blue & red
+  const pieColors = ["#A0C4FF", "#FFADAD"];
   const lineChartColor = "#FFD700"; // Gold yellow for interviews over time
 
   // Interviews Over Time Calculation
@@ -88,100 +76,110 @@ function Insights() {
   });
 
   return (
-    <div className="insights-page">
-      <h1>📊 Insights Dashboard</h1>
+    <Box maxW="1000px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+        📊 Insights Dashboard
+      </Heading>
 
       {/* Date Filters */}
-      <div className="date-filter-controls">
-        <label>
-          Start Date:
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-        </label>
-        <label>
-          End Date:
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </label>
-      </div>
+      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mb="6">
+        <VStack align="stretch">
+          <Text fontSize="sm" fontWeight="bold">Start Date:</Text>
+          <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </VStack>
+        <VStack align="stretch">
+          <Text fontSize="sm" fontWeight="bold">End Date:</Text>
+          <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </VStack>
+      </Grid>
 
       {/* Stats Overview */}
-      <div className="stats-overview">
-        <div className="stat-card">
-          <h2>Total Candidates</h2>
-          <p>{totalCandidates}</p>
-        </div>
-        <div className="stat-card highlight">
-          <h2>Hired</h2>
-          <p>{hiredCount}</p>
-        </div>
-        <div className="stat-card">
-          <h2>Archived</h2>
-          <p>{archivedCount}</p>
-        </div>
-      </div>
+      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6} mb="8">
+        <StatCard title="Total Candidates" value={totalCandidates} />
+        <StatCard title="Hired" value={hiredCount} />
+        <StatCard title="Archived" value={archivedCount} />
+      </Grid>
 
       {/* PieChart: Hired vs. Archived */}
-      <div className="chart-section">
-        <h2>Hired vs. Archived</h2>
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
-              <Pie
-                data={statusPieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label={({ name, value }) => `${name}: ${value}`}
-              >
-                {statusPieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={pieColors[index]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <ChartSection title="Hired vs. Archived">
+        <ResponsiveContainer width="100%" height={350}>
+          <PieChart>
+            <Pie
+              data={statusPieData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label={({ name, value }) => `${name}: ${value}`}
+            >
+              {statusPieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={pieColors[index]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartSection>
 
       {/* Interviews Over Time (Line Chart) */}
-      <div className="chart-section">
-        <h2>📅 Interviews Over Time</h2>
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="count" stroke={lineChartColor} strokeWidth={3} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <ChartSection title="📅 Interviews Over Time">
+        <ResponsiveContainer width="100%" height={350}>
+          <LineChart data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="count" stroke={lineChartColor} strokeWidth={3} />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartSection>
 
-      {/* Grouped Bar Chart for Team Fit & Other Scores */}
-      <div className="chart-section">
-        <h2>⭐ Team Fit & Other Scores</h2>
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={skillAverages}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="skill" />
-              <YAxis domain={[0, 5]} />
-              <Tooltip />
-              <Legend />
-              {allSkills.map((skill, index) => (
-                <Bar key={skill} dataKey="averageScore" fill={skillColors[index % skillColors.length]} name={skill} />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    </div>
+      {/* Grouped Bar Chart for Skill Scores */}
+      <ChartSection title="⭐ Team Fit & Other Scores">
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={skillAverages}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="skill" />
+            <YAxis domain={[0, 5]} />
+            <Tooltip />
+            <Legend />
+            {allSkills.map((skill, index) => (
+              <Bar key={skill} dataKey="averageScore" fill={skillColors[index % skillColors.length]} name={skill} />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartSection>
+    </Box>
   );
 }
+
+// Reusable Stat Card Component
+const StatCard = ({ title, value }) => {
+  return (
+    <Card bg="white" shadow="md" borderRadius="lg">
+      <CardBody>
+        <Stat textAlign="center">
+          <StatLabel fontSize="lg" color="gray.600">{title}</StatLabel>
+          <StatNumber fontSize="3xl" color="purple.600">{value}</StatNumber>
+        </Stat>
+      </CardBody>
+    </Card>
+  );
+};
+
+// Reusable Chart Section Component
+const ChartSection = ({ title, children }) => {
+  return (
+    <Card bg="white" shadow="md" borderRadius="lg" mb="8">
+      <CardBody>
+        <Heading size="md" textAlign="center" color="purple.700" mb="4">{title}</Heading>
+        {children}
+      </CardBody>
+    </Card>
+  );
+};
 
 export default Insights;
