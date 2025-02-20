@@ -24,13 +24,7 @@ import {
   Spinner
 } from "@chakra-ui/react";
 
-const JobTitleDetailsModal = ({
-  isOpen,
-  onClose,
-  department,
-  jobTitle,
-  jobLevel,
-}) => {
+const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel }) => {
   const [jobDetails, setJobDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,25 +36,31 @@ const JobTitleDetailsModal = ({
 
   useEffect(() => {
     if (!isOpen) return;
+
     const fetchJobDetails = async () => {
       setLoading(true);
       try {
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-job-title-details/${department}/${jobTitle}/${jobLevel}`
         );
+
         if (!response.ok) throw new Error("Failed to fetch job title details.");
 
         const data = await response.json();
+        console.log("Fetched Job Details:", data);  // ✅ Debugging API Response
+
+        // Ensure competencies exist before setting state
         setJobDetails(data);
         setEditedSalaryMin(data.salary_min || "");
         setEditedSalaryMax(data.salary_max || "");
-        setEditedCompetencies([...data.competencies]); // Ensure proper state setting
+        setEditedCompetencies(Array.isArray(data.competencies) ? data.competencies : []);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+
     fetchJobDetails();
   }, [isOpen, department, jobTitle, jobLevel]);
 
@@ -109,29 +109,6 @@ const JobTitleDetailsModal = ({
     }
   };
 
-  const handleExportToCSV = () => {
-    if (!jobDetails) return;
-
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += `Department,Job Title,Job Level,Salary Min,Salary Max\n`;
-    csvContent += `${department},${jobTitle},${jobLevel},${jobDetails.salary_min},${jobDetails.salary_max}\n\n`;
-    csvContent += "Competency Name,Level,Description\n";
-
-    jobDetails.competencies.forEach((comp) => {
-      Object.entries(comp.descriptions).forEach(([lvl, desc]) => {
-        csvContent += `${comp.name},${lvl},${desc}\n`;
-      });
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${department}-${jobTitle}-${jobLevel}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -148,12 +125,8 @@ const JobTitleDetailsModal = ({
           ) : (
             <VStack spacing={5} align="stretch">
               <HStack spacing={4} justify="center">
-                <Button colorScheme="blue" onClick={handleExportToCSV}>Export to CSV</Button>
-                {isEditing ? (
-                  <Button colorScheme="green" onClick={handleSave}>Save</Button>
-                ) : (
-                  <Button colorScheme="purple" onClick={handleEditClick}>Edit</Button>
-                )}
+                <Button colorScheme="blue" onClick={handleSave}>Save</Button>
+                <Button colorScheme="purple" onClick={handleEditClick}>Edit</Button>
               </HStack>
 
               {/* Salary Banding */}
@@ -182,26 +155,30 @@ const JobTitleDetailsModal = ({
               {/* Competencies Section */}
               <Box bg="gray.50" p={5} borderRadius="md" shadow="sm">
                 <Heading size="md" color="gray.700" mb="3">📌 Competencies</Heading>
-                <Table variant="simple" mt="3">
-                  <Thead>
-                    <Tr>
-                      <Th>Competency</Th>
-                      <Th>Level</Th>
-                      <Th>Description</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {jobDetails.competencies.map((comp, i) =>
-                      Object.entries(comp.descriptions).map(([lvl, desc], idx) => (
-                        <Tr key={`${i}-${idx}`}>
-                          <Td fontWeight="bold">{comp.name}</Td>
-                          <Td>{lvl}</Td>
-                          <Td>{desc}</Td>
-                        </Tr>
-                      ))
-                    )}
-                  </Tbody>
-                </Table>
+                {editedCompetencies.length > 0 ? (
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>Competency</Th>
+                        <Th>Level</Th>
+                        <Th>Description</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {editedCompetencies.map((comp, i) =>
+                        Object.entries(comp.descriptions || {}).map(([lvl, desc]) => (
+                          <Tr key={`${i}-${lvl}`}>
+                            <Td fontWeight="bold">{comp.name}</Td>
+                            <Td>{lvl}</Td>
+                            <Td>{desc}</Td>
+                          </Tr>
+                        ))
+                      )}
+                    </Tbody>
+                  </Table>
+                ) : (
+                  <Text color="gray.500">No competencies available.</Text>
+                )}
               </Box>
             </VStack>
           )}
