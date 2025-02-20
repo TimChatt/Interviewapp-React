@@ -47,12 +47,13 @@ const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel 
         if (!response.ok) throw new Error("Failed to fetch job title details.");
 
         const data = await response.json();
-        console.log("Fetched Job Details:", data);  // ✅ Debugging API Response
+        console.log("Fetched Job Details:", data); // ✅ Debugging API Response
 
-        // Ensure competencies exist before setting state
         setJobDetails(data);
         setEditedSalaryMin(data.salary_min || "");
         setEditedSalaryMax(data.salary_max || "");
+
+        // ✅ Ensure competencies are correctly set as an array
         setEditedCompetencies(Array.isArray(data.competencies) ? data.competencies : []);
       } catch (err) {
         setError(err.message);
@@ -166,8 +167,8 @@ const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel 
                     </Thead>
                     <Tbody>
                       {editedCompetencies.map((comp, i) =>
-                        Object.entries(comp.descriptions || {}).map(([lvl, desc]) => (
-                          <Tr key={`${i}-${lvl}`}>
+                        Object.entries(comp.descriptions || {}).map(([lvl, desc], idx) => (
+                          <Tr key={`${i}-${idx}`}>
                             <Td fontWeight="bold">{comp.name}</Td>
                             <Td>{lvl}</Td>
                             <Td>{desc}</Td>
