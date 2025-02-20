@@ -1257,3 +1257,92 @@ ul {
   cursor: pointer;
   color: #333;
 }
+/* ---------- Sidebar Enhancements ---------- */
+
+/* Collapsible Admin Section */
+.collapsible-section {
+  position: relative;
+}
+
+.collapsible-toggle {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  font-weight: bold;
+}
+
+.collapsible-toggle:hover,
+.collapsible-toggle.active {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.collapsible-links {
+  display: none;
+  padding-left: 1rem;
+}
+
+.collapsible-links.open {
+  display: block;
+}
+
+.collapsible-links a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #6366f1;
+  text-decoration: none;
+  transition: background 0.3s ease;
+  font-weight: normal;
+}
+
+.collapsible-links a:hover {
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-weight: bold;
+}
+
+/* Fix for Sidebar Logout Button */
+.sidebar-footer {
+  padding: 1rem;
+  text-align: center;
+}
+
+.logout-button {
+  width: 100%;
+  background-color: #f87171;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.logout-button:hover {
+  background-color: #dc2626;
+}
+
+/* Ensure Sidebar Links are Consistent */
+.sidebar a {
+  display: block;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #6366f1;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-weight: bold;
+}
