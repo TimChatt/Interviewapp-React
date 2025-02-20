@@ -282,78 +282,112 @@ ul {
 /* ---------- Insights Page ---------- */
 .insights-page {
   max-width: 1400px; /* Increased width for better scaling */
+  width: 90%;
   margin: 0 auto;
   padding: 2rem;
   color: #333;
 }
 
-/* Improved Stats Overview */
+/* Improved Header */
+.insights-page h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #444;
+}
+
+/* -------------------------------
+   ✅ Date Filters - Centered & Spacious
+-------------------------------- */
+.date-filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.date-filter-controls label {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-filter-controls input {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* -------------------------------
+   ✅ Stats Overview - Flexible Grid Layout
+-------------------------------- */
 .stats-overview {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Dynamic, responsive grid */
   gap: 1.5rem;
   justify-content: center;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
-/* Make the stat cards larger and evenly spaced */
+/* Stat Cards - Improved Readability & Spacing */
 .stat-card {
   background-color: #fff;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
+  min-width: 260px;
+  max-width: 320px; /* Prevents excessive stretching */
   flex: 1;
-  min-width: 250px; /* Ensures they don't shrink too much */
 }
 
-/* Bigger, bolder stats */
+/* Bigger, Bolder Stat Headers */
 .stat-card h2 {
   font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.stat-card p {
-  font-size: 2rem; /* Larger numbers */
   font-weight: bold;
   color: #333;
 }
 
-/* Ensuring the charts scale properly */
-.chart-wrapper {
-  width: 100%;
-  height: 350px; /* Increased height for better visibility */
-  max-width: 1000px; /* Prevents unnecessary shrinking */
-  margin: 0 auto;
+.stat-card p {
+  font-size: 2.2rem; /* Bigger for better impact */
+  font-weight: bold;
+  color: #222;
 }
 
-/* Chart sections alignment */
+/* -------------------------------
+   ✅ Charts - Full Width & Better Visibility
+-------------------------------- */
 .chart-section {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
 }
 
-/* Date Filters - Centered & Spacious */
-.date-filter-controls {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+.chart-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #555;
+  text-align: center;
 }
 
-.date-filter-controls label {
-  font-weight: 500;
+/* Make the Charts Properly Scale */
+.chart-wrapper {
+  width: 100%;
+  height: 350px; /* Improved height for readability */
+  max-width: 1100px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
 }
 
-.date-filter-controls input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-/* Metric Filters */
+/* -------------------------------
+   ✅ Metric Filters - Centered
+-------------------------------- */
 .metric-filters {
   display: flex;
   justify-content: center;
@@ -365,22 +399,25 @@ ul {
   cursor: pointer;
 }
 
-/* Chart Buttons */
+/* -------------------------------
+   ✅ Chart Controls - Styled Buttons
+-------------------------------- */
 .chart-controls {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .chart-controls button {
   background-color: #e2e8f0;
   color: #333;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
   margin: 0 0.5rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-size: 1rem;
 }
 
 .chart-controls button.active,
@@ -388,7 +425,6 @@ ul {
   background-color: #f6ad55;
   color: #fff;
 }
-
 /* ---------- Recommendations Page ---------- */
 .recommendations-page {
   max-width: 1000px;
