@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import '../styles.css';
+import "../styles.css";
 import { AuthContext } from "../contexts/AuthContext";
 import { FaEye } from "react-icons/fa"; // Futuristic icon
 
@@ -64,9 +64,12 @@ const Sidebar = () => {
               className={`collapsible-toggle ${isAdminOpen ? "active" : ""}`}
               onClick={() => setIsAdminOpen(!isAdminOpen)}
             >
-              Admin ▼
+              Admin {isAdminOpen ? "▲" : "▼"}
             </button>
-            <div className={`collapsible-links ${isAdminOpen ? "open" : ""}`}>
+            <div
+              className={`collapsible-links ${isAdminOpen ? "open" : ""}`}
+              style={{ display: isAdminOpen ? "block" : "none" }}
+            >
               <Link
                 to="/admin"
                 className={location.pathname === "/admin" ? "active" : ""}
