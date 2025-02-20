@@ -1,8 +1,10 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "../styles.css";
 import { AuthContext } from "../contexts/AuthContext";
-import { FaEye } from "react-icons/fa"; // Futuristic icon
+import { 
+  VStack, Box, Button, Collapse, Icon, useColorModeValue 
+} from "@chakra-ui/react";
+import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -15,89 +17,112 @@ const Sidebar = () => {
     navigate("/login");
   };
 
+  // Styling for active links
+  const activeBg = useColorModeValue("gray.200", "gray.700");
+  const inactiveBg = "transparent";
+
   return (
-    <nav className="sidebar">
-      <div className="sidebar-container">
-        {/* Logo - Restored Pastel Glow */}
-        <div className="sidebar-logo">
-          <FaEye className="logo-icon" />
-          <span className="logo-text">TA Vision</span>
-        </div>
+    <Box 
+      as="nav" 
+      w="250px" 
+      h="100vh" 
+      bg={useColorModeValue("white", "gray.800")}
+      boxShadow="md"
+      p="4"
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+    >
+      {/* Logo Section */}
+      <VStack spacing="4" align="center">
+        <Icon as={FaEye} boxSize="8" color="blue.500" />
+        <Box fontSize="xl" fontWeight="bold" color="blue.500">
+          TA Vision
+        </Box>
+      </VStack>
 
-        {/* Navigation Links */}
-        <ul className="sidebar-links">
-          <li>
-            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/candidates"
-              className={location.pathname === "/candidates" ? "active" : ""}
-            >
-              Candidates
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/insights"
-              className={location.pathname === "/insights" ? "active" : ""}
-            >
-              Insights
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/recommendations"
-              className={
-                location.pathname === "/recommendations" ? "active" : ""
-              }
-            >
-              Recommendations
-            </Link>
-          </li>
+      {/* Navigation Links */}
+      <VStack align="stretch" spacing="3">
+        <Button 
+          as={Link} 
+          to="/" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/" ? activeBg : inactiveBg}
+        >
+          Home
+        </Button>
+        <Button 
+          as={Link} 
+          to="/candidates" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/candidates" ? activeBg : inactiveBg}
+        >
+          Candidates
+        </Button>
+        <Button 
+          as={Link} 
+          to="/insights" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/insights" ? activeBg : inactiveBg}
+        >
+          Insights
+        </Button>
+        <Button 
+          as={Link} 
+          to="/recommendations" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/recommendations" ? activeBg : inactiveBg}
+        >
+          Recommendations
+        </Button>
 
-          {/* Admin Section (Collapsible) */}
-          <li className="collapsible-section">
-            <button
-              className={`collapsible-toggle ${isAdminOpen ? "active" : ""}`}
-              onClick={() => setIsAdminOpen(!isAdminOpen)}
+        {/* Admin Section (Collapsible) */}
+        <Button 
+          variant="ghost" 
+          justifyContent="space-between" 
+          onClick={() => setIsAdminOpen(!isAdminOpen)}
+        >
+          Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
+        </Button>
+        <Collapse in={isAdminOpen}>
+          <VStack align="stretch" pl="4">
+            <Button 
+              as={Link} 
+              to="/admin" 
+              variant="ghost" 
+              justifyContent="flex-start" 
+              bg={location.pathname === "/admin" ? activeBg : inactiveBg}
             >
-              Admin {isAdminOpen ? "▲" : "▼"}
-            </button>
-            <div className={`collapsible-links ${isAdminOpen ? "open" : ""}`}>
-              <Link
-                to="/admin"
-                className={location.pathname === "/admin" ? "active" : ""}
-              >
-                Admin Panel
-              </Link>
-            </div>
-          </li>
+              Admin Panel
+            </Button>
+          </VStack>
+        </Collapse>
 
-          <li>
-            <Link
-              to="/competency-framework-planner"
-              className={
-                location.pathname === "/competency-framework-planner"
-                  ? "active"
-                  : ""
-              }
-            >
-              Competency Framework
-            </Link>
-          </li>
-        </ul>
+        <Button 
+          as={Link} 
+          to="/competency-framework-planner" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/competency-framework-planner" ? activeBg : inactiveBg}
+        >
+          Competency Framework
+        </Button>
+      </VStack>
 
-        {/* Logout Button - Styled for Consistency */}
-        <div className="sidebar-footer">
-          <button className="logout-button" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </div>
-    </nav>
+      {/* Logout Button */}
+      <Button 
+        onClick={handleLogout} 
+        colorScheme="red" 
+        mt="auto"
+        width="full"
+      >
+        Logout
+      </Button>
+    </Box>
   );
 };
 
