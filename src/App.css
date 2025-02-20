@@ -52,9 +52,14 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Remove the Admin Button */
+/* Remove ONLY the Admin Button (not Admin Panel) */
 .sidebar a[href*="admin"]:not([href*="admin-panel"]) {
   display: none;
+}
+
+/* Ensure "Admin Panel" Remains */
+.sidebar a[href*="admin-panel"] {
+  display: block;
 }
 
 /* Fix Logout Button Styling */
