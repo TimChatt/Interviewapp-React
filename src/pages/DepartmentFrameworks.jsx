@@ -22,7 +22,7 @@ const DepartmentFrameworks = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
+          https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}
         );
         if (!response.ok) {
           throw new Error("Failed to fetch job titles.");
@@ -38,36 +38,21 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // ✅ Extracts job category (e.g., "Machine Learning" from "Machine Learning L1")
-  const extractJobCategory = (jobTitle) => jobTitle.replace(/L\d+/, "").trim();
-
-  // ✅ Extracts the job level (e.g., "L1" from "Machine Learning L1")
-  const extractJobLevel = (jobTitle) => {
-    const match = jobTitle.match(/L\d+/);
-    return match ? match[0] : "L1";
-  };
-
   // ✅ Open the modal and pass job details
   const openModal = (jobTitle) => {
+    const levels = ["L1", "L2", "L3", "L4"];
+    const jobLevel = levels.find(level => jobTitle.includes(level)) || "L1";
     setSelectedJobTitle(jobTitle);
-    setSelectedJobLevel(extractJobLevel(jobTitle));
+    setSelectedJobLevel(jobLevel);
     setIsModalOpen(true);
   };
 
   const handleEdit = (jobTitle) => {
-    navigate(`/edit-framework/${jobTitle}`);
+    navigate(/edit-framework/${jobTitle});
   };
 
-  // ✅ Groups job titles by category
-  const groupedTitles = jobTitles.reduce((acc, job) => {
-    const category = extractJobCategory(job.job_title);
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(job);
-    return acc;
-  }, {});
-
   return (
-    <Box maxW="1200px" mx="auto" py="6">
+    <Box maxW="1000px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         {department} Frameworks
       </Heading>
@@ -92,30 +77,23 @@ const DepartmentFrameworks = () => {
       )}
 
       {!loading && !error && jobTitles.length > 0 && (
-        <>
-          {Object.entries(groupedTitles).map(([category, jobs], idx) => (
-            <Box key={idx} mb="8">
-              <Heading size="lg" color="purple.700" mb="4">{category}</Heading>
-              <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
-                {jobs.map((job, index) => (
-                  <GridItem key={index}>
-                    <Card bg="white" shadow="md" borderRadius="lg">
-                      <CardBody textAlign="center">
-                        <Heading size="md" mb="2">{job.job_title}</Heading>
-                        <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
-                          View Details
-                        </Button>
-                        <Button colorScheme="purple" size="sm" onClick={() => handleEdit(job.job_title)}>
-                          Edit Framework
-                        </Button>
-                      </CardBody>
-                    </Card>
-                  </GridItem>
-                ))}
-              </Grid>
-            </Box>
+        <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+          {jobTitles.map((job, index) => (
+            <GridItem key={index}>
+              <Card bg="white" shadow="md" borderRadius="lg">
+                <CardBody textAlign="center">
+                  <Heading size="md" mb="2">{job.job_title}</Heading>
+                  <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
+                    View Details
+                  </Button>
+                  <Button colorScheme="purple" size="sm" onClick={() => handleEdit(job.job_title)}>
+                    Edit Framework
+                  </Button>
+                </CardBody>
+              </Card>
+            </GridItem>
           ))}
-        </>
+        </Grid>
       )}
 
       {/* ✅ Use JobTitleDetailsModal Instead of Manual Modal */}
