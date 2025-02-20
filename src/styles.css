@@ -1,7 +1,6 @@
 /* =========================================
    styles.css - Page & Component Styles
-   Modern Pastel SaaS
-   Consolidated & Optimized
+   Fixes Sidebar & Main Content Alignment
    ========================================= */
 
 /* ---------- Common Styles ---------- */
@@ -13,31 +12,6 @@ body {
   padding: 0;
 }
 
-/* Error & Loading Messages */
-.error-message {
-  background-color: #ffe5e5;
-  color: #e53e3e;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 1rem;
-  margin-top: 20px;
-}
-
-.loading-spinner {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #6366f1;
-  margin-top: 20px;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
-}
-
-/* Generic Reset */
 ul {
   list-style-type: none;
   padding: 0;
@@ -48,15 +22,8 @@ button {
   cursor: pointer;
 }
 
-/* ---------- Main App Layout ---------- */
+/* ---------- Sidebar Styles (Fixed Left) ---------- */
 
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f0f2f8;
-}
-
-/* Sidebar */
 .sidebar {
   width: 250px;
   height: 100vh;
@@ -86,10 +53,10 @@ button {
   border-radius: 6px;
 }
 
-/* Main Content */
+/* ---------- Main Content (Properly Aligned) ---------- */
+
 .main-content {
-  flex-grow: 1;
-  margin-left: 250px;
+  margin-left: 250px; /* Prevents sidebar overlap */
   padding: 2rem;
   max-width: calc(100% - 250px);
   background-color: #f8f9fa;
@@ -99,7 +66,7 @@ button {
   align-items: center;
 }
 
-/* ---------- Dashboard Styles ---------- */
+/* ---------- Dashboard & Stats Cards ---------- */
 
 .stats-overview {
   display: flex;
@@ -121,13 +88,12 @@ button {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- Insights Page Fixes ---------- */
+/* ---------- Insights Page (Fix Content Alignment) ---------- */
 
 .insights-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -168,20 +134,6 @@ button {
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-}
-
-.admin-card h3 {
-  color: #444;
-  margin-bottom: 0.5rem;
-}
-
-/* ---------- Candidate Pages ---------- */
-
-.candidate-summary {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  justify-content: space-around;
 }
 
 /* ---------- Login/SignUp Pages ---------- */
@@ -226,17 +178,6 @@ button {
   max-width: 900px;
   width: 90%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #333;
 }
 
 /* ---------- Responsive Fixes ---------- */
