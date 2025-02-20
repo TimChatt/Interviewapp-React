@@ -1,17 +1,20 @@
 import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext"; // Assuming you have admin token in context
+import { AuthContext } from "../contexts/AuthContext"; 
 import { useNavigate } from "react-router-dom";
-import '../styles.css';
+import { 
+  Box, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Spinner, Flex, VStack, useToast 
+} from "@chakra-ui/react";
 
 const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useContext(AuthContext); // Admin user should be logged in
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
-    console.log("AdminDashboard user:", user); // Debug: check if user exists
-    // If no user is logged in, stop loading and show message
+    console.log("AdminDashboard user:", user);
+
     if (!user) {
       setLoading(false);
       return;
@@ -22,7 +25,6 @@ const AdminDashboard = () => {
         const response = await fetch("https://interviewappbe-production.up.railway.app/api/users/pending", {
           headers: {
             "Content-Type": "application/json",
-            // Include the admin JWT token in the Authorization header:
             "Authorization": `Bearer ${user.token}`
           }
         });
@@ -42,48 +44,73 @@ const AdminDashboard = () => {
     fetchPendingUsers();
   }, [user]);
 
+  const handleApprove = (username) => {
+    toast({
+      title: "User Approved",
+      description: `${username} has been approved.`,
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
   if (loading) {
-    return <div>Loading pending users...</div>;
+    return (
+      <Flex height="100vh" justify="center" align="center">
+        <Spinner size="xl" color="purple.500" />
+      </Flex>
+    );
   }
 
-  // If there's no user, prompt to log in
   if (!user) {
-    return <div>Please log in as an admin to access this page.</div>;
+    return (
+      <Flex height="100vh" justify="center" align="center">
+        <Text fontSize="lg" color="gray.600">Please log in as an admin to access this page.</Text>
+      </Flex>
+    );
   }
 
   return (
-    <div className="admin-dashboard">
-      <h1>Admin Dashboard - Pending User Approvals</h1>
-      {pendingUsers.length === 0 ? (
-        <p>No pending users.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingUsers.map((pendingUser) => (
-              <tr key={pendingUser.username}>
-                <td>{pendingUser.username}</td>
-                <td>{pendingUser.email}</td>
-                <td>
-                  <button onClick={() => handleApprove(pendingUser.username)}>
-                    Approve
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      <button className="back-button" onClick={() => navigate("/admin")}>
-        Back to Admin Home
-      </button>
-    </div>
+    <Box maxW="1000px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+        Admin Dashboard - Pending User Approvals
+      </Heading>
+
+      <Box bg="white" p="6" borderRadius="lg" shadow="md">
+        {pendingUsers.length === 0 ? (
+          <Text fontSize="lg" color="gray.600" textAlign="center">No pending users.</Text>
+        ) : (
+          <Table variant="simple">
+            <Thead bg="gray.100">
+              <Tr>
+                <Th>Username</Th>
+                <Th>Email</Th>
+                <Th>Action</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {pendingUsers.map((pendingUser) => (
+                <Tr key={pendingUser.username}>
+                  <Td>{pendingUser.username}</Td>
+                  <Td>{pendingUser.email}</Td>
+                  <Td>
+                    <Button colorScheme="green" size="sm" onClick={() => handleApprove(pendingUser.username)}>
+                      Approve
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
+      </Box>
+
+      <VStack mt="6">
+        <Button colorScheme="purple" onClick={() => navigate("/admin")}>
+          Back to Admin Home
+        </Button>
+      </VStack>
+    </Box>
   );
 };
 
