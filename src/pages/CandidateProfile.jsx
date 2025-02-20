@@ -1,12 +1,12 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider
+  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider, Stat, StatLabel, StatNumber
 } from "@chakra-ui/react";
 import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip,
+  PieChart, Pie, Cell
 } from "recharts";
-
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
 
@@ -28,6 +28,7 @@ const CandidateProfile = () => {
   // Merge Ashby & Metaview data
   const candidate = ashbyMockData.find((item, index) => index + 1 === parseInt(candidateId));
   const transcript = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName)?.transcript || [];
+  const feedback = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName)?.aiFeedback || "No AI feedback available.";
 
   if (!candidate) {
     return (
@@ -73,25 +74,25 @@ const CandidateProfile = () => {
         </CardBody>
       </Card>
 
-      {/* Grid Layout for Sections */}
+      {/* AI Insights & Interview Stats */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mb="6">
-        {/* Interview Timeline */}
+        {/* AI Feedback */}
         <GridItem>
-          <StatCard title="Interview Timeline" content={
-            candidate.timeline?.length > 0 ? (
-              candidate.timeline.map((t, idx) => (
-                <Text key={idx}><strong>{t.stage}</strong> - {t.date}</Text>
-              ))
-            ) : <Text>No timeline data available.</Text>
-          } />
+          <StatCard title="AI Feedback" content={<Text>{feedback}</Text>} />
         </GridItem>
 
         {/* Speaking Ratio */}
         <GridItem>
           <StatCard title="Speaking Ratio" content={
             <>
-              <Text><strong>Candidate:</strong> {candidateRatio}%</Text>
-              <Text><strong>Interviewer:</strong> {interviewerRatio}%</Text>
+              <PieChart width={200} height={200}>
+                <Pie dataKey="value" data={[{ name: "Candidate", value: candidateWords }, { name: "Interviewer", value: interviewerWords }]} cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label>
+                  <Cell key="candidate" fill="#82ca9d" />
+                  <Cell key="interviewer" fill="#ffc658" />
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
             </>
           } />
         </GridItem>
@@ -125,22 +126,6 @@ const CandidateProfile = () => {
               <Legend />
             </RadarChart>
           ) : <Text>No radar data available.</Text>}
-        </CardBody>
-      </Card>
-
-      {/* Interview Transcript */}
-      <Card mb="6" p="6" bg="white" shadow="md">
-        <CardBody>
-          <Heading size="md" mb="4">Interview Transcript</Heading>
-          {transcript.length > 0 ? (
-            transcript.map((entry, idx) => (
-              <Box key={idx} mb="4">
-                <Text><strong>Q:</strong> {entry.question}</Text>
-                <Text><em>A: {entry.candidateAnswer}</em></Text>
-                <Divider my="2" />
-              </Box>
-            ))
-          ) : <Text>No transcript available.</Text>}
         </CardBody>
       </Card>
     </Box>
