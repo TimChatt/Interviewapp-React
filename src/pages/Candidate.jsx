@@ -1,29 +1,27 @@
-// src/pages/Candidate.jsx
 import React, { useState } from "react";
 import CandidateTable from "../components/CandidateTable";
-import candidateData from "../mockdata/ashbyMockData.json"; // Your candidate data
-import '../styles.css';
+import candidateData from "../mockdata/ashbyMockData.json"; 
+import { 
+  Box, Heading, Text, Select, Grid, GridItem, Flex, VStack, Card, CardBody 
+} from "@chakra-ui/react";
 
 const Candidate = () => {
-  // Transform candidate data so that keys match CandidateTable's expectations
+  // Transform candidate data to match CandidateTable's expectations
   const transformedCandidates = candidateData.map((candidate, index) => ({
     candidate_id: index + 1,
     name: candidate.candidateName,
-    // Use jobTitle as department for simplicity or map it appropriately
     department: candidate.jobTitle,
     interview_date: candidate.interviewDate,
-    status: candidate.status, // e.g., "Hired" or "Archived"
-    // include any additional properties CandidateTable might use
+    status: candidate.status,
   }));
 
-  // Create a filter state for candidate status
+  // Status filter state
   const [statusFilter, setStatusFilter] = useState("All");
 
-  // Filter candidates based on the selected status
-  const filteredCandidates = transformedCandidates.filter((candidate) => {
-    if (statusFilter === "All") return true;
-    return candidate.status === statusFilter;
-  });
+  // Filter candidates based on status
+  const filteredCandidates = transformedCandidates.filter((candidate) => 
+    statusFilter === "All" ? true : candidate.status === statusFilter
+  );
 
   // Compute summary stats
   const totalCandidates = transformedCandidates.length;
@@ -31,44 +29,55 @@ const Candidate = () => {
   const archivedCount = transformedCandidates.filter((c) => c.status === "Archived").length;
 
   return (
-    <div className="candidate-page">
-      <h1>Candidate Management</h1>
+    <Box maxW="1000px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+        Candidate Management
+      </Heading>
 
       {/* Summary Stats */}
-      <div className="candidate-summary">
-        <div className="stat-card">
-          <h2>Total Candidates</h2>
-          <p>{totalCandidates}</p>
-        </div>
-        <div className="stat-card">
-          <h2>Hired</h2>
-          <p>{hiredCount}</p>
-        </div>
-        <div className="stat-card">
-          <h2>Archived</h2>
-          <p>{archivedCount}</p>
-        </div>
-      </div>
+      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4} mb={6}>
+        <StatCard title="Total Candidates" value={totalCandidates} />
+        <StatCard title="Hired" value={hiredCount} color="green.500" />
+        <StatCard title="Archived" value={archivedCount} color="red.500" />
+      </Grid>
 
       {/* Filter Controls */}
-      <div className="filter-controls">
-        <label htmlFor="statusFilter">Filter by Status: </label>
-        <select
-          id="statusFilter"
+      <Flex align="center" mb="6">
+        <Text fontWeight="bold" mr="3">Filter by Status:</Text>
+        <Select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          maxW="200px"
+          bg="white"
+          borderColor="gray.300"
         >
           <option value="All">All</option>
           <option value="Hired">Hired</option>
           <option value="Archived">Archived</option>
-        </select>
-      </div>
+        </Select>
+      </Flex>
 
       {/* Candidate Table */}
-      <div className="candidate-list-container">
+      <Box bg="white" p="6" borderRadius="lg" shadow="md">
         <CandidateTable candidates={filteredCandidates} />
-      </div>
-    </div>
+      </Box>
+    </Box>
+  );
+};
+
+// Reusable StatCard Component
+const StatCard = ({ title, value, color = "purple.500" }) => {
+  return (
+    <GridItem>
+      <Card bg="white" shadow="md" borderRadius="lg">
+        <CardBody textAlign="center">
+          <Heading size="md" color="gray.700">{title}</Heading>
+          <Text fontSize="2xl" fontWeight="bold" color={color} mt="2">
+            {value}
+          </Text>
+        </CardBody>
+      </Card>
+    </GridItem>
   );
 };
 
