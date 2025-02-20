@@ -48,33 +48,16 @@ function Insights() {
   ];
 
   const pieColors = ["#A0C4FF", "#FFADAD"]; // Pastel blue & red
-  const lineChartColor = "#FFD700"; // Gold yellow for interviews over time
-  
-  // Interviews Over Time Calculation
-  const monthlyCountMap = {};
-  filteredData.forEach((candidate) => {
-    const dt = parseDate(candidate.interviewDate);
-    if (dt) {
-      const monthKey = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
-      monthlyCountMap[monthKey] = (monthlyCountMap[monthKey] || 0) + 1;
-    }
-  });
+  const skillColors = ["#A0C4FF", "#BDB2FF", "#FFC6FF", "#FFADAD", "#CAFFBF"];
 
-  const monthlyData = Object.entries(monthlyCountMap)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([month, count]) => ({ month, count }));
-
-  // Average Scores by Skill
   const allSkillsSet = new Set();
   filteredData.forEach((candidate) => {
     if (candidate.scores) {
       Object.keys(candidate.scores).forEach((skill) => allSkillsSet.add(skill));
     }
   });
-
+  
   const allSkills = Array.from(allSkillsSet);
-  const skillColors = ["#A0C4FF", "#BDB2FF", "#FFC6FF", "#FFADAD", "#CAFFBF"];
-
   const skillAverages = allSkills.map((skill) => {
     let totalScore = 0;
     let count = 0;
@@ -132,7 +115,6 @@ function Insights() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                labelLine={false}
                 label={({ name, value }) => `${name}: ${value}`}
               >
                 {statusPieData.map((entry, index) => (
