@@ -47,13 +47,14 @@ const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel 
         if (!response.ok) throw new Error("Failed to fetch job title details.");
 
         const data = await response.json();
-        console.log("Fetched Job Details:", data); // ✅ Debugging API Response
+        console.log("Fetched Job Details:", data);
+        console.log("Competencies from API:", data.competencies);
 
         setJobDetails(data);
         setEditedSalaryMin(data.salary_min || "");
         setEditedSalaryMax(data.salary_max || "");
 
-        // ✅ Ensure competencies are correctly set as an array
+        // Ensure competencies are set correctly
         setEditedCompetencies(Array.isArray(data.competencies) ? data.competencies : []);
       } catch (err) {
         setError(err.message);
@@ -110,6 +111,29 @@ const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel 
     }
   };
 
+  const handleExportToCSV = () => {
+    if (!jobDetails) return;
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += `Department,Job Title,Job Level,Salary Min,Salary Max\n`;
+    csvContent += `${department},${jobTitle},${jobLevel},${jobDetails.salary_min},${jobDetails.salary_max}\n\n`;
+    csvContent += "Competency Name,Level,Description\n";
+
+    jobDetails.competencies.forEach((comp) => {
+      Object.entries(comp.descriptions).forEach(([lvl, desc]) => {
+        csvContent += `${comp.name},${lvl},${desc}\n`;
+      });
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${department}-${jobTitle}-${jobLevel}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -126,8 +150,12 @@ const JobTitleDetailsModal = ({ isOpen, onClose, department, jobTitle, jobLevel 
           ) : (
             <VStack spacing={5} align="stretch">
               <HStack spacing={4} justify="center">
-                <Button colorScheme="blue" onClick={handleSave}>Save</Button>
-                <Button colorScheme="purple" onClick={handleEditClick}>Edit</Button>
+                <Button colorScheme="blue" onClick={handleExportToCSV}>Export to CSV</Button>
+                {isEditing ? (
+                  <Button colorScheme="green" onClick={handleSave}>Save</Button>
+                ) : (
+                  <Button colorScheme="purple" onClick={handleEditClick}>Edit</Button>
+                )}
               </HStack>
 
               {/* Salary Banding */}
