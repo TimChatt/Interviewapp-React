@@ -54,7 +54,7 @@ const JobTitleDetailsModal = ({
         setJobDetails(data);
         setEditedSalaryMin(data.salary_min || "");
         setEditedSalaryMax(data.salary_max || "");
-        setEditedCompetencies(data.competencies || []);
+        setEditedCompetencies([...data.competencies]); // Ensure proper state setting
       } catch (err) {
         setError(err.message);
       } finally {
@@ -179,52 +179,29 @@ const JobTitleDetailsModal = ({
                 )}
               </Box>
 
-              {/* Competencies */}
+              {/* Competencies Section */}
               <Box bg="gray.50" p={5} borderRadius="md" shadow="sm">
                 <Heading size="md" color="gray.700" mb="3">📌 Competencies</Heading>
-                {isEditing ? (
-                  <VStack spacing={4} align="stretch">
-                    {editedCompetencies.map((comp, compIndex) => (
-                      <Box key={compIndex}>
-                        <Text fontWeight="bold" color="purple.600">{comp.name}</Text>
-                        {Object.entries(comp.descriptions).map(([lvlKey, descVal]) => (
-                          <HStack key={lvlKey} spacing={4} mt={2}>
-                            <Text fontWeight="bold">{lvlKey}:</Text>
-                            <Input
-                              value={descVal}
-                              onChange={(e) => {
-                                const updated = [...editedCompetencies];
-                                updated[compIndex].descriptions[lvlKey] = e.target.value;
-                                setEditedCompetencies(updated);
-                              }}
-                            />
-                          </HStack>
-                        ))}
-                      </Box>
-                    ))}
-                  </VStack>
-                ) : (
-                  <Table variant="simple" mt="3">
-                    <Thead>
-                      <Tr>
-                        <Th>Competency</Th>
-                        <Th>Level</Th>
-                        <Th>Description</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {jobDetails.competencies.map((comp, i) => (
-                        Object.entries(comp.descriptions).map(([lvl, desc], idx) => (
-                          <Tr key={`${i}-${idx}`}>
-                            <Td fontWeight="bold">{comp.name}</Td>
-                            <Td>{lvl}</Td>
-                            <Td>{desc}</Td>
-                          </Tr>
-                        ))
-                      ))}
-                    </Tbody>
-                  </Table>
-                )}
+                <Table variant="simple" mt="3">
+                  <Thead>
+                    <Tr>
+                      <Th>Competency</Th>
+                      <Th>Level</Th>
+                      <Th>Description</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {jobDetails.competencies.map((comp, i) =>
+                      Object.entries(comp.descriptions).map(([lvl, desc], idx) => (
+                        <Tr key={`${i}-${idx}`}>
+                          <Td fontWeight="bold">{comp.name}</Td>
+                          <Td>{lvl}</Td>
+                          <Td>{desc}</Td>
+                        </Tr>
+                      ))
+                    )}
+                  </Tbody>
+                </Table>
               </Box>
             </VStack>
           )}
