@@ -26,7 +26,7 @@
   z-index: 1000;
 }
 
-/* Sidebar Logo - Restored Pastel Glow */
+/* Sidebar Logo - Pastel Glow Effect Restored */
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -68,7 +68,7 @@
   font-weight: bold;
 }
 
-/* Fix for Admin Link Styling */
+/* Admin Button - Collapsible Styling */
 .collapsible-toggle {
   color: #6366f1;
   font-weight: bold;
@@ -88,7 +88,7 @@
   color: #4338ca;
 }
 
-/* Dropdown for Admin Panel */
+/* Admin Dropdown Menu */
 .collapsible-links {
   display: none;
   padding-left: 1.5rem;
@@ -98,7 +98,7 @@
   display: block;
 }
 
-/* Dropdown Admin Panel Link */
+/* Admin Dropdown Links */
 .collapsible-links a {
   display: block;
   padding: 0.4rem 1rem;
@@ -113,56 +113,7 @@
   color: #4338ca;
 }
 
-/* Logout Button - Consistent Styling */
-.logout-button {
-  background-color: transparent;
-  color: #6366f1;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-  font-size: 1rem;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.logout-button:hover {
-  background-color: #e0e7ff;
-  color: #4338ca;
-}
-
-/* Main Content */
-.main-content {
-  flex-grow: 1;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #f8f9fa;
-  color: #333;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Responsive Adjustments for smaller screens */
-@media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100%;
-    box-shadow: none;
-    height: auto;
-    position: static;
-  }
-  .main-content {
-    margin-left: 0;
-    max-width: 100%;
-    padding: 1rem;
-  }
-/* Logout Button - With Red Box */
+/* Logout Button - Now with Red Box */
 .logout-button {
   background-color: transparent;
   color: #6366f1;
@@ -180,4 +131,36 @@
 .logout-button:hover {
   background-color: #ffe5e5; /* Light red hover */
   color: #e53e3e; /* Red text */
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    box-shadow: none;
+    height: auto;
+    position: static;
+  }
+  .main-content {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 1rem;
+  }
 }
