@@ -34,13 +34,16 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        {/* Eye Icon with Pastel Gradient */}
-        <Box 
+        {/* Fixed Eye Icon with Pastel Gradient */}
+        <Icon 
           as={FaEye} 
-          boxSize="6" 
-          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff)" 
-          bgClip="text"
+          boxSize="8" 
           color="transparent"
+          sx={{
+            background: "linear-gradient(to right, #ffafcc, #bde0fe, #a2d2ff)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          }}
         />
         
         {/* TA Vision Text with Glowing Pastel Effect */}
