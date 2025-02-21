@@ -19,6 +19,7 @@ import DepartmentFrameworks from "./pages/DepartmentFrameworks";
 import JobTitleDetails from "./pages/JobTitleDetails";
 import PrivateRoute from "./components/PrivateRoute"; // Private Routes
 
+// Handles Sidebar Visibility Based on Route
 const AppContent = () => {
   const location = useLocation();
   const hideSidebarPaths = ["/login", "/signup"];
@@ -30,10 +31,10 @@ const AppContent = () => {
       {!shouldHideSidebar && <Sidebar />}
 
       {/* Main Content */}
-      <Container 
-        maxW="container.xl" 
-        flex="1" 
-        p={shouldHideSidebar ? "0" : "4"} 
+      <Container
+        maxW="container.xl"
+        flex="1"
+        p={shouldHideSidebar ? "0" : "4"}
         bg="gray.50"
       >
         <Routes>
@@ -62,6 +63,7 @@ const AppContent = () => {
   );
 };
 
+// Main App Component
 const App = () => (
   <AuthProvider>
     <ChakraProvider>
