@@ -34,19 +34,21 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        <Icon as={FaEye} boxSize="8" color="blue.500" />
+        <Icon as={FaEye} boxSize="6" color="purple.300" /> {/* Smaller logo & Light purple */}
         <Text
-          fontSize="xl"
+          fontSize="lg"
           fontWeight="bold"
-          bgGradient="linear(to-r, cyan.400, pink.400, purple.400, blue.400)"
+          letterSpacing="wide"
+          textTransform="uppercase"
+          bgGradient="linear(to-r, #d8b4fe, #a78bfa, #c4b5fd)"
           bgClip="text"
-          textShadow="0 0 5px cyan, 0 0 10px pink, 0 0 15px purple"
+          textShadow="0 0 5px #d8b4fe, 0 0 10px #a78bfa, 0 0 15px #c4b5fd"
           animation="glow 1.5s infinite alternate"
           css={{
             "@keyframes glow": {
-              "0%": { textShadow: "0 0 5px cyan, 0 0 10px pink" },
-              "50%": { textShadow: "0 0 10px purple, 0 0 15px blue" },
-              "100%": { textShadow: "0 0 15px pink, 0 0 20px cyan" }
+              "0%": { textShadow: "0 0 5px #d8b4fe, 0 0 10px #a78bfa" },
+              "50%": { textShadow: "0 0 10px #c4b5fd, 0 0 15px #a78bfa" },
+              "100%": { textShadow: "0 0 15px #a78bfa, 0 0 20px #d8b4fe" }
             }
           }}
         >
