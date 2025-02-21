@@ -4,10 +4,10 @@ import { AuthContext } from "../contexts/AuthContext";
 import { 
   VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
-import { keyframes } from "@emotion/react"; // ✅ Corrected Import
-import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { keyframes } from "@emotion/react"; // Fix for animation
+import { FaEye, FaChevronDown, FaChevronUp, FaHome, FaFutbol, FaBasketballBall, FaTrophy, FaUsers } from "react-icons/fa"; 
 
-// Keyframe animation for the spinning eye effect
+// Keyframe animation for spinning effect
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -80,13 +80,13 @@ const Sidebar = () => {
 
       {/* Navigation & Logout Section */}
       <VStack align="stretch" spacing="3">
-        {/* Main Navigation */}
+        {/* Main Navigation with Sports Icons */}
         {[
-          { to: "/", label: "Home" },
-          { to: "/candidates", label: "Candidates" },
-          { to: "/insights", label: "Insights" },
-          { to: "/recommendations", label: "Recommendations" },
-          { to: "/competency-framework-planner", label: "Competency Framework" },
+          { to: "/", label: "Home", icon: FaHome },
+          { to: "/candidates", label: "Candidates", icon: FaUsers },
+          { to: "/insights", label: "Insights", icon: FaBasketballBall }, // Basketball for insights
+          { to: "/recommendations", label: "Recommendations", icon: FaTrophy }, // Trophy for recommendations
+          { to: "/competency-framework-planner", label: "Competency Framework", icon: FaFutbol }, // Football for competency
         ].map((item) => (
           <Button 
             as={Link} 
@@ -97,6 +97,7 @@ const Sidebar = () => {
             _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }} 
             transition="all 0.2s ease-in-out"
             key={item.to}
+            leftIcon={<Icon as={item.icon} />}
           >
             {item.label}
           </Button>
@@ -144,3 +145,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
