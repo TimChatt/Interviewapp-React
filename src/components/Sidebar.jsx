@@ -4,7 +4,8 @@ import { AuthContext } from "../contexts/AuthContext";
 import { 
   VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
-import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { Eye } from "lucide-react"; // Lucide React Icons for better visibility
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -34,9 +35,9 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        {/* Fixed Eye Icon with Pastel Gradient */}
+        {/* Fancy Eye Logo from Lucide */}
         <Icon 
-          as={FaEye} 
+          as={Eye} 
           boxSize="8" 
           color="transparent"
           sx={{
