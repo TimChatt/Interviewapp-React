@@ -26,7 +26,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "framer-motion": "^10.12.16",
-    "react-quill": "^2.0.0"  // ✅ Added React Quill
+    "react-quill": "^2.0.0" 
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.18.6"
