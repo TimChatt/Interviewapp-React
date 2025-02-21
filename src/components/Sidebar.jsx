@@ -4,8 +4,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { 
   VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { EyeIcon } from "beautiful-react-icons"; // ✅ Use Beautiful NPM Icons
+import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa"; // Standard Eye Icon
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -21,6 +20,7 @@ const Sidebar = () => {
   // Styling for active links
   const activeBg = useColorModeValue("gray.200", "gray.700");
   const inactiveBg = "transparent";
+  const iconColor = useColorModeValue("purple.400", "purple.300"); // Light purple in both themes
 
   return (
     <Box 
@@ -35,39 +35,16 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        {/* ✅ Restored Beautiful NPM Eye Logo */}
-        <Icon 
-          as={EyeIcon} 
-          boxSize="8" 
-          color="transparent"
-          sx={{
-            background: "linear-gradient(to right, #ffafcc, #bde0fe, #a2d2ff)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0px 0px 8px #bde0fe)",
-          }}
-        />
-        
-        {/* TA Vision Text with Glowing Pastel Effect */}
+        {/* Standard Eye Icon (Light Purple) */}
+        <Icon as={FaEye} boxSize="8" color={iconColor} />
+
+        {/* TA Vision Text with Light Purple Effect */}
         <Text
           fontSize="lg"
           fontWeight="bold"
           letterSpacing="wide"
           textTransform="uppercase"
-          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff, #cdb4db)"
-          bgClip="text"
-          textShadow={useColorModeValue(
-            "0 0 5px #ffafcc, 0 0 10px #bde0fe, 0 0 15px #cdb4db",
-            "0 0 5px #a2d2ff, 0 0 10px #ffafcc, 0 0 15px #cdb4db"
-          )}
-          animation="glow 1.5s infinite alternate"
-          css={{
-            "@keyframes glow": {
-              "0%": { textShadow: "0 0 5px #ffafcc, 0 0 10px #bde0fe" },
-              "50%": { textShadow: "0 0 10px #a2d2ff, 0 0 15px #cdb4db" },
-              "100%": { textShadow: "0 0 15px #cdb4db, 0 0 20px #ffafcc" }
-            }
-          }}
+          color={iconColor}
         >
           TA Vision
         </Text>
