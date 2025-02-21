@@ -34,21 +34,33 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        <Icon as={FaEye} boxSize="6" color="purple.300" /> {/* Smaller logo & Light purple */}
+        {/* Eye Icon with Pastel Gradient */}
+        <Box 
+          as={FaEye} 
+          boxSize="6" 
+          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff)" 
+          bgClip="text"
+          color="transparent"
+        />
+        
+        {/* TA Vision Text with Glowing Pastel Effect */}
         <Text
           fontSize="lg"
           fontWeight="bold"
           letterSpacing="wide"
           textTransform="uppercase"
-          bgGradient="linear(to-r, #d8b4fe, #a78bfa, #c4b5fd)"
+          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff, #cdb4db)"
           bgClip="text"
-          textShadow="0 0 5px #d8b4fe, 0 0 10px #a78bfa, 0 0 15px #c4b5fd"
+          textShadow={useColorModeValue(
+            "0 0 5px #ffafcc, 0 0 10px #bde0fe, 0 0 15px #cdb4db",
+            "0 0 5px #a2d2ff, 0 0 10px #ffafcc, 0 0 15px #cdb4db"
+          )}
           animation="glow 1.5s infinite alternate"
           css={{
             "@keyframes glow": {
-              "0%": { textShadow: "0 0 5px #d8b4fe, 0 0 10px #a78bfa" },
-              "50%": { textShadow: "0 0 10px #c4b5fd, 0 0 15px #a78bfa" },
-              "100%": { textShadow: "0 0 15px #a78bfa, 0 0 20px #d8b4fe" }
+              "0%": { textShadow: "0 0 5px #ffafcc, 0 0 10px #bde0fe" },
+              "50%": { textShadow: "0 0 10px #a2d2ff, 0 0 15px #cdb4db" },
+              "100%": { textShadow: "0 0 15px #cdb4db, 0 0 20px #ffafcc" }
             }
           }}
         >
@@ -57,7 +69,7 @@ const Sidebar = () => {
       </HStack>
 
       {/* Navigation & Logout Section */}
-      <VStack align="stretch" spacing="3" flexGrow={1}>
+      <VStack align="stretch" spacing="3">
         <Button 
           as={Link} 
           to="/" 
@@ -99,7 +111,7 @@ const Sidebar = () => {
         <Button 
           variant="ghost" 
           justifyContent="space-between" 
-          onClick={() => setIsAdminOpen(!isAdminOpen)}
+          onClick={() => setIsAdminOpen(prev => !prev)}
         >
           Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
         </Button>
@@ -126,17 +138,16 @@ const Sidebar = () => {
         >
           Competency Framework
         </Button>
-      </VStack>
 
-      {/* Logout Button (Now Below the Navigation) */}
-      <Button 
-        onClick={handleLogout} 
-        colorScheme="red" 
-        width="full"
-        mt="4"
-      >
-        Logout
-      </Button>
+        {/* Logout Button (Now Right Under Competency Framework) */}
+        <Button 
+          onClick={handleLogout} 
+          colorScheme="red" 
+          width="full"
+        >
+          Logout
+        </Button>
+      </VStack>
     </Box>
   );
 };
