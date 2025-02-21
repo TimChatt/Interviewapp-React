@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   Box,
   Heading,
-  Text,
   Button,
   Spinner,
   Alert,
@@ -11,10 +12,10 @@ import {
   VStack,
   Card,
   CardBody,
-  Textarea,
   useClipboard,
   useToast,
   Select,
+  Text,
 } from "@chakra-ui/react";
 
 const JobDescriptionPage = () => {
@@ -28,6 +29,7 @@ const JobDescriptionPage = () => {
   const [editedDescription, setEditedDescription] = useState("");
   const [versionHistory, setVersionHistory] = useState([]);
   const [selectedVersion, setSelectedVersion] = useState("");
+  const [analysis, setAnalysis] = useState(null);
   const toast = useToast();
 
   // Fetch job description
@@ -38,9 +40,7 @@ const JobDescriptionPage = () => {
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-job-description/${department}/${jobTitle}`
         );
-        if (!response.ok) {
-          throw new Error("Failed to fetch job description.");
-        }
+        if (!response.ok) throw new Error("Failed to fetch job description.");
         const data = await response.json();
         setJobDescription(data.job_description);
         setEditedDescription(data.job_description);
@@ -60,9 +60,7 @@ const JobDescriptionPage = () => {
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-job-description-history/${department}/${jobTitle}`
         );
-        if (!response.ok) {
-          throw new Error("Failed to fetch version history.");
-        }
+        if (!response.ok) throw new Error("Failed to fetch version history.");
         const data = await response.json();
         setVersionHistory(data.history || []);
       } catch (err) {
@@ -72,16 +70,14 @@ const JobDescriptionPage = () => {
     fetchVersionHistory();
   }, [department, jobTitle]);
 
-  // Handle Save Job Description
+  // Save Job Description
   const handleSave = async () => {
     try {
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/save-job-description`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             department,
             job_title: jobTitle,
@@ -90,38 +86,19 @@ const JobDescriptionPage = () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to save job description.");
-      }
-
+      if (!response.ok) throw new Error("Failed to save job description.");
       setJobDescription(editedDescription);
       setIsEditing(false);
-      toast({
-        title: "Job description updated.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Job description updated.", status: "success", duration: 3000, isClosable: true });
     } catch (err) {
-      toast({
-        title: "Error saving job description.",
-        description: err.message,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Error saving job description.", description: err.message, status: "error", duration: 3000, isClosable: true });
     }
   };
 
   // Restore Previous Version
   const restoreVersion = async (selectedVersion) => {
     setEditedDescription(selectedVersion);
-    toast({
-      title: "Version restored!",
-      status: "info",
-      duration: 2000,
-      isClosable: true,
-    });
+    toast({ title: "Version restored!", status: "info", duration: 2000, isClosable: true });
   };
 
   // AI-Powered Improvement
@@ -131,33 +108,38 @@ const JobDescriptionPage = () => {
         `https://interviewappbe-production.up.railway.app/api/improve-job-description`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ description: editedDescription }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to generate improved description.");
-      }
-
+      if (!response.ok) throw new Error("Failed to generate improved description.");
       const data = await response.json();
       setEditedDescription(data.improved_description);
-      toast({
-        title: "AI-generated improvements applied!",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "AI-generated improvements applied!", status: "success", duration: 3000, isClosable: true });
     } catch (err) {
-      toast({
-        title: "Error improving description.",
-        description: err.message,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast({ title: "Error improving description.", description: err.message, status: "error", duration: 3000, isClosable: true });
+    }
+  };
+
+  // AI-Powered Analysis
+  const handleAnalyzeDescription = async () => {
+    try {
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/analyze-job-description`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description: editedDescription }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to analyze job description.");
+      const data = await response.json();
+      setAnalysis(data.analysis);
+      toast({ title: "Analysis completed!", status: "success", duration: 3000, isClosable: true });
+    } catch (err) {
+      toast({ title: "Error analyzing description.", description: err.message, status: "error", duration: 3000, isClosable: true });
     }
   };
 
@@ -188,16 +170,11 @@ const JobDescriptionPage = () => {
         <Card bg="white" shadow="md" borderRadius="lg">
           <CardBody>
             {isEditing ? (
-              <Textarea
-                value={editedDescription}
-                onChange={(e) => setEditedDescription(e.target.value)}
-                size="lg"
-                rows={10}
-              />
+              <ReactQuill theme="snow" value={editedDescription} onChange={setEditedDescription} />
             ) : (
-              <Text fontSize="lg" whiteSpace="pre-wrap">
-                {jobDescription}
-              </Text>
+              <Box border="1px solid #E2E8F0" p="4" borderRadius="md" minH="200px">
+                <Text fontSize="lg" whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: jobDescription }} />
+              </Box>
             )}
 
             <Box mt="4">
@@ -218,8 +195,11 @@ const JobDescriptionPage = () => {
                   <Button colorScheme="purple" mr="2" onClick={() => setIsEditing(true)}>
                     Edit Job Description
                   </Button>
-                  <Button colorScheme="teal" onClick={handleImproveDescription}>
+                  <Button colorScheme="teal" mr="2" onClick={handleImproveDescription}>
                     Improve with AI ✨
+                  </Button>
+                  <Button colorScheme="orange" onClick={handleAnalyzeDescription}>
+                    Analyze for Bias 📊
                   </Button>
                 </>
               )}
@@ -228,27 +208,11 @@ const JobDescriptionPage = () => {
         </Card>
       )}
 
-      {/* Version History */}
-      {versionHistory.length > 0 && (
-        <Box mt="6">
-          <Heading size="md" mb="2">Version History</Heading>
-          <Select
-            placeholder="Select a previous version"
-            onChange={(e) => restoreVersion(e.target.value)}
-          >
-            {versionHistory.map((version, index) => (
-              <option key={index} value={version.description}>
-                {version.date_changed} - {version.description.substring(0, 30)}...
-              </option>
-            ))}
-          </Select>
+      {analysis && (
+        <Box mt="6" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.100">
+          <Heading size="md" mb="2">AI Analysis</Heading>
+          <Text>{analysis}</Text>
         </Box>
-      )}
-
-      {!loading && !error && !jobDescription && (
-        <Text textAlign="center" color="gray.600">
-          No job description available for this role.
-        </Text>
       )}
     </Box>
   );
