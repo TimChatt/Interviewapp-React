@@ -29,12 +29,13 @@ const JobDescriptionPage = () => {
   const [editedDescription, setEditedDescription] = useState("");
   const [versionHistory, setVersionHistory] = useState([]);
   const [selectedVersion, setSelectedVersion] = useState("");
-const [analysis, setAnalysis] = useState({
-  biased_terms: [],
-  suggested_edits: [],
-  overall_score: null,
-  feedback: "",
-});
+  const [analysis, setAnalysis] = useState({
+    hasAnalysis: false, // ✅ New property to track if analysis has been performed
+    biased_terms: [],
+    suggested_edits: [],
+    overall_score: null,
+    feedback: "",
+  });
   const toast = useToast();
 
   // Fetch job description
@@ -128,36 +129,54 @@ const [analysis, setAnalysis] = useState({
   };
 
   // AI-Powered Analysis
-const handleAnalyzeDescription = async () => {
+  const handleAnalyzeDescription = async () => {
+    try {
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/analyze-job-description`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description: editedDescription }),
+        }
+      );
+  
+      if (!response.ok) throw new Error("Failed to analyze job description.");
+      const data = await response.json();
+  
+      setAnalysis({
+        hasAnalysis: true,
+        biased_terms: data.biased_terms || [],
+        suggested_edits: data.suggested_edits || [],
+        overall_score: data.overall_score || "N/A",
+        feedback: data.feedback || "No additional feedback.",
+      });
+  
+      toast({ title: "Analysis completed!", status: "success", duration: 3000, isClosable: true });
+  
+    } catch (err) {
+      toast({ title: "Error analyzing description.", description: err.message, status: "error", duration: 3000, isClosable: true });
+    }
+  };
+
+  const handleGenerateJobDescription = async () => {
   try {
     const response = await fetch(
-      `https://interviewappbe-production.up.railway.app/api/analyze-job-description`,
+      `https://interviewappbe-production.up.railway.app/api/generate-job-description`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: editedDescription }),
+        body: JSON.stringify({ department, job_title: jobTitle }),
       }
     );
 
-    if (!response.ok) throw new Error("Failed to analyze job description.");
-
+    if (!response.ok) throw new Error("Failed to generate job description.");
     const data = await response.json();
 
-    // ✅ SAFETY CHECK: Ensure response contains expected properties
-    if (!data || typeof data !== "object") throw new Error("Invalid response format.");
-
-    setAnalysis({
-      biased_terms: data.biased_terms || [],
-      suggested_edits: data.suggested_edits || [],
-      overall_score: data.overall_score || "N/A",
-      feedback: data.feedback || "No additional feedback.",
-    });
-
-    toast({ title: "Analysis completed!", status: "success", duration: 3000, isClosable: true });
+    setEditedDescription(data.job_description);
+    toast({ title: "AI-generated job description applied!", status: "success", duration: 3000, isClosable: true });
 
   } catch (err) {
-    toast({ title: "Error analyzing description.", description: err.message, status: "error", duration: 3000, isClosable: true });
-    console.error("Analyze Error:", err); // ✅ LOG TO DEBUG
+    toast({ title: "Error generating job description.", description: err.message, status: "error", duration: 3000, isClosable: true });
   }
 };
 
@@ -201,8 +220,11 @@ const handleAnalyzeDescription = async () => {
                   <Button colorScheme="green" mr="2" onClick={handleSave}>
                     Save Changes
                   </Button>
-                  <Button colorScheme="gray" onClick={() => setIsEditing(false)}>
+                  <Button colorScheme="gray" mr="2" onClick={() => setIsEditing(false)}>
                     Cancel
+                  </Button>
+                  <Button colorScheme="blue" onClick={handleGenerateJobDescription}>
+                    Generate Job Description with AI 📝
                   </Button>
                 </>
               ) : (
@@ -226,7 +248,8 @@ const handleAnalyzeDescription = async () => {
         </Card>
       )}
 
-      {analysis && (
+      {/* AI Analysis - Hidden unless analyzed */}
+      {analysis && analysis.hasAnalysis && (
         <Card bg="gray.50" shadow="md" borderRadius="lg" mt="4" p="4">
           <Heading size="md" color="purple.700" mb="2">
             AI Analysis
