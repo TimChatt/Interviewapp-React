@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Box } from "@chakra-ui/react";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
-import Candidates from "./pages/Candidates";
+import Candidate from "./pages/Candidate"; // Fixed naming issue
 import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
 import Admin from "./pages/Admin";
@@ -20,7 +20,7 @@ const App = () => {
           <Box as="main" flex="1" p={4}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/candidates" element={<Candidates />} />
+              <Route path="/candidates" element={<Candidate />} /> {/* Fixed Import */}
               <Route path="/insights" element={<Insights />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/admin" element={<Admin />} />
