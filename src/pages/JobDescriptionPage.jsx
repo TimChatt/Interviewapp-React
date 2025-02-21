@@ -128,25 +128,38 @@ const [analysis, setAnalysis] = useState({
   };
 
   // AI-Powered Analysis
-  const handleAnalyzeDescription = async () => {
-    try {
-      const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/analyze-job-description`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ description: editedDescription }),
-        }
-      );
+const handleAnalyzeDescription = async () => {
+  try {
+    const response = await fetch(
+      `https://interviewappbe-production.up.railway.app/api/analyze-job-description`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: editedDescription }),
+      }
+    );
 
-      if (!response.ok) throw new Error("Failed to analyze job description.");
-      const data = await response.json();
-      setAnalysis(data.analysis);
-      toast({ title: "Analysis completed!", status: "success", duration: 3000, isClosable: true });
-    } catch (err) {
-      toast({ title: "Error analyzing description.", description: err.message, status: "error", duration: 3000, isClosable: true });
-    }
-  };
+    if (!response.ok) throw new Error("Failed to analyze job description.");
+
+    const data = await response.json();
+
+    // ✅ SAFETY CHECK: Ensure response contains expected properties
+    if (!data || typeof data !== "object") throw new Error("Invalid response format.");
+
+    setAnalysis({
+      biased_terms: data.biased_terms || [],
+      suggested_edits: data.suggested_edits || [],
+      overall_score: data.overall_score || "N/A",
+      feedback: data.feedback || "No additional feedback.",
+    });
+
+    toast({ title: "Analysis completed!", status: "success", duration: 3000, isClosable: true });
+
+  } catch (err) {
+    toast({ title: "Error analyzing description.", description: err.message, status: "error", duration: 3000, isClosable: true });
+    console.error("Analyze Error:", err); // ✅ LOG TO DEBUG
+  }
+};
 
   return (
     <Box maxW="800px" mx="auto" py="6">
@@ -227,10 +240,10 @@ const [analysis, setAnalysis] = useState({
             {analysis.suggested_edits.length > 0 ? analysis.suggested_edits.join(", ") : "N/A"}
           </Text>
           <Text>
-            <strong>Overall Score:</strong> {analysis.overall_score || "N/A"} / 10
+            <strong>Overall Score:</strong> {analysis.overall_score} / 10
           </Text>
           <Text fontStyle="italic" color="gray.600" mt="2">
-            {analysis.feedback || "No additional feedback."}
+            {analysis.feedback}
           </Text>
         </Card>
       )}
