@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
+import CompetencyDashboard from "./components/CompetencyDashboard";
 import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
 import DepartmentFrameworks from "./pages/DepartmentFrameworks";
@@ -52,6 +53,7 @@ const AppContent = () => {
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
+            <Route path="/competency-dashboard" element={<CompetencyDashboard />} />
             <Route path="/frameworks" element={<SavedFrameworks />} />
             <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
             <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
