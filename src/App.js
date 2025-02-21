@@ -13,7 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
-import CompetencyDashboard from "./components/CompetencyDashboard";
+import CompetencyDashboard from "./pages/CompetencyDashboard";
 import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
 import DepartmentFrameworks from "./pages/DepartmentFrameworks";
