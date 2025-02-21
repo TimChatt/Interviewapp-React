@@ -1,75 +1,149 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { ChakraProvider, Box, Container } from "@chakra-ui/react"; // Chakra UI
-import Sidebar from "./components/Sidebar";
-import Home from "./pages/Home";
-import Candidate from "./pages/Candidate";
-import CandidateProfile from "./pages/CandidateProfile";
-import Insights from "./pages/Insights";
-import Recommendations from "./pages/Recommendations";
-import Admin from "./pages/Admin";
-import AdminDashboard from "./pages/AdminDashboard";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
-import CompetencyFrameworkPlanner from "./pages/CompetencyFrameworkPlanner";
-import SavedFrameworks from "./pages/SavedFrameworks";
-import EditFramework from "./pages/EditFramework";
-import DepartmentFrameworks from "./pages/DepartmentFrameworks";
-import JobTitleDetails from "./pages/JobTitleDetails";
-import PrivateRoute from "./components/PrivateRoute"; // Private Routes
+import React, { useState, useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
+import { 
+  VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
+} from "@chakra-ui/react";
+import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-const AppContent = () => {
+const Sidebar = () => {
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const location = useLocation();
-  const hideSidebarPaths = ["/login", "/signup"];
-  const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
+  const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // Styling for active links
+  const activeBg = useColorModeValue("gray.200", "gray.700");
+  const inactiveBg = "transparent";
 
   return (
-    <Box display="flex" minH="100vh">
-      {/* Sidebar (Hidden on Login/Signup) */}
-      {!shouldHideSidebar && <Sidebar />}
+    <Box 
+      as="nav" 
+      w="250px" 
+      h="100vh" 
+      bg={useColorModeValue("white", "gray.800")}
+      boxShadow="md"
+      p="4"
+      display="flex"
+      flexDirection="column"
+    >
+      {/* Logo + TA Vision Section */}
+      <HStack spacing="2" align="center" justify="center" mb="6">
+        <Icon 
+          as={FaEye} 
+          boxSize="6" 
+          color="transparent"
+          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff)"
+          bgClip="text"
+        />
+        <Text
+          fontSize="lg"
+          fontWeight="bold"
+          letterSpacing="wide"
+          textTransform="uppercase"
+          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff, #cdb4db)"
+          bgClip="text"
+          textShadow="0 0 5px #ffafcc, 0 0 10px #bde0fe, 0 0 15px #cdb4db"
+          animation="glow 1.5s infinite alternate"
+          css={{
+            "@keyframes glow": {
+              "0%": { textShadow: "0 0 5px #ffafcc, 0 0 10px #bde0fe" },
+              "50%": { textShadow: "0 0 10px #a2d2ff, 0 0 15px #cdb4db" },
+              "100%": { textShadow: "0 0 15px #cdb4db, 0 0 20px #ffafcc" }
+            }
+          }}
+        >
+          TA Vision
+        </Text>
+      </HStack>
 
-      {/* Main Content */}
-      <Container 
-        maxW="container.xl" 
-        flex="1" 
-        p={shouldHideSidebar ? "0" : "4"} 
-        bg="gray.50"
-      >
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+      {/* Navigation & Logout Section */}
+      <VStack align="stretch" spacing="3">
+        <Button 
+          as={Link} 
+          to="/" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/" ? activeBg : inactiveBg}
+        >
+          Home
+        </Button>
+        <Button 
+          as={Link} 
+          to="/candidates" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/candidates" ? activeBg : inactiveBg}
+        >
+          Candidates
+        </Button>
+        <Button 
+          as={Link} 
+          to="/insights" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/insights" ? activeBg : inactiveBg}
+        >
+          Insights
+        </Button>
+        <Button 
+          as={Link} 
+          to="/recommendations" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/recommendations" ? activeBg : inactiveBg}
+        >
+          Recommendations
+        </Button>
 
-          {/* Protected Routes */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/candidates" element={<Candidate />} />
-            <Route path="/candidate/:candidateId" element={<CandidateProfile />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/recommendations" element={<Recommendations />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/competency-framework-planner" element={<CompetencyFrameworkPlanner />} />
-            <Route path="/frameworks" element={<SavedFrameworks />} />
-            <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
-            <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
-            <Route path="/edit-framework/:id" element={<EditFramework />} />
-          </Route>
-        </Routes>
-      </Container>
+        {/* Admin Section (Collapsible) */}
+        <Button 
+          variant="ghost" 
+          justifyContent="space-between" 
+          onClick={() => setIsAdminOpen(!isAdminOpen)}
+        >
+          Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
+        </Button>
+        <Collapse in={isAdminOpen}>
+          <VStack align="stretch" pl="4">
+            <Button 
+              as={Link} 
+              to="/admin" 
+              variant="ghost" 
+              justifyContent="flex-start" 
+              bg={location.pathname === "/admin" ? activeBg : inactiveBg}
+            >
+              Admin Panel
+            </Button>
+          </VStack>
+        </Collapse>
+
+        <Button 
+          as={Link} 
+          to="/competency-framework-planner" 
+          variant="ghost" 
+          justifyContent="flex-start" 
+          bg={location.pathname === "/competency-framework-planner" ? activeBg : inactiveBg}
+        >
+          Competency Framework
+        </Button>
+
+        {/* Logout Button (NOW RIGHT UNDER Competency Framework) */}
+        <Button 
+          onClick={handleLogout} 
+          colorScheme="red" 
+          width="full"
+        >
+          Logout
+        </Button>
+      </VStack>
     </Box>
   );
 };
 
-const App = () => (
-  <AuthProvider>
-    <ChakraProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </ChakraProvider>
-  </AuthProvider>
-);
-
-export default App;
+export default Sidebar;
