@@ -2,8 +2,9 @@ import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { 
-  VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue, keyframes 
+  VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
+import { keyframes } from "@emotion/react"; // ✅ Corrected Import
 import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 // Keyframe animation for the spinning eye effect
@@ -143,4 +144,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
