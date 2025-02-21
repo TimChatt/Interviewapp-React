@@ -54,8 +54,9 @@ const DepartmentFrameworks = () => {
     setIsModalOpen(true);
   };
 
-  const handleEdit = (jobTitle) => {
-    navigate(`/edit-framework/${jobTitle}`);
+  // ✅ Navigate to Job Description Builder
+  const handleViewJobDescription = (jobTitle) => {
+    navigate(`/job-description/${department}/${jobTitle}`);
   };
 
   // ✅ Groups job titles by category
@@ -105,8 +106,8 @@ const DepartmentFrameworks = () => {
                         <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
                           View Details
                         </Button>
-                        <Button colorScheme="purple" size="sm" onClick={() => handleEdit(job.job_title)}>
-                          Edit Framework
+                        <Button colorScheme="purple" size="sm" onClick={() => handleViewJobDescription(job.job_title)}>
+                          View Job Description
                         </Button>
                       </CardBody>
                     </Card>
