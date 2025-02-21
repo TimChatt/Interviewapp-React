@@ -17,6 +17,7 @@ import CompetencyDashboard from "./pages/CompetencyDashboard";
 import SavedFrameworks from "./pages/SavedFrameworks";
 import EditFramework from "./pages/EditFramework";
 import DepartmentFrameworks from "./pages/DepartmentFrameworks";
+import JobDescriptionPage from "./pages/JobDescriptionPage";
 import JobTitleDetails from "./pages/JobTitleDetails";
 import PrivateRoute from "./components/PrivateRoute"; // Private Routes
 
@@ -56,6 +57,7 @@ const AppContent = () => {
             <Route path="/competency-dashboard" element={<CompetencyDashboard />} />
             <Route path="/frameworks" element={<SavedFrameworks />} />
             <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
+            <Route path="/job-description/:department/:jobTitle" element={<JobDescriptionPage />} />
             <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
             <Route path="/edit-framework/:id" element={<EditFramework />} />
           </Route>
