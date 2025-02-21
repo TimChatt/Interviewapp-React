@@ -29,7 +29,12 @@ const JobDescriptionPage = () => {
   const [editedDescription, setEditedDescription] = useState("");
   const [versionHistory, setVersionHistory] = useState([]);
   const [selectedVersion, setSelectedVersion] = useState("");
-  const [analysis, setAnalysis] = useState(null);
+const [analysis, setAnalysis] = useState({
+  biased_terms: [],
+  suggested_edits: [],
+  overall_score: null,
+  feedback: "",
+});
   const toast = useToast();
 
   // Fetch job description
@@ -208,28 +213,24 @@ const JobDescriptionPage = () => {
         </Card>
       )}
 
-      {analysisResult && (
-         <Card bg="gray.50" shadow="md" borderRadius="lg" mt="4" p="4">
+      {analysis && (
+        <Card bg="gray.50" shadow="md" borderRadius="lg" mt="4" p="4">
           <Heading size="md" color="purple.700" mb="2">
             AI Analysis
           </Heading>
           <Text>
             <strong>Biased Terms:</strong>{" "}
-            {analysisResult.biased_terms && analysisResult.biased_terms.length > 0
-              ? analysisResult.biased_terms.join(", ")
-              : "None"}
+            {analysis.biased_terms.length > 0 ? analysis.biased_terms.join(", ") : "None"}
           </Text>
           <Text>
             <strong>Suggested Edits:</strong>{" "}
-            {analysisResult.suggested_edits && analysisResult.suggested_edits.length > 0
-              ? analysisResult.suggested_edits.join(", ")
-              : "N/A"}
+            {analysis.suggested_edits.length > 0 ? analysis.suggested_edits.join(", ") : "N/A"}
           </Text>
           <Text>
-            <strong>Overall Score:</strong> {analysisResult.overall_score} / 10
+            <strong>Overall Score:</strong> {analysis.overall_score || "N/A"} / 10
           </Text>
           <Text fontStyle="italic" color="gray.600" mt="2">
-            {analysisResult.feedback}
+            {analysis.feedback || "No additional feedback."}
           </Text>
         </Card>
       )}
