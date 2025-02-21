@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { 
-  VStack, Box, Button, Collapse, Icon, useColorModeValue 
+  VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
 import { FaEye, FaChevronDown, FaChevronUp } from "react-icons/fa";
 
@@ -31,18 +31,31 @@ const Sidebar = () => {
       p="4"
       display="flex"
       flexDirection="column"
-      justifyContent="space-between"
     >
-      {/* Logo Section */}
-      <VStack spacing="4" align="center">
+      {/* Logo + TA Vision Section */}
+      <HStack spacing="2" align="center" justify="center" mb="6">
         <Icon as={FaEye} boxSize="8" color="blue.500" />
-        <Box fontSize="xl" fontWeight="bold" color="blue.500">
+        <Text
+          fontSize="xl"
+          fontWeight="bold"
+          bgGradient="linear(to-r, cyan.400, pink.400, purple.400, blue.400)"
+          bgClip="text"
+          textShadow="0 0 5px cyan, 0 0 10px pink, 0 0 15px purple"
+          animation="glow 1.5s infinite alternate"
+          css={{
+            "@keyframes glow": {
+              "0%": { textShadow: "0 0 5px cyan, 0 0 10px pink" },
+              "50%": { textShadow: "0 0 10px purple, 0 0 15px blue" },
+              "100%": { textShadow: "0 0 15px pink, 0 0 20px cyan" }
+            }
+          }}
+        >
           TA Vision
-        </Box>
-      </VStack>
+        </Text>
+      </HStack>
 
-      {/* Navigation Links */}
-      <VStack align="stretch" spacing="3">
+      {/* Navigation & Logout Section */}
+      <VStack align="stretch" spacing="3" flexGrow={1}>
         <Button 
           as={Link} 
           to="/" 
@@ -113,12 +126,12 @@ const Sidebar = () => {
         </Button>
       </VStack>
 
-      {/* Logout Button */}
+      {/* Logout Button (Now Below the Navigation) */}
       <Button 
         onClick={handleLogout} 
         colorScheme="red" 
-        mt="auto"
         width="full"
+        mt="4"
       >
         Logout
       </Button>
