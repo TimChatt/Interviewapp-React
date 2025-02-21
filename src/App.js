@@ -34,13 +34,16 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        <Icon 
+        {/* Eye Icon with Pastel Gradient */}
+        <Box 
           as={FaEye} 
           boxSize="6" 
-          color="transparent"
-          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff)"
+          bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff)" 
           bgClip="text"
+          color="transparent"
         />
+        
+        {/* TA Vision Text with Glowing Pastel Effect */}
         <Text
           fontSize="lg"
           fontWeight="bold"
@@ -48,7 +51,10 @@ const Sidebar = () => {
           textTransform="uppercase"
           bgGradient="linear(to-r, #ffafcc, #bde0fe, #a2d2ff, #cdb4db)"
           bgClip="text"
-          textShadow="0 0 5px #ffafcc, 0 0 10px #bde0fe, 0 0 15px #cdb4db"
+          textShadow={useColorModeValue(
+            "0 0 5px #ffafcc, 0 0 10px #bde0fe, 0 0 15px #cdb4db",
+            "0 0 5px #a2d2ff, 0 0 10px #ffafcc, 0 0 15px #cdb4db"
+          )}
           animation="glow 1.5s infinite alternate"
           css={{
             "@keyframes glow": {
@@ -105,7 +111,7 @@ const Sidebar = () => {
         <Button 
           variant="ghost" 
           justifyContent="space-between" 
-          onClick={() => setIsAdminOpen(!isAdminOpen)}
+          onClick={() => setIsAdminOpen(prev => !prev)}
         >
           Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
         </Button>
@@ -133,7 +139,7 @@ const Sidebar = () => {
           Competency Framework
         </Button>
 
-        {/* Logout Button (NOW RIGHT UNDER Competency Framework) */}
+        {/* Logout Button (Now Right Under Competency Framework) */}
         <Button 
           onClick={handleLogout} 
           colorScheme="red" 
