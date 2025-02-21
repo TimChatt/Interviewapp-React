@@ -208,11 +208,30 @@ const JobDescriptionPage = () => {
         </Card>
       )}
 
-      {analysis && (
-        <Box mt="6" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.100">
-          <Heading size="md" mb="2">AI Analysis</Heading>
-          <Text>{analysis}</Text>
-        </Box>
+      {analysisResult && (
+         <Card bg="gray.50" shadow="md" borderRadius="lg" mt="4" p="4">
+          <Heading size="md" color="purple.700" mb="2">
+            AI Analysis
+          </Heading>
+          <Text>
+            <strong>Biased Terms:</strong>{" "}
+            {analysisResult.biased_terms && analysisResult.biased_terms.length > 0
+              ? analysisResult.biased_terms.join(", ")
+              : "None"}
+          </Text>
+          <Text>
+            <strong>Suggested Edits:</strong>{" "}
+            {analysisResult.suggested_edits && analysisResult.suggested_edits.length > 0
+              ? analysisResult.suggested_edits.join(", ")
+              : "N/A"}
+          </Text>
+          <Text>
+            <strong>Overall Score:</strong> {analysisResult.overall_score} / 10
+          </Text>
+          <Text fontStyle="italic" color="gray.600" mt="2">
+            {analysisResult.feedback}
+          </Text>
+        </Card>
       )}
     </Box>
   );
