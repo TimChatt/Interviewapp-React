@@ -5,7 +5,7 @@ import {
   VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { Eye } from "lucide-react"; // Lucide React Icons for better visibility
+import { EyeIcon } from "beautiful-react-icons"; // ✅ Use Beautiful NPM Icons
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -35,15 +35,16 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        {/* Fancy Eye Logo from Lucide */}
+        {/* ✅ Restored Beautiful NPM Eye Logo */}
         <Icon 
-          as={Eye} 
+          as={EyeIcon} 
           boxSize="8" 
           color="transparent"
           sx={{
             background: "linear-gradient(to right, #ffafcc, #bde0fe, #a2d2ff)",
             WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
+            WebkitTextFillColor: "transparent",
+            filter: "drop-shadow(0px 0px 8px #bde0fe)",
           }}
         />
         
