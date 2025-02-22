@@ -263,7 +263,7 @@ const InterviewerDashboard = () => {
         ))}
       </Select>
       
-      {/* ✅ Display Saved Questions (Persistent) */}
+      {/* ✅ Display Saved Interview Questions */}
       {savedQuestions.length > 0 && (
         <Card bg="white" shadow="md" borderRadius="lg" p="4" mb="4">
           <CardBody>
@@ -275,7 +275,9 @@ const InterviewerDashboard = () => {
                   p="4"
                   border="1px solid #E2E8F0"
                   borderRadius="md"
-                  bg="gray.50"
+                  cursor="pointer"
+                  _hover={{ bg: "gray.100" }}
+                  onClick={() => setSelectedQuestion(q)} // ✅ Set selected question when clicked
                 >
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
@@ -289,86 +291,51 @@ const InterviewerDashboard = () => {
         </Card>
       )}
       
-      {/* Generate AI-Powered Questions */}
-      <Card bg="white" shadow="md" borderRadius="lg" p="4">
-        <CardBody>
-          <Heading size="md" mb="4">Generate AI-Powered Questions</Heading>
-          <Button colorScheme="blue" onClick={handleGenerateQuestions} isLoading={loading}>
-            Generate Questions 🤖
-          </Button>
-      
-          {questions.length > 0 && (
-            <>
-              <VStack align="stretch" mt="4">
-                {questions.map((q, index) => (
-                  <Box
-                    key={index}
-                    p="4"
-                    border="1px solid #E2E8F0"
-                    borderRadius="md"
-                    cursor="pointer"
-                    _hover={{ bg: "gray.100" }}
-                    onClick={() => handleSelectQuestion(q)}
-                  >
-                    <Text fontWeight="bold">{q.question}</Text>
-                    <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
-                    <Text fontSize="sm" color="blue.500">
-                      Competencies Covered: {q.competency || "General Skills"}
-                    </Text>
-                  </Box>
-                ))}
-              </VStack>
-      
-              {/* ✅ Fix: Place the Save Button inside the fragment correctly */}
-              <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
-                Save Questions 💾
-              </Button>
-            </>
-          )}
-        </CardBody>
-      </Card>
-
-
-      {/* Candidate Answer Assessment */}
-      <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
-        <CardBody>
-          <Heading size="md" mb="4">Assess Candidate Answers</Heading>
-      
-          {/* ✅ Combine Saved + AI Questions into One List */}
-          {([...savedQuestions, ...questions].length > 0) ? (
-            <VStack align="stretch" mb="4">
-              {[...savedQuestions, ...questions].map((q, index) => (
+      {/* ✅ Display AI-Generated Interview Questions */}
+      {questions.length > 0 && (
+        <Card bg="white" shadow="md" borderRadius="lg" p="4">
+          <CardBody>
+            <Heading size="md" mb="4">Generated AI-Powered Questions</Heading>
+            <VStack align="stretch">
+              {questions.map((q, index) => (
                 <Box
                   key={index}
                   p="4"
                   border="1px solid #E2E8F0"
                   borderRadius="md"
                   cursor="pointer"
-                  bg={selectedQuestion === q ? "blue.50" : "white"}
                   _hover={{ bg: "gray.100" }}
-                  onClick={() => setSelectedQuestion(q)}
+                  onClick={() => setSelectedQuestion(q)} // ✅ Set selected question when clicked
                 >
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
                   <Text fontSize="sm" color="blue.500">
-                    Competencies Covered: {q.competencies_covered?.join(", ") || "General Skills"}
+                    Competencies Covered: {q.competency || "General Skills"}
                   </Text>
                 </Box>
               ))}
             </VStack>
-          ) : (
-            <Alert status="info">
-              <AlertIcon />
-              No questions available. Generate or select a job title with saved questions.
-            </Alert>
-          )}
+          </CardBody>
+        </Card>
+      )}
+
+
+      {/* ✅ Assess Candidate Answers */}
+      <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
+        <CardBody>
+          <Heading size="md" mb="4">Assess Candidate Answers</Heading>
       
           {/* ✅ Display Selected Question */}
-          {selectedQuestion && (
+          {selectedQuestion ? (
             <Box mt="4" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.50">
               <Text fontWeight="bold">Selected Question: {selectedQuestion.question}</Text>
               <Text color="gray.600">Follow-Up: {selectedQuestion.follow_up}</Text>
             </Box>
+          ) : (
+            <Alert status="info">
+              <AlertIcon />
+              Click a question to assess.
+            </Alert>
           )}
       
           {/* ✅ Candidate Response Input */}
