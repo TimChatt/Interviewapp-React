@@ -87,27 +87,16 @@ const InterviewerDashboard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            job_title: selectedJobTitle,
-            department: "Engineering",
-            competencies: [],
-          }),
+          body: JSON.stringify({ job_title: selectedJobTitle }),
         }
       );
   
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
-  
-      console.log("API Response Data:", data); // ✅ Debugging line
-  
-      if (!data.questions || data.questions.length === 0) {
-        throw new Error("No questions generated. Try again.");
-      }
-  
+      console.log("Generated Questions:", data.questions); // ✅ Debug log
       setQuestions(data.questions);
-      setShowGeneratedQuestions(true);
+      setShowGeneratedQuestions(true); // ✅ Ensure questions are shown
     } catch (err) {
-      console.error("Error in handleGenerateQuestions:", err);
       toast({
         title: "Error generating questions",
         description: err.message,
@@ -119,6 +108,7 @@ const InterviewerDashboard = () => {
       setLoading(false);
     }
   };
+
 
   // Assess candidate's response
   const handleAssessAnswer = async () => {
@@ -193,7 +183,8 @@ const InterviewerDashboard = () => {
             <VStack align="stretch" mt="4">
               {questions.map((q, index) => (
                 <Box key={index} p="4" border="1px solid #E2E8F0" borderRadius="md">
-                  <Text fontWeight="bold">{q}</Text>
+                  <Text fontWeight="bold">{q.question}</Text>
+                  <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
                 </Box>
               ))}
             </VStack>
