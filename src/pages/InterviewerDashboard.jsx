@@ -100,10 +100,13 @@ const InterviewerDashboard = () => {
       return;
     }
   
+    // ✅ Convert competencies from object list to string list
+    const formattedCompetencies = (competenciesMap[selectedJobTitle] || []).map(comp => comp.name);
+  
     const requestBody = {
       job_title: selectedJobTitle,
-      department: "Engineering",  // ✅ Ensure department is included
-      competencies: competenciesMap[selectedJobTitle] || [],
+      department: "Engineering",
+      competencies: formattedCompetencies, // ✅ Ensure it's a list of strings
     };
   
     console.log("🔍 Sending request payload:", JSON.stringify(requestBody)); // ✅ Debugging
@@ -122,9 +125,11 @@ const InterviewerDashboard = () => {
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
   
+      console.log("✅ Response:", data);
       setQuestions(data.questions);
       setShowGeneratedQuestions(true);
     } catch (err) {
+      console.error("❌ Error:", err);
       toast({
         title: "Error generating questions",
         description: err.message,
@@ -136,6 +141,7 @@ const InterviewerDashboard = () => {
       setLoading(false);
     }
   };
+
 
 
   // Set selected question when clicked
