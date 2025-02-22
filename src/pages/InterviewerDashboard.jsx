@@ -98,6 +98,12 @@ const InterviewerDashboard = () => {
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
   
+      console.log("API Response Data:", data); // ✅ Debugging line
+  
+      if (!data.questions || data.questions.length === 0) {
+        throw new Error("No questions generated. Try again.");
+      }
+  
       setQuestions(data.questions);
       setShowGeneratedQuestions(true);
     } catch (err) {
