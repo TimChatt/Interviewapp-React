@@ -184,22 +184,23 @@ const JobDescriptionPage = () => {
   }
 };
 
-  return (
-    <Box maxW="800px" mx="auto" py="6">
-      <Button onClick={() => navigate(-1)} colorScheme="gray" mb="4">
-        ← Back
-      </Button>
+return (
+  <Box maxW="800px" mx="auto" py="6">
+    <Button onClick={() => navigate(-1)} colorScheme="gray" mb="4">
+      ← Back
+    </Button>
 
-      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        {jobTitle} - Job Description
-      </Heading>
+    <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+      {jobTitle} - Job Description
+    </Heading>
 
-      {loading && (
-        <VStack justify="center" align="center">
-          <Spinner size="xl" color="purple.500" />
-        </VStack>
-      )}
+    {loading && (
+      <VStack justify="center" align="center">
+        <Spinner size="xl" color="purple.500" />
+      </VStack>
+    )}
 
+    {!loading && (
       <Card bg="white" shadow="md" borderRadius="lg">
         <CardBody>
           {isEditing ? (
@@ -211,18 +212,21 @@ const JobDescriptionPage = () => {
           ) : (
             <Alert status="warning" mt="4">
               <AlertIcon />
-              No job description found for this role. Click below to create one.
+              No job description found. Click below to create one.
             </Alert>
           )}
-      
+
           <Box mt="4">
             {isEditing ? (
               <>
                 <Button colorScheme="green" mr="2" onClick={handleSave}>
                   Save Changes
                 </Button>
-                <Button colorScheme="gray" onClick={() => setIsEditing(false)}>
+                <Button colorScheme="gray" mr="2" onClick={() => setIsEditing(false)}>
                   Cancel
+                </Button>
+                <Button colorScheme="blue" onClick={handleGenerateJobDescription}>
+                  Generate Job Description with AI 📝
                 </Button>
               </>
             ) : (
@@ -246,77 +250,32 @@ const JobDescriptionPage = () => {
           </Box>
         </CardBody>
       </Card>
+    )}
 
-      )}
-      {!loading && !error && (
-        <Card bg="white" shadow="md" borderRadius="lg">
-          <CardBody>
-            {isEditing ? (
-              <ReactQuill theme="snow" value={editedDescription} onChange={setEditedDescription} />
-            ) : (
-              <Box border="1px solid #E2E8F0" p="4" borderRadius="md" minH="200px">
-                <Text fontSize="lg" whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: jobDescription }} />
-              </Box>
-            )}
+    {/* AI Analysis - Hidden unless analyzed */}
+    {analysis.hasAnalysis && (
+      <Card bg="gray.50" shadow="md" borderRadius="lg" mt="4" p="4">
+        <Heading size="md" color="purple.700" mb="2">
+          AI Analysis
+        </Heading>
+        <Text>
+          <strong>Biased Terms:</strong>{" "}
+          {analysis.biased_terms.length > 0 ? analysis.biased_terms.join(", ") : "None"}
+        </Text>
+        <Text>
+          <strong>Suggested Edits:</strong>{" "}
+          {analysis.suggested_edits.length > 0 ? analysis.suggested_edits.join(", ") : "N/A"}
+        </Text>
+        <Text>
+          <strong>Overall Score:</strong> {analysis.overall_score} / 10
+        </Text>
+        <Text fontStyle="italic" color="gray.600" mt="2">
+          {analysis.feedback}
+        </Text>
+      </Card>
+    )}
+  </Box>
+);
 
-            <Box mt="4">
-              {isEditing ? (
-                <>
-                  <Button colorScheme="green" mr="2" onClick={handleSave}>
-                    Save Changes
-                  </Button>
-                  <Button colorScheme="gray" mr="2" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme="blue" onClick={handleGenerateJobDescription}>
-                    Generate Job Description with AI 📝
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button colorScheme="blue" mr="2" onClick={onCopy}>
-                    {hasCopied ? "Copied!" : "Copy to Clipboard"}
-                  </Button>
-                  <Button colorScheme="purple" mr="2" onClick={() => setIsEditing(true)}>
-                    Edit Job Description
-                  </Button>
-                  <Button colorScheme="teal" mr="2" onClick={handleImproveDescription}>
-                    Improve with AI ✨
-                  </Button>
-                  <Button colorScheme="orange" onClick={handleAnalyzeDescription}>
-                    Analyze for Bias 📊
-                  </Button>
-                </>
-              )}
-            </Box>
-          </CardBody>
-        </Card>
-      )}
-
-      {/* AI Analysis - Hidden unless analyzed */}
-      {analysis && analysis.hasAnalysis && (
-        <Card bg="gray.50" shadow="md" borderRadius="lg" mt="4" p="4">
-          <Heading size="md" color="purple.700" mb="2">
-            AI Analysis
-          </Heading>
-          <Text>
-            <strong>Biased Terms:</strong>{" "}
-            {analysis.biased_terms.length > 0 ? analysis.biased_terms.join(", ") : "None"}
-          </Text>
-          <Text>
-            <strong>Suggested Edits:</strong>{" "}
-            {analysis.suggested_edits.length > 0 ? analysis.suggested_edits.join(", ") : "N/A"}
-          </Text>
-          <Text>
-            <strong>Overall Score:</strong> {analysis.overall_score} / 10
-          </Text>
-          <Text fontStyle="italic" color="gray.600" mt="2">
-            {analysis.feedback}
-          </Text>
-        </Card>
-      )}
-    </Box>
-  );
-};
 
 export default JobDescriptionPage;
