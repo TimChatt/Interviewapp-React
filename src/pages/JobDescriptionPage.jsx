@@ -46,7 +46,11 @@ const JobDescriptionPage = () => {
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-job-description/${department}/${jobTitle}`
         );
-        if (!response.ok) throw new Error("Failed to fetch job description.");
+        if (!response.ok) {
+          setJobDescription(""); // ✅ Allow editing an empty description
+          setEditedDescription(""); 
+          return; // Prevent error blocking UI
+        }
         const data = await response.json();
         setJobDescription(data.job_description);
         setEditedDescription(data.job_description);
@@ -196,13 +200,56 @@ const JobDescriptionPage = () => {
         </VStack>
       )}
 
-      {error && (
-        <Alert status="error" mt="4">
-          <AlertIcon />
-          {error}
-        </Alert>
+      {error ? (
+        <>
+          <Alert status="warning" mt="4">
+            <AlertIcon />
+            No job description found for this role. Create a new one below.
+          </Alert>
+          <Button colorScheme="green" mt="4" onClick={() => setIsEditing(true)}>
+            Create Job Description
+          </Button>
+        </>
+      ) : (
+        <Card bg="white" shadow="md" borderRadius="lg">
+          <CardBody>
+            {isEditing ? (
+              <ReactQuill theme="snow" value={editedDescription} onChange={setEditedDescription} />
+            ) : (
+              <Box border="1px solid #E2E8F0" p="4" borderRadius="md" minH="200px">
+                <Text fontSize="lg" whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: jobDescription }} />
+              </Box>
+            )}
+            <Box mt="4">
+              {isEditing ? (
+                <>
+                  <Button colorScheme="green" mr="2" onClick={handleSave}>
+                    Save Changes
+                  </Button>
+                  <Button colorScheme="gray" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button colorScheme="blue" mr="2" onClick={onCopy}>
+                    {hasCopied ? "Copied!" : "Copy to Clipboard"}
+                  </Button>
+                  <Button colorScheme="purple" mr="2" onClick={() => setIsEditing(true)}>
+                    {jobDescription ? "Edit Job Description" : "Create Job Description"}
+                  </Button>
+                  <Button colorScheme="teal" mr="2" onClick={handleImproveDescription}>
+                    Improve with AI ✨
+                  </Button>
+                  <Button colorScheme="orange" onClick={handleAnalyzeDescription}>
+                    Analyze for Bias 📊
+                  </Button>
+                </>
+              )}
+            </Box>
+          </CardBody>
+        </Card>
       )}
-
       {!loading && !error && (
         <Card bg="white" shadow="md" borderRadius="lg">
           <CardBody>
