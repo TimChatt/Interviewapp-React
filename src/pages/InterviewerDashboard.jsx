@@ -271,31 +271,32 @@ const InterviewerDashboard = () => {
           </Button>
 
           {questions.length > 0 && (
-            <VStack align="stretch" mt="4">
-              {questions.map((q, index) => (
-                <Box
-                  key={index}
-                  p="4"
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                  cursor="pointer"
-                  _hover={{ bg: "gray.100" }}
-                  onClick={() => handleSelectQuestion(q)}
-                >
-                  <Text fontWeight="bold">{q.question}</Text>
-                  <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
-                  <Text fontSize="sm" color="blue.500">
-                    Competencies Covered: {q.competency || "General Skills"}
-                  </Text>
-                </Box>
-              ))}
-            </VStack>
-      
-            {/* ✅ New Save Button */}
-            <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
-              Save Questions 💾
-            </Button>
-           </>
+            <>
+              <VStack align="stretch" mt="4">
+                {questions.map((q, index) => (
+                  <Box
+                    key={index}
+                    p="4"
+                    border="1px solid #E2E8F0"
+                    borderRadius="md"
+                    cursor="pointer"
+                    _hover={{ bg: "gray.100" }}
+                    onClick={() => handleSelectQuestion(q)}
+                  >
+                    <Text fontWeight="bold">{q.question}</Text>
+                    <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
+                    <Text fontSize="sm" color="blue.500">
+                      Competencies Covered: {q.competency || "General Skills"}
+                    </Text>
+                  </Box>
+                ))}
+              </VStack>
+          
+              {/* ✅ Fix: Place the Save Button inside the fragment correctly */}
+              <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
+                Save Questions 💾
+              </Button>
+            </>
           )}
         </CardBody>
       </Card>
