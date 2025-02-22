@@ -233,7 +233,7 @@ const InterviewerDashboard = () => {
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
                   <Text fontSize="sm" color="blue.500">
-                    Competencies Covered: {q.competencies_covered?.join(", ") || "General Skills"}
+                    Competencies Covered: {q.competency?.join(", ") || "General Skills"}
                   </Text>
                 </Box>
               ))}
