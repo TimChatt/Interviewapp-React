@@ -87,6 +87,7 @@ const Sidebar = () => {
           { to: "/insights", label: "Insights", icon: FaBasketballBall }, // Basketball for insights
           { to: "/recommendations", label: "Recommendations", icon: FaTrophy }, // Trophy for recommendations
           { to: "/competency-framework-planner", label: "Competency Framework", icon: FaFutbol }, // Football for competency
+          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye }, // ✅ Added Interviewer Dashboard
         ].map((item) => (
           <Button 
             as={Link} 
@@ -145,4 +146,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
