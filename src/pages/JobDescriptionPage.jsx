@@ -184,7 +184,7 @@ const JobDescriptionPage = () => {
   }
 };
 
-return (
+  return (
     <Box maxW="800px" mx="auto" py="6">
       <Button onClick={() => navigate(-1)} colorScheme="gray" mb="4">
         ← Back
@@ -238,6 +238,12 @@ return (
                 <Button colorScheme="purple" mr="2" onClick={() => setIsEditing(true)}>
                   {jobDescription ? "Edit Job Description" : "Create Job Description"}
                 </Button>
+                <Button colorScheme="teal" mr="2" onClick={handleImproveDescription}>
+                  Improve with AI ✨
+                </Button>
+                <Button colorScheme="orange" onClick={handleAnalyzeDescription}>
+                  Analyze for Bias 📊
+                </Button>
               </>
             )}
           </Box>
@@ -249,8 +255,8 @@ return (
           <Heading size="md" color="purple.700" mb="2">
             AI Analysis
           </Heading>
-          <Text><strong>Biased Terms:</strong> {analysis.biased_terms.length > 0 ? analysis.biased_terms.join(", ") : "None"}</Text>
-          <Text><strong>Suggested Edits:</strong> {analysis.suggested_edits.length > 0 ? analysis.suggested_edits.join(", ") : "N/A"}</Text>
+          <Text><strong>Biased Terms:</strong> {analysis.biased_terms.join(", ") || "None"}</Text>
+          <Text><strong>Suggested Edits:</strong> {analysis.suggested_edits.join(", ") || "N/A"}</Text>
           <Text><strong>Overall Score:</strong> {analysis.overall_score} / 10</Text>
           <Text fontStyle="italic" color="gray.600" mt="2">{analysis.feedback}</Text>
         </Card>
