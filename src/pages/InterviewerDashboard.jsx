@@ -19,7 +19,7 @@ const InterviewerDashboard = () => {
   const toast = useToast();
 
   // States
-  const [jobTitles, setJobTitles] = useState([]); // Fetch all job titles
+  const [jobTitles, setJobTitles] = useState([]);
   const [selectedJobTitle, setSelectedJobTitle] = useState("");
   const [questions, setQuestions] = useState([]);
   const [savedQuestions, setSavedQuestions] = useState([]);
@@ -27,9 +27,10 @@ const InterviewerDashboard = () => {
   const [candidateResponse, setCandidateResponse] = useState("");
   const [answerAnalysis, setAnswerAnalysis] = useState(null);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [showGeneratedQuestions, setShowGeneratedQuestions] = useState(false); // Toggle AI-generated vs saved
+  const [competenciesMap, setCompetenciesMap] = useState({});
+  const [showGeneratedQuestions, setShowGeneratedQuestions] = useState(false);
 
-  // Fetch all job titles
+  // Fetch all job titles & their competencies
   useEffect(() => {
     const fetchJobTitles = async () => {
       try {
@@ -38,7 +39,15 @@ const InterviewerDashboard = () => {
         );
         if (!response.ok) throw new Error("Failed to fetch job titles.");
         const data = await response.json();
+
         setJobTitles(data.job_titles.map((job) => job.job_title) || []);
+
+        // Store competencies mapped to job titles
+        const jobCompetencies = {};
+        data.job_titles.forEach((job) => {
+          jobCompetencies[job.job_title] = job.competencies || [];
+        });
+        setCompetenciesMap(jobCompetencies);
       } catch (err) {
         toast({
           title: "Error fetching job titles",
@@ -52,7 +61,7 @@ const InterviewerDashboard = () => {
     fetchJobTitles();
   }, [toast]);
 
-  // Fetch saved interview questions for this job title
+  // Fetch saved interview questions
   useEffect(() => {
     if (!selectedJobTitle) return;
 
@@ -80,6 +89,17 @@ const InterviewerDashboard = () => {
 
   // Generate AI-powered questions
   const handleGenerateQuestions = async () => {
+    if (!selectedJobTitle) {
+      toast({
+        title: "Select a job title first",
+        description: "You need to select a job title before generating questions.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(
@@ -87,15 +107,24 @@ const InterviewerDashboard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ job_title: selectedJobTitle }),
+          body: JSON.stringify({
+            job_title: selectedJobTitle,
+            competencies: competenciesMap[selectedJobTitle] || [],
+          }),
         }
       );
-  
+
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
-      console.log("Generated Questions:", data.questions); // ✅ Debug log
-      setQuestions(data.questions);
-      setShowGeneratedQuestions(true); // ✅ Ensure questions are shown
+
+      // Include competency details per question
+      const formattedQuestions = data.questions.map((q) => ({
+        ...q,
+        competencies: competenciesMap[selectedJobTitle] || [],
+      }));
+
+      setQuestions(formattedQuestions);
+      setShowGeneratedQuestions(true);
     } catch (err) {
       toast({
         title: "Error generating questions",
@@ -108,7 +137,6 @@ const InterviewerDashboard = () => {
       setLoading(false);
     }
   };
-
 
   // Assess candidate's response
   const handleAssessAnswer = async () => {
@@ -185,44 +213,15 @@ const InterviewerDashboard = () => {
                 <Box key={index} p="4" border="1px solid #E2E8F0" borderRadius="md">
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
+                  <Text fontSize="sm" color="blue.500">
+                    Competencies Covered: {q.competencies.join(", ") || "General Skills"}
+                  </Text>
                 </Box>
               ))}
             </VStack>
           )}
         </CardBody>
       </Card>
-
-      {/* Toggle Saved or AI Questions */}
-      <Button
-        mt="4"
-        onClick={() => setShowGeneratedQuestions(!showGeneratedQuestions)}
-      >
-        {showGeneratedQuestions ? "Show Saved Questions" : "Show AI-Generated Questions"}
-      </Button>
-
-      {/* Saved Questions */}
-      {!showGeneratedQuestions && savedQuestions.length > 0 && (
-        <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
-          <CardBody>
-            <Heading size="md" mb="4">Saved Questions</Heading>
-            <VStack align="stretch">
-              {savedQuestions.map((q) => (
-                <Box
-                  key={q.id}
-                  p="4"
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                  cursor="pointer"
-                  _hover={{ bg: "gray.100" }}
-                  onClick={() => setSelectedQuestion(q.question)}
-                >
-                  <Text fontWeight="bold">{q.question}</Text>
-                </Box>
-              ))}
-            </VStack>
-          </CardBody>
-        </Card>
-      )}
 
       {/* Candidate Answer Assessment */}
       <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
