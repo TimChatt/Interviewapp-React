@@ -5,16 +5,13 @@ import {
   Box,
   Heading,
   Input,
-  Button,
   Grid,
   Card,
   CardBody,
-  IconButton,
-  Spinner,
   Text,
   VStack,
+  Spinner,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 const SavedFrameworks = () => {
   const [allFrameworks, setAllFrameworks] = useState([]);
@@ -85,33 +82,6 @@ const SavedFrameworks = () => {
     navigate(`/frameworks/${department}`);
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this framework?");
-    if (!confirmDelete) return;
-
-    try {
-      const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/delete-framework/${id}`,
-        { method: "DELETE" }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to delete framework");
-      }
-
-      alert("Framework deleted successfully!");
-      setAllFrameworks(allFrameworks.filter((framework) => framework.id !== id));
-    } catch (error) {
-      console.error("Error deleting framework:", error);
-      alert("An error occurred while deleting the framework. Please try again.");
-    }
-  };
-
-  const handleEdit = (id) => {
-    navigate(`/edit-framework/${id}`);
-  };
-
   const onDragEnd = (result) => {
     if (!result.destination) return;
 
@@ -129,6 +99,7 @@ const SavedFrameworks = () => {
         Saved Competency Frameworks
       </Heading>
 
+      {/* Search Input */}
       <VStack spacing={4} mb={6} align="center">
         <Input
           placeholder="Search by department"
@@ -151,9 +122,6 @@ const SavedFrameworks = () => {
       {!loading && !error && displayedFrameworks.length === 0 && (
         <Box textAlign="center">
           <Text>No saved frameworks found. Start by generating a new framework.</Text>
-          <Button mt={4} colorScheme="blue" onClick={() => navigate("/competency-framework-planner")}>
-            Generate New Framework
-          </Button>
         </Box>
       )}
 
@@ -181,33 +149,17 @@ const SavedFrameworks = () => {
                         cursor="grab"
                       >
                         <CardBody>
-                          <Heading size="md" color="blue.600" onClick={() => handleDepartmentClick(group.department)}>
+                          <Heading
+                            size="md"
+                            color="blue.600"
+                            onClick={() => handleDepartmentClick(group.department)}
+                            _hover={{ textDecoration: "underline", cursor: "pointer" }}
+                          >
                             {group.department}
                           </Heading>
                           <Text mt={2} fontSize="sm" color="gray.600">
-                            {group.frameworks.length} Job Titles
+                            {group.frameworks.reduce((total, framework) => total + framework.jobTitles.length, 0)} Job Titles
                           </Text>
-
-                          <VStack mt={4} spacing={2} align="start">
-                            {group.frameworks.map((framework, idx) => (
-                              <Text key={idx} fontSize="sm" color="gray.500">
-                                {framework.jobTitles.map((title) => title.job_title).join(", ")}
-                              </Text>
-                            ))}
-                          </VStack>
-
-                          <VStack mt={4} spacing={2} align="start">
-                            <Button size="sm" colorScheme="blue" onClick={() => handleEdit(group.department)}>
-                              Edit Framework
-                            </Button>
-                            <IconButton
-                              size="sm"
-                              colorScheme="red"
-                              icon={<DeleteIcon />}
-                              aria-label="Delete Framework"
-                              onClick={() => handleDelete(group.department)}
-                            />
-                          </VStack>
                         </CardBody>
                       </Card>
                     )}
