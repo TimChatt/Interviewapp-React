@@ -89,17 +89,19 @@ const InterviewerDashboard = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             job_title: selectedJobTitle,
-            department: "Engineering",  // Replace with a dynamic value if needed
-            competencies: [],  // Pass actual competencies if available
+            department: "Engineering",
+            competencies: [],
           }),
         }
       );
-
+  
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
+  
       setQuestions(data.questions);
-      setShowGeneratedQuestions(true); // Show AI-generated questions
+      setShowGeneratedQuestions(true);
     } catch (err) {
+      console.error("Error in handleGenerateQuestions:", err);
       toast({
         title: "Error generating questions",
         description: err.message,
