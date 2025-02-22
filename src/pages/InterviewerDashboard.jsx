@@ -148,6 +148,58 @@ const InterviewerDashboard = () => {
   const handleSelectQuestion = (question) => {
     setSelectedQuestion(question);
   };
+  
+  const handleSaveQuestions = async () => {
+    if (questions.length === 0) {
+      toast({
+        title: "No Questions to Save",
+        description: "Please generate questions first.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/save-interview-questions`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            job_title: selectedJobTitle,
+            questions: questions.map((q) => ({
+              question: q.question,
+              follow_up: q.follow_up,
+              competency: q.competency || "General Skills",
+            })),
+          }),
+        }
+      );
+  
+      if (!response.ok) throw new Error("Failed to save questions.");
+      const data = await response.json();
+      toast({
+        title: "Questions Saved!",
+        description: `${data.saved_questions.length} questions saved successfully.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+  
+      // Refresh saved questions
+      fetchSavedQuestions();
+    } catch (err) {
+      toast({
+        title: "Error Saving Questions",
+        description: err.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   // Assess candidate's response
   const handleAssessAnswer = async () => {
@@ -238,6 +290,12 @@ const InterviewerDashboard = () => {
                 </Box>
               ))}
             </VStack>
+      
+             {/* ✅ New Save Button */}
+              <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
+                Save Questions 💾
+              </Button>
+             </>
           )}
         </CardBody>
       </Card>
