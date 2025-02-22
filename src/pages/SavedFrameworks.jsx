@@ -14,8 +14,8 @@ import {
 } from "@chakra-ui/react";
 
 const SavedFrameworks = () => {
-  const [allFrameworks, setAllFrameworks] = useState([]);
-  const [displayedFrameworks, setDisplayedFrameworks] = useState([]);
+  const [frameworks, setFrameworks] = useState([]);
+  const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,44 +25,40 @@ const SavedFrameworks = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // ✅ Fetch frameworks
+        // ✅ Fetch all frameworks (departments)
         const frameworksResponse = await fetch(
           `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=`
         );
-        if (!frameworksResponse.ok) {
-          throw new Error("Failed to fetch frameworks.");
-        }
+        if (!frameworksResponse.ok) throw new Error("Failed to fetch frameworks.");
         const frameworksData = await frameworksResponse.json();
         const frameworks = frameworksData.frameworks;
 
-        // ✅ Fetch job titles
+        // ✅ Fetch all job titles
         const jobTitlesResponse = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=`
         );
-        if (!jobTitlesResponse.ok) {
-          throw new Error("Failed to fetch job titles.");
-        }
+        if (!jobTitlesResponse.ok) throw new Error("Failed to fetch job titles.");
         const jobTitlesData = await jobTitlesResponse.json();
         const jobTitlesList = jobTitlesData.job_titles;
 
         console.log("✅ Frameworks:", frameworks);
         console.log("✅ Job Titles:", jobTitlesList);
 
-        // ✅ Map frameworks by department ID & count job titles
-        const frameworksByDepartment = frameworks.map((framework) => {
-          // ✅ Count job titles where department_id matches framework.id
-          const jobTitleCount = jobTitlesList.filter(
-            (job) => job.department_id === framework.id
-          ).length;
-
-          return {
-            department: framework.department,
-            jobTitleCount,
-          };
+        // ✅ Count job titles per department
+        const jobTitleCounts = {};
+        jobTitlesList.forEach((job) => {
+          if (job.department_id) {
+            jobTitleCounts[job.department_id] = (jobTitleCounts[job.department_id] || 0) + 1;
+          }
         });
 
-        setAllFrameworks(frameworksByDepartment);
-        setDisplayedFrameworks(frameworksByDepartment);
+        // ✅ Map frameworks with job title counts
+        const frameworksWithCounts = frameworks.map((framework) => ({
+          department: framework.department,
+          jobTitleCount: jobTitleCounts[framework.id] || 0, // Default to 0 if no job titles exist
+        }));
+
+        setFrameworks(frameworksWithCounts);
         setError(null);
       } catch (err) {
         console.error("❌ Error fetching data:", err);
@@ -77,28 +73,17 @@ const SavedFrameworks = () => {
 
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setDisplayedFrameworks(allFrameworks);
+      setFrameworks(frameworks);
     } else {
-      const filteredFrameworks = allFrameworks.filter((group) =>
+      const filteredFrameworks = frameworks.filter((group) =>
         group.department.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setDisplayedFrameworks(filteredFrameworks);
+      setFrameworks(filteredFrameworks);
     }
-  }, [searchQuery, allFrameworks]);
+  }, [searchQuery]);
 
   const handleDepartmentClick = (department) => {
     navigate(`/frameworks/${department}`);
-  };
-
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const reorderedFrameworks = Array.from(displayedFrameworks);
-    const [movedFramework] = reorderedFrameworks.splice(result.source.index, 1);
-    reorderedFrameworks.splice(result.destination.index, 0, movedFramework);
-
-    setDisplayedFrameworks(reorderedFrameworks);
-    setAllFrameworks(reorderedFrameworks);
   };
 
   return (
@@ -127,57 +112,36 @@ const SavedFrameworks = () => {
       )}
       {error && <Text color="red.500" textAlign="center">{error}</Text>}
 
-      {!loading && !error && displayedFrameworks.length === 0 && (
+      {!loading && !error && frameworks.length === 0 && (
         <Box textAlign="center">
           <Text>No saved frameworks found. Start by generating a new framework.</Text>
         </Box>
       )}
 
-      {!loading && !error && displayedFrameworks.length > 0 && (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="frameworks">
-            {(provided) => (
-              <Grid
-                templateColumns={{ base: "1fr", md: "1fr 1fr" }}
-                gap={6}
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                {displayedFrameworks.map((group, index) => (
-                  <Draggable key={group.department} draggableId={group.department} index={index}>
-                    {(provided) => (
-                      <Card
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        p={6}
-                        shadow="md"
-                        borderRadius="lg"
-                        bg="white"
-                        cursor="grab"
-                      >
-                        <CardBody>
-                          <Heading
-                            size="md"
-                            color="blue.600"
-                            onClick={() => handleDepartmentClick(group.department)}
-                            _hover={{ textDecoration: "underline", cursor: "pointer" }}
-                          >
-                            {group.department}
-                          </Heading>
-                          <Text mt={2} fontSize="sm" color="gray.600">
-                            {group.jobTitleCount} Job Titles
-                          </Text>
-                        </CardBody>
-                      </Card>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </Grid>
-            )}
-          </Droppable>
-        </DragDropContext>
+      {!loading && !error && frameworks.length > 0 && (
+        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6}>
+          {frameworks.map((group, index) => (
+            <Card
+              key={index}
+              p={6}
+              shadow="md"
+              borderRadius="lg"
+              bg="white"
+              cursor="pointer"
+              _hover={{ bg: "gray.100" }}
+              onClick={() => handleDepartmentClick(group.department)}
+            >
+              <CardBody>
+                <Heading size="md" color="blue.600">
+                  {group.department}
+                </Heading>
+                <Text mt={2} fontSize="sm" color="gray.600">
+                  {group.jobTitleCount} Job Titles
+                </Text>
+              </CardBody>
+            </Card>
+          ))}
+        </Grid>
       )}
     </Box>
   );
