@@ -39,17 +39,14 @@ const SavedFrameworks = () => {
 
         const frameworksByDepartment = data.frameworks.reduce((acc, framework) => {
           if (!acc[framework.department]) acc[framework.department] = [];
-          acc[framework.department].push({
-            ...framework,
-            jobTitles: framework.job_titles || [],
-          });
+          acc[framework.department].push(framework);
           return acc;
         }, {});
 
         const groupedFrameworks = Object.entries(frameworksByDepartment).map(
           ([department, frameworks]) => ({
             department,
-            frameworks,
+            jobTitleCount: frameworks.reduce((sum, framework) => sum + (framework.job_titles?.length || 0), 0),
           })
         );
 
@@ -158,7 +155,7 @@ const SavedFrameworks = () => {
                             {group.department}
                           </Heading>
                           <Text mt={2} fontSize="sm" color="gray.600">
-                            {group.frameworks.reduce((total, framework) => total + framework.jobTitles.length, 0)} Job Titles
+                            {group.jobTitleCount} Job Titles
                           </Text>
                         </CardBody>
                       </Card>
