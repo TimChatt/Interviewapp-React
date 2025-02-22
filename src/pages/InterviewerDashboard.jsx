@@ -330,6 +330,10 @@ const InterviewerDashboard = () => {
                 </Box>
               ))}
             </VStack>
+            {/* ✅ Save Questions Button */}
+            <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
+              Save Questions 💾
+             </Button>
           </CardBody>
         </Card>
       )}
