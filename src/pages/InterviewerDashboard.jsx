@@ -333,24 +333,58 @@ const InterviewerDashboard = () => {
       <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
         <CardBody>
           <Heading size="md" mb="4">Assess Candidate Answers</Heading>
-          {selectedQuestion ? (
-            <Text fontWeight="bold">Selected Question: {selectedQuestion.question}</Text>
+      
+          {/* ✅ Combine Saved + AI Questions into One List */}
+          {([...savedQuestions, ...questions].length > 0) ? (
+            <VStack align="stretch" mb="4">
+              {[...savedQuestions, ...questions].map((q, index) => (
+                <Box
+                  key={index}
+                  p="4"
+                  border="1px solid #E2E8F0"
+                  borderRadius="md"
+                  cursor="pointer"
+                  bg={selectedQuestion === q ? "blue.50" : "white"}
+                  _hover={{ bg: "gray.100" }}
+                  onClick={() => setSelectedQuestion(q)}
+                >
+                  <Text fontWeight="bold">{q.question}</Text>
+                  <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
+                  <Text fontSize="sm" color="blue.500">
+                    Competencies Covered: {q.competencies_covered?.join(", ") || "General Skills"}
+                  </Text>
+                </Box>
+              ))}
+            </VStack>
           ) : (
             <Alert status="info">
               <AlertIcon />
-              Select a question from the list above.
+              No questions available. Generate or select a job title with saved questions.
             </Alert>
           )}
+      
+          {/* ✅ Display Selected Question */}
+          {selectedQuestion && (
+            <Box mt="4" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.50">
+              <Text fontWeight="bold">Selected Question: {selectedQuestion.question}</Text>
+              <Text color="gray.600">Follow-Up: {selectedQuestion.follow_up}</Text>
+            </Box>
+          )}
+      
+          {/* ✅ Candidate Response Input */}
           <Textarea
             placeholder="Enter candidate's answer..."
             value={candidateResponse}
             onChange={(e) => setCandidateResponse(e.target.value)}
             mt="4"
           />
+      
+          {/* ✅ Assess Answer Button */}
           <Button colorScheme="teal" mt="4" onClick={handleAssessAnswer} isLoading={loading}>
             Assess Answer 📊
           </Button>
-
+      
+          {/* ✅ Display Answer Analysis */}
           {answerAnalysis && (
             <Box mt="4" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.50">
               <Text fontWeight="bold">Score: {answerAnalysis.score} / 4</Text>
