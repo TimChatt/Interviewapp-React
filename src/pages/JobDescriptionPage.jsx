@@ -200,55 +200,53 @@ const JobDescriptionPage = () => {
         </VStack>
       )}
 
-      {error ? (
-        <>
-          <Alert status="warning" mt="4">
-            <AlertIcon />
-            No job description found for this role. Create a new one below.
-          </Alert>
-          <Button colorScheme="green" mt="4" onClick={() => setIsEditing(true)}>
-            Create Job Description
-          </Button>
-        </>
-      ) : (
-        <Card bg="white" shadow="md" borderRadius="lg">
-          <CardBody>
+      <Card bg="white" shadow="md" borderRadius="lg">
+        <CardBody>
+          {isEditing ? (
+            <ReactQuill theme="snow" value={editedDescription} onChange={setEditedDescription} />
+          ) : jobDescription ? (
+            <Box border="1px solid #E2E8F0" p="4" borderRadius="md" minH="200px">
+              <Text fontSize="lg" whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: jobDescription }} />
+            </Box>
+          ) : (
+            <Alert status="warning" mt="4">
+              <AlertIcon />
+              No job description found for this role. Click below to create one.
+            </Alert>
+          )}
+      
+          <Box mt="4">
             {isEditing ? (
-              <ReactQuill theme="snow" value={editedDescription} onChange={setEditedDescription} />
+              <>
+                <Button colorScheme="green" mr="2" onClick={handleSave}>
+                  Save Changes
+                </Button>
+                <Button colorScheme="gray" onClick={() => setIsEditing(false)}>
+                  Cancel
+                </Button>
+              </>
             ) : (
-              <Box border="1px solid #E2E8F0" p="4" borderRadius="md" minH="200px">
-                <Text fontSize="lg" whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: jobDescription }} />
-              </Box>
-            )}
-            <Box mt="4">
-              {isEditing ? (
-                <>
-                  <Button colorScheme="green" mr="2" onClick={handleSave}>
-                    Save Changes
-                  </Button>
-                  <Button colorScheme="gray" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <>
+              <>
+                {jobDescription && (
                   <Button colorScheme="blue" mr="2" onClick={onCopy}>
                     {hasCopied ? "Copied!" : "Copy to Clipboard"}
                   </Button>
-                  <Button colorScheme="purple" mr="2" onClick={() => setIsEditing(true)}>
-                    {jobDescription ? "Edit Job Description" : "Create Job Description"}
-                  </Button>
-                  <Button colorScheme="teal" mr="2" onClick={handleImproveDescription}>
-                    Improve with AI ✨
-                  </Button>
-                  <Button colorScheme="orange" onClick={handleAnalyzeDescription}>
-                    Analyze for Bias 📊
-                  </Button>
-                </>
-              )}
-            </Box>
-          </CardBody>
-        </Card>
+                )}
+                <Button colorScheme="purple" mr="2" onClick={() => setIsEditing(true)}>
+                  {jobDescription ? "Edit Job Description" : "Create Job Description"}
+                </Button>
+                <Button colorScheme="teal" mr="2" onClick={handleImproveDescription}>
+                  Improve with AI ✨
+                </Button>
+                <Button colorScheme="orange" onClick={handleAnalyzeDescription}>
+                  Analyze for Bias 📊
+                </Button>
+              </>
+            )}
+          </Box>
+        </CardBody>
+      </Card>
+
       )}
       {!loading && !error && (
         <Card bg="white" shadow="md" borderRadius="lg">
