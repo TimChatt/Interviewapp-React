@@ -290,6 +290,21 @@ const InterviewerDashboard = () => {
           </CardBody>
         </Card>
       )}
+
+      {/* ✅ Generate AI-Powered Questions */}
+      <Card bg="white" shadow="md" borderRadius="lg" p="4">
+        <CardBody>
+          <Heading size="md" mb="4">Generate AI-Powered Questions</Heading>
+          
+          <Button 
+            colorScheme="blue" 
+            onClick={handleGenerateQuestions} 
+            isLoading={loading}
+          >
+            Generate Questions 🤖
+          </Button>
+        </CardBody>
+      </Card>
       
       {/* ✅ Display AI-Generated Interview Questions */}
       {questions.length > 0 && (
