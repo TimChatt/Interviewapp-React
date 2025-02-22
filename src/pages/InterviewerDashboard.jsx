@@ -99,7 +99,15 @@ const InterviewerDashboard = () => {
       });
       return;
     }
-
+  
+    const requestBody = {
+      job_title: selectedJobTitle,
+      department: "Engineering",  // ✅ Ensure department is included
+      competencies: competenciesMap[selectedJobTitle] || [],
+    };
+  
+    console.log("🔍 Sending request payload:", requestBody); // ✅ Debugging
+  
     setLoading(true);
     try {
       const response = await fetch(
@@ -107,17 +115,13 @@ const InterviewerDashboard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            job_title: selectedJobTitle,
-            competencies: competenciesMap[selectedJobTitle] || [],
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
-
+  
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
-
-      // Include competency details per question
+  
       setQuestions(data.questions);
       setShowGeneratedQuestions(true);
     } catch (err) {
@@ -132,6 +136,7 @@ const InterviewerDashboard = () => {
       setLoading(false);
     }
   };
+
 
   // Set selected question when clicked
   const handleSelectQuestion = (question) => {
