@@ -262,7 +262,33 @@ const InterviewerDashboard = () => {
           <option key={index} value={title}>{title}</option>
         ))}
       </Select>
-
+      
+      {/* ✅ Display Saved Questions (Persistent) */}
+      {savedQuestions.length > 0 && (
+        <Card bg="white" shadow="md" borderRadius="lg" p="4" mb="4">
+          <CardBody>
+            <Heading size="md" mb="4">Saved Interview Questions</Heading>
+            <VStack align="stretch">
+              {savedQuestions.map((q, index) => (
+                <Box
+                  key={index}
+                  p="4"
+                  border="1px solid #E2E8F0"
+                  borderRadius="md"
+                  bg="gray.50"
+                >
+                  <Text fontWeight="bold">{q.question}</Text>
+                  <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
+                  <Text fontSize="sm" color="blue.500">
+                    Competencies Covered: {q.competencies_covered?.join(", ") || "General Skills"}
+                  </Text>
+                </Box>
+              ))}
+            </VStack>
+          </CardBody>
+        </Card>
+      )}
+      
       {/* Generate AI-Powered Questions */}
       <Card bg="white" shadow="md" borderRadius="lg" p="4">
         <CardBody>
@@ -270,7 +296,7 @@ const InterviewerDashboard = () => {
           <Button colorScheme="blue" onClick={handleGenerateQuestions} isLoading={loading}>
             Generate Questions 🤖
           </Button>
-
+      
           {questions.length > 0 && (
             <>
               <VStack align="stretch" mt="4">
@@ -292,7 +318,7 @@ const InterviewerDashboard = () => {
                   </Box>
                 ))}
               </VStack>
-          
+      
               {/* ✅ Fix: Place the Save Button inside the fragment correctly */}
               <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
                 Save Questions 💾
@@ -301,6 +327,7 @@ const InterviewerDashboard = () => {
           )}
         </CardBody>
       </Card>
+
 
       {/* Candidate Answer Assessment */}
       <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
