@@ -16,52 +16,62 @@ import {
 const SavedFrameworks = () => {
   const [allFrameworks, setAllFrameworks] = useState([]);
   const [displayedFrameworks, setDisplayedFrameworks] = useState([]);
+  const [jobTitles, setJobTitles] = useState([]); // Store job titles separately
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchFrameworks = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
+        // Fetch frameworks
+        const frameworksResponse = await fetch(
           `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=`
         );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || `Error: ${response.status}`);
+        if (!frameworksResponse.ok) {
+          throw new Error("Failed to fetch frameworks.");
         }
+        const frameworksData = await frameworksResponse.json();
+        const frameworks = frameworksData.frameworks;
 
-        const data = await response.json();
-        console.log("Fetched all frameworks:", data.frameworks);
-
-        const frameworksByDepartment = data.frameworks.reduce((acc, framework) => {
-          if (!acc[framework.department]) acc[framework.department] = [];
-          acc[framework.department].push(framework);
-          return acc;
-        }, {});
-
-        const groupedFrameworks = Object.entries(frameworksByDepartment).map(
-          ([department, frameworks]) => ({
-            department,
-            jobTitleCount: frameworks.reduce((sum, framework) => sum + (framework.job_titles?.length || 0), 0),
-          })
+        // Fetch job titles
+        const jobTitlesResponse = await fetch(
+          `https://interviewappbe-production.up.railway.app/api/get-job-titles`
         );
+        if (!jobTitlesResponse.ok) {
+          throw new Error("Failed to fetch job titles.");
+        }
+        const jobTitlesData = await jobTitlesResponse.json();
+        const jobTitlesList = jobTitlesData.job_titles;
 
-        setAllFrameworks(groupedFrameworks);
-        setDisplayedFrameworks(groupedFrameworks);
+        // Organize frameworks by department
+        const frameworksByDepartment = frameworks.map((framework) => {
+          // Count how many job titles match the department_id
+          const jobTitleCount = jobTitlesList.filter(
+            (job) => job.department_id === framework.id
+          ).length;
+
+          return {
+            department: framework.department,
+            jobTitleCount,
+          };
+        });
+
+        setAllFrameworks(frameworksByDepartment);
+        setDisplayedFrameworks(frameworksByDepartment);
+        setJobTitles(jobTitlesList); // Store job titles separately
         setError(null);
       } catch (err) {
-        console.error("Error fetching frameworks:", err);
-        setError("Failed to fetch saved frameworks. Please try again.");
+        console.error("Error fetching data:", err);
+        setError("Failed to fetch data. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFrameworks();
+    fetchData();
   }, []);
 
   useEffect(() => {
