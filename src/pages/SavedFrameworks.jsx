@@ -16,7 +16,6 @@ import {
 const SavedFrameworks = () => {
   const [allFrameworks, setAllFrameworks] = useState([]);
   const [displayedFrameworks, setDisplayedFrameworks] = useState([]);
-  const [jobTitles, setJobTitles] = useState([]); // Store job titles separately
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,7 +25,7 @@ const SavedFrameworks = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch frameworks
+        // ✅ Fetch frameworks
         const frameworksResponse = await fetch(
           `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=`
         );
@@ -36,9 +35,9 @@ const SavedFrameworks = () => {
         const frameworksData = await frameworksResponse.json();
         const frameworks = frameworksData.frameworks;
 
-        // Fetch job titles
+        // ✅ Fetch job titles
         const jobTitlesResponse = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles`
+          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=`
         );
         if (!jobTitlesResponse.ok) {
           throw new Error("Failed to fetch job titles.");
@@ -46,9 +45,12 @@ const SavedFrameworks = () => {
         const jobTitlesData = await jobTitlesResponse.json();
         const jobTitlesList = jobTitlesData.job_titles;
 
-        // Organize frameworks by department
+        console.log("✅ Frameworks:", frameworks);
+        console.log("✅ Job Titles:", jobTitlesList);
+
+        // ✅ Map frameworks by department ID & count job titles
         const frameworksByDepartment = frameworks.map((framework) => {
-          // Count how many job titles match the department_id
+          // ✅ Count job titles where department_id matches framework.id
           const jobTitleCount = jobTitlesList.filter(
             (job) => job.department_id === framework.id
           ).length;
@@ -61,10 +63,9 @@ const SavedFrameworks = () => {
 
         setAllFrameworks(frameworksByDepartment);
         setDisplayedFrameworks(frameworksByDepartment);
-        setJobTitles(jobTitlesList); // Store job titles separately
         setError(null);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("❌ Error fetching data:", err);
         setError("Failed to fetch data. Please try again.");
       } finally {
         setLoading(false);
