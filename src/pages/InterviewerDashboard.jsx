@@ -34,11 +34,11 @@ const InterviewerDashboard = () => {
     const fetchJobTitles = async () => {
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles`
+          `https://interviewappbe-production.up.railway.app/api/get-interview-job-titles?department=Engineering`
         );
         if (!response.ok) throw new Error("Failed to fetch job titles.");
         const data = await response.json();
-        setJobTitles(data.job_titles || []);
+        setJobTitles(data.job_titles.map((job) => job.job_title) || []);
       } catch (err) {
         toast({
           title: "Error fetching job titles",
@@ -165,9 +165,7 @@ const InterviewerDashboard = () => {
         mb="4"
       >
         {jobTitles.map((title, index) => (
-          <option key={index} value={title}>
-            {title}
-          </option>
+          <option key={index} value={title}>{title}</option>
         ))}
       </Select>
 
