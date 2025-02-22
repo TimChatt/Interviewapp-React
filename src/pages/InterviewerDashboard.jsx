@@ -172,20 +172,17 @@ const InterviewerDashboard = () => {
             questions: questions.map((q) => ({
               question: q.question,
               follow_up: q.follow_up || "",
-              competencies_covered: Array.isArray(q.competency) 
-                ? q.competency 
-                : [q.competency || "General Skills"], // ✅ Ensure it's stored as a list
+              competency: q.competency || "General Skills", // ✅ Always send competency
             })),
           }),
         }
       );
-
   
       if (!response.ok) throw new Error("Failed to save questions.");
       const data = await response.json();
       toast({
         title: "Questions Saved!",
-        description: `${data.saved_questions.length} questions saved successfully.`,
+        description: `${data.message}`,
         status: "success",
         duration: 3000,
         isClosable: true,
