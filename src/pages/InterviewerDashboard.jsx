@@ -106,7 +106,7 @@ const InterviewerDashboard = () => {
       competencies: competenciesMap[selectedJobTitle] || [],
     };
   
-    console.log("🔍 Sending request payload:", requestBody); // ✅ Debugging
+    console.log("🔍 Sending request payload:", JSON.stringify(requestBody)); // ✅ Debugging
   
     setLoading(true);
     try {
