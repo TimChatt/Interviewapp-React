@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
   Box,
   Heading,
@@ -15,7 +14,6 @@ import {
 
 const SavedFrameworks = () => {
   const [frameworks, setFrameworks] = useState([]);
-  const [jobTitles, setJobTitles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,31 +29,40 @@ const SavedFrameworks = () => {
         );
         if (!frameworksResponse.ok) throw new Error("Failed to fetch frameworks.");
         const frameworksData = await frameworksResponse.json();
-        const frameworks = frameworksData.frameworks;
+        const frameworksList = frameworksData.frameworks;
 
-        // ✅ Fetch all job titles
-        const jobTitlesResponse = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=`
-        );
-        if (!jobTitlesResponse.ok) throw new Error("Failed to fetch job titles.");
-        const jobTitlesData = await jobTitlesResponse.json();
-        const jobTitlesList = jobTitlesData.job_titles;
+        console.log("✅ Frameworks:", frameworksList);
 
-        console.log("✅ Frameworks:", frameworks);
-        console.log("✅ Job Titles:", jobTitlesList);
+        // ✅ Fetch job titles for each department separately
+        const departmentJobCounts = {};
 
-        // ✅ Count job titles per department
-        const jobTitleCounts = {};
-        jobTitlesList.forEach((job) => {
-          if (job.department_id) {
-            jobTitleCounts[job.department_id] = (jobTitleCounts[job.department_id] || 0) + 1;
+        for (const framework of frameworksList) {
+          const departmentName = framework.department;
+
+          // 🔥 Make sure departmentName exists before making API call
+          if (!departmentName) continue;
+
+          const jobTitlesResponse = await fetch(
+            `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${encodeURIComponent(departmentName)}`
+          );
+
+          if (!jobTitlesResponse.ok) {
+            console.error(`❌ Failed to fetch job titles for ${departmentName}`);
+            continue;
           }
-        });
 
-        // ✅ Map frameworks with job title counts
-        const frameworksWithCounts = frameworks.map((framework) => ({
+          const jobTitlesData = await jobTitlesResponse.json();
+
+          // ✅ Store the number of job titles for each department
+          departmentJobCounts[departmentName] = jobTitlesData.job_titles.length || 0;
+        }
+
+        console.log("✅ Job Title Counts:", departmentJobCounts);
+
+        // ✅ Attach job title counts to frameworks
+        const frameworksWithCounts = frameworksList.map((framework) => ({
           department: framework.department,
-          jobTitleCount: jobTitleCounts[framework.id] || 0, // Default to 0 if no job titles exist
+          jobTitleCount: departmentJobCounts[framework.department] || 0, // Default to 0 if missing
         }));
 
         setFrameworks(frameworksWithCounts);
@@ -70,17 +77,6 @@ const SavedFrameworks = () => {
 
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFrameworks(frameworks);
-    } else {
-      const filteredFrameworks = frameworks.filter((group) =>
-        group.department.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFrameworks(filteredFrameworks);
-    }
-  }, [searchQuery]);
 
   const handleDepartmentClick = (department) => {
     navigate(`/frameworks/${department}`);
