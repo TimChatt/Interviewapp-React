@@ -171,7 +171,7 @@ const InterviewerDashboard = () => {
             job_title: selectedJobTitle,
             questions: questions.map((q) => ({
               question: q.question,
-              follow_up: q.follow_up,
+              follow_up: q.follow_up || "",
               competency: q.competency || "General Skills",
             })),
           }),
@@ -200,6 +200,7 @@ const InterviewerDashboard = () => {
       });
     }
   };
+
 
   // Assess candidate's response
   const handleAssessAnswer = async () => {
