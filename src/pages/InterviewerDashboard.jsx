@@ -118,12 +118,7 @@ const InterviewerDashboard = () => {
       const data = await response.json();
 
       // Include competency details per question
-      const formattedQuestions = data.questions.map((q) => ({
-        ...q,
-        competencies: competenciesMap[selectedJobTitle] || [],
-      }));
-
-      setQuestions(formattedQuestions);
+      setQuestions(data.questions);
       setShowGeneratedQuestions(true);
     } catch (err) {
       toast({
@@ -136,6 +131,11 @@ const InterviewerDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Set selected question when clicked
+  const handleSelectQuestion = (question) => {
+    setSelectedQuestion(question);
   };
 
   // Assess candidate's response
@@ -159,7 +159,7 @@ const InterviewerDashboard = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            question: selectedQuestion,
+            question: selectedQuestion.question,
             candidate_answer: candidateResponse,
           }),
         }
@@ -210,11 +210,19 @@ const InterviewerDashboard = () => {
           {questions.length > 0 && (
             <VStack align="stretch" mt="4">
               {questions.map((q, index) => (
-                <Box key={index} p="4" border="1px solid #E2E8F0" borderRadius="md">
+                <Box
+                  key={index}
+                  p="4"
+                  border="1px solid #E2E8F0"
+                  borderRadius="md"
+                  cursor="pointer"
+                  _hover={{ bg: "gray.100" }}
+                  onClick={() => handleSelectQuestion(q)}
+                >
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
                   <Text fontSize="sm" color="blue.500">
-                    Competencies Covered: {q.competencies.join(", ") || "General Skills"}
+                    Competencies Covered: {q.competencies_covered?.join(", ") || "General Skills"}
                   </Text>
                 </Box>
               ))}
@@ -227,6 +235,14 @@ const InterviewerDashboard = () => {
       <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
         <CardBody>
           <Heading size="md" mb="4">Assess Candidate Answers</Heading>
+          {selectedQuestion ? (
+            <Text fontWeight="bold">Selected Question: {selectedQuestion.question}</Text>
+          ) : (
+            <Alert status="info">
+              <AlertIcon />
+              Select a question from the list above.
+            </Alert>
+          )}
           <Textarea
             placeholder="Enter candidate's answer..."
             value={candidateResponse}
