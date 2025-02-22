@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import {
   Box,
   Heading,
@@ -11,28 +10,56 @@ import {
   AlertIcon,
   Card,
   CardBody,
+  Select,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
 
 const InterviewerDashboard = () => {
-  const { jobTitle } = useParams();
   const toast = useToast();
 
   // States
+  const [jobTitles, setJobTitles] = useState([]); // Fetch all job titles
+  const [selectedJobTitle, setSelectedJobTitle] = useState("");
   const [questions, setQuestions] = useState([]);
   const [savedQuestions, setSavedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [candidateResponse, setCandidateResponse] = useState("");
   const [answerAnalysis, setAnswerAnalysis] = useState(null);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [showGeneratedQuestions, setShowGeneratedQuestions] = useState(false); // Toggle AI-generated vs saved
+
+  // Fetch all job titles
+  useEffect(() => {
+    const fetchJobTitles = async () => {
+      try {
+        const response = await fetch(
+          `https://interviewappbe-production.up.railway.app/api/get-job-titles`
+        );
+        if (!response.ok) throw new Error("Failed to fetch job titles.");
+        const data = await response.json();
+        setJobTitles(data.job_titles || []);
+      } catch (err) {
+        toast({
+          title: "Error fetching job titles",
+          description: err.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
+    fetchJobTitles();
+  }, [toast]);
 
   // Fetch saved interview questions for this job title
   useEffect(() => {
+    if (!selectedJobTitle) return;
+
     const fetchSavedQuestions = async () => {
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-interview-questions/${jobTitle}`
+          `https://interviewappbe-production.up.railway.app/api/get-interview-questions/${selectedJobTitle}`
         );
         if (!response.ok) throw new Error("Failed to fetch saved questions.");
         const data = await response.json();
@@ -49,7 +76,7 @@ const InterviewerDashboard = () => {
     };
 
     fetchSavedQuestions();
-  }, [jobTitle, toast]);
+  }, [selectedJobTitle, toast]);
 
   // Generate AI-powered questions
   const handleGenerateQuestions = async () => {
@@ -60,13 +87,14 @@ const InterviewerDashboard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ job_title: jobTitle, department: "Unknown", competencies: [] }),
+          body: JSON.stringify({ job_title: selectedJobTitle }),
         }
       );
 
       if (!response.ok) throw new Error("Failed to generate questions.");
       const data = await response.json();
       setQuestions(data.questions);
+      setShowGeneratedQuestions(true); // Show AI-generated questions
     } catch (err) {
       toast({
         title: "Error generating questions",
@@ -126,8 +154,22 @@ const InterviewerDashboard = () => {
   return (
     <Box maxW="900px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        Interviewer Dashboard - {jobTitle}
+        Interviewer Dashboard
       </Heading>
+
+      {/* Job Title Dropdown */}
+      <Select
+        placeholder="Select a Job Title"
+        onChange={(e) => setSelectedJobTitle(e.target.value)}
+        value={selectedJobTitle}
+        mb="4"
+      >
+        {jobTitles.map((title, index) => (
+          <option key={index} value={title}>
+            {title}
+          </option>
+        ))}
+      </Select>
 
       {/* Generate AI-Powered Questions */}
       <Card bg="white" shadow="md" borderRadius="lg" p="4">
@@ -141,8 +183,7 @@ const InterviewerDashboard = () => {
             <VStack align="stretch" mt="4">
               {questions.map((q, index) => (
                 <Box key={index} p="4" border="1px solid #E2E8F0" borderRadius="md">
-                  <Text fontWeight="bold">{q.question}</Text>
-                  <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
+                  <Text fontWeight="bold">{q}</Text>
                 </Box>
               ))}
             </VStack>
@@ -150,8 +191,16 @@ const InterviewerDashboard = () => {
         </CardBody>
       </Card>
 
+      {/* Toggle Saved or AI Questions */}
+      <Button
+        mt="4"
+        onClick={() => setShowGeneratedQuestions(!showGeneratedQuestions)}
+      >
+        {showGeneratedQuestions ? "Show Saved Questions" : "Show AI-Generated Questions"}
+      </Button>
+
       {/* Saved Questions */}
-      {savedQuestions.length > 0 && (
+      {!showGeneratedQuestions && savedQuestions.length > 0 && (
         <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
           <CardBody>
             <Heading size="md" mb="4">Saved Questions</Heading>
@@ -167,7 +216,6 @@ const InterviewerDashboard = () => {
                   onClick={() => setSelectedQuestion(q.question)}
                 >
                   <Text fontWeight="bold">{q.question}</Text>
-                  {q.follow_up && <Text color="gray.600">Follow-Up: {q.follow_up}</Text>}
                 </Box>
               ))}
             </VStack>
@@ -179,22 +227,12 @@ const InterviewerDashboard = () => {
       <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
         <CardBody>
           <Heading size="md" mb="4">Assess Candidate Answers</Heading>
-          {selectedQuestion ? (
-            <Text fontWeight="bold">Selected Question: {selectedQuestion}</Text>
-          ) : (
-            <Alert status="info" mt="2">
-              <AlertIcon />
-              Select a question from the list above.
-            </Alert>
-          )}
-
           <Textarea
             placeholder="Enter candidate's answer..."
             value={candidateResponse}
             onChange={(e) => setCandidateResponse(e.target.value)}
             mt="4"
           />
-
           <Button colorScheme="teal" mt="4" onClick={handleAssessAnswer} isLoading={loading}>
             Assess Answer 📊
           </Button>
