@@ -145,10 +145,6 @@ const InterviewerDashboard = () => {
 
 
   // Set selected question when clicked
-  const handleSelectQuestion = (question) => {
-    setSelectedQuestion(question);
-  };
-  
   const handleSaveQuestions = async () => {
     if (questions.length === 0) {
       toast({
@@ -172,7 +168,8 @@ const InterviewerDashboard = () => {
             questions: questions.map((q) => ({
               question: q.question,
               follow_up: q.follow_up || "",
-              competency: q.competency || "General Skills", // ✅ Always send competency
+              competency: q.competency || "General Skills",
+              competencies_covered: [q.competency || "General Skills"],  // ✅ Ensure this is included
             })),
           }),
         }
