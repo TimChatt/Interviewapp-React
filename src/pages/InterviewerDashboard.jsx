@@ -61,10 +61,10 @@ const InterviewerDashboard = () => {
     fetchJobTitles();
   }, [toast]);
 
-  // Fetch saved interview questions
+  // Fetch saved interview questions when a job title is selected
   useEffect(() => {
     if (!selectedJobTitle) return;
-
+  
     const fetchSavedQuestions = async () => {
       try {
         const response = await fetch(
@@ -72,7 +72,10 @@ const InterviewerDashboard = () => {
         );
         if (!response.ok) throw new Error("Failed to fetch saved questions.");
         const data = await response.json();
-        setSavedQuestions(data.questions);
+  
+        console.log("✅ Loaded Saved Questions:", data.questions);  // Debugging
+  
+        setSavedQuestions(data.questions || []);
       } catch (err) {
         toast({
           title: "Error fetching saved questions",
@@ -83,7 +86,7 @@ const InterviewerDashboard = () => {
         });
       }
     };
-
+  
     fetchSavedQuestions();
   }, [selectedJobTitle, toast]);
 
