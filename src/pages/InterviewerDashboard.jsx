@@ -87,7 +87,11 @@ const InterviewerDashboard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ job_title: selectedJobTitle }),
+          body: JSON.stringify({
+            job_title: selectedJobTitle,
+            department: "Engineering",  // Replace with a dynamic value if needed
+            competencies: [],  // Pass actual competencies if available
+          }),
         }
       );
 
