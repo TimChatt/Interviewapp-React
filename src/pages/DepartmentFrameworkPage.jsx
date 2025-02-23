@@ -68,52 +68,39 @@ const DepartmentFrameworkPage = () => {
 
   /** ✅ Fetch Competencies using Department ID */
   const fetchCompetencies = async (departmentId) => {
-    setLoading(true);
-    setError(null);
-    setCompetenciesByCategory({});
-
-    try {
-      console.log("Fetching competencies for Department ID:", departmentId); // ✅ Debugging
-
-      const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/get-framework/${departmentId}`
-      );
-      if (!response.ok) throw new Error("Failed to fetch competencies.");
-
-      const data = await response.json();
-      console.log("Fetched competencies:", data); // ✅ Debugging
-
-      let categorizedCompetencies = {};
-      STATIC_CATEGORIES.forEach((category) => {
-        categorizedCompetencies[category] = [];
-      });
-
-      data.job_titles.forEach((job) => {
-        job.competencies.forEach((competency) => {
-          let category = competency.category || "Uncategorized";
-          if (!categorizedCompetencies[category]) {
-            categorizedCompetencies[category] = [];
-          }
-          categorizedCompetencies[category].push(competency);
-        });
-      });
-
-      setCompetenciesByCategory(categorizedCompetencies);
-    } catch (err) {
-      console.error("Error fetching competencies:", err);
-      setError("Failed to fetch competencies.");
-    } finally {
-      setLoading(false);
-    }
+      setLoading(true);
+      setError(null);
+      setCompetenciesByCategory({});
+  
+      try {
+          console.log("Fetching competencies for Department ID:", departmentId); // ✅ Debugging
+  
+          const response = await fetch(
+              `https://interviewappbe-production.up.railway.app/api/get-categorized-framework/${departmentId}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch competencies.");
+  
+          const data = await response.json();
+          console.log("Fetched categorized competencies:", data); // ✅ Debugging
+  
+          // ✅ Set the categorized competencies directly (since backend already does the work)
+          setCompetenciesByCategory(data.competencies);
+      } catch (err) {
+          console.error("Error fetching competencies:", err);
+          setError("Failed to fetch competencies.");
+      } finally {
+          setLoading(false);
+      }
   };
-
+  
   /** ✅ Toggle Categories */
   const toggleCategory = (category) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
+      setExpandedCategories((prev) => ({
+          ...prev,
+          [category]: !prev[category],
+      }));
   };
+
 
   return (
     <Box maxW="1200px" mx="auto" py="6">
