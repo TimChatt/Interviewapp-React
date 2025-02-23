@@ -6,8 +6,8 @@ import {
 } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
 import { 
-  FaEye, FaChevronDown, FaChevronUp, FaHome, FaFutbol, 
-  FaBasketballBall, FaTrophy, FaUsers, FaTools, FaClipboardList, FaTable 
+  FaEye, FaChevronDown, FaChevronUp, FaHome, FaUsers, FaTrophy, FaBasketballBall,
+  FaClipboardList, FaTools, FaFutbol, FaTable, FaThList 
 } from "react-icons/fa";
 
 // Keyframe animation for spinning effect
@@ -18,7 +18,7 @@ const spin = keyframes`
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isCompetencyOpen, setIsCompetencyOpen] = useState(false); // ✅ New Section Toggle
+  const [isCompetencyOpen, setIsCompetencyOpen] = useState(false); 
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
@@ -31,8 +31,8 @@ const Sidebar = () => {
   // Colors for the AI futuristic theme
   const activeBg = useColorModeValue("gray.200", "gray.700");
   const inactiveBg = "transparent";
-  const iconColor = useColorModeValue("#b19cd9", "#9a86fd"); // Light futuristic purple
-  const hoverBg = useColorModeValue("#e5d9f2", "#5a4fcf"); // Light purple for hover
+  const hoverBg = useColorModeValue("#e5d9f2", "#5a4fcf"); 
+  const iconColor = useColorModeValue("#b19cd9", "#9a86fd"); 
   const glowColor = useColorModeValue(
     "0 0 10px #b19cd9, 0 0 20px #9a86fd", 
     "0 0 15px #5a4fcf, 0 0 30px #e5d9f2"
@@ -41,7 +41,7 @@ const Sidebar = () => {
   return (
     <Box 
       as="nav" 
-      w="300px"  // ✅ Increased width from 250px → 300px
+      w="300px"  // ✅ Increased width
       h="100vh" 
       bg={useColorModeValue("white", "gray.900")}
       boxShadow="xl"
@@ -58,7 +58,7 @@ const Sidebar = () => {
           color={iconColor}
           sx={{
             textShadow: glowColor,
-            animation: `${spin} 4s linear infinite`, // Spinning animation
+            animation: `${spin} 4s linear infinite`, 
           }}
         />
         <Text
@@ -114,10 +114,10 @@ const Sidebar = () => {
           <VStack align="stretch" pl="4">
             <Button 
               as={Link} 
-              to="/competency-framework-generator" 
+              to="/competency-framework-planner" 
               variant="ghost" 
               justifyContent="flex-start" 
-              bg={location.pathname === "/competency-framework-generator" ? activeBg : inactiveBg}
+              bg={location.pathname === "/competency-framework-planner" ? activeBg : inactiveBg}
               _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
               transition="all 0.2s ease-in-out"
               leftIcon={<Icon as={FaClipboardList} />}
@@ -127,10 +127,10 @@ const Sidebar = () => {
 
             <Button 
               as={Link} 
-              to="/SavedFrameworks.jsx" 
+              to="/frameworks" 
               variant="ghost" 
               justifyContent="flex-start" 
-              bg={location.pathname === "/SavedFrameworks.jsx" ? activeBg : inactiveBg}
+              bg={location.pathname === "/frameworks" ? activeBg : inactiveBg}
               _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
               transition="all 0.2s ease-in-out"
               leftIcon={<Icon as={FaFutbol} />}
@@ -149,6 +149,19 @@ const Sidebar = () => {
               leftIcon={<Icon as={FaTable} />}
             >
               Competency Dashboard
+            </Button>
+
+            <Button 
+              as={Link} 
+              to="/framework-overview/:department" 
+              variant="ghost" 
+              justifyContent="flex-start" 
+              bg={location.pathname.startsWith("/framework-overview") ? activeBg : inactiveBg}
+              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
+              transition="all 0.2s ease-in-out"
+              leftIcon={<Icon as={FaThList} />}
+            >
+              Framework Overview
             </Button>
           </VStack>
         </Collapse>
