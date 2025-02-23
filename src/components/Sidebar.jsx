@@ -4,8 +4,11 @@ import { AuthContext } from "../contexts/AuthContext";
 import { 
   VStack, HStack, Box, Button, Collapse, Icon, Text, useColorModeValue 
 } from "@chakra-ui/react";
-import { keyframes } from "@emotion/react"; // Fix for animation
-import { FaEye, FaChevronDown, FaChevronUp, FaHome, FaFutbol, FaBasketballBall, FaTrophy, FaUsers } from "react-icons/fa"; 
+import { keyframes } from "@emotion/react";
+import { 
+  FaEye, FaChevronDown, FaChevronUp, FaHome, FaFutbol, 
+  FaBasketballBall, FaTrophy, FaUsers, FaTools, FaClipboardList 
+} from "react-icons/fa";
 
 // Keyframe animation for spinning effect
 const spin = keyframes`
@@ -15,6 +18,7 @@ const spin = keyframes`
 
 const Sidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isCompetencyOpen, setIsCompetencyOpen] = useState(false); // ✅ New Section Toggle
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
@@ -48,7 +52,6 @@ const Sidebar = () => {
     >
       {/* Logo + TA Vision Section */}
       <HStack spacing="2" align="center" justify="center" mb="6">
-        {/* Spinning Eye Icon with Glow Effect */}
         <Icon 
           as={FaEye} 
           boxSize="7" 
@@ -56,15 +59,8 @@ const Sidebar = () => {
           sx={{
             textShadow: glowColor,
             animation: `${spin} 4s linear infinite`, // Spinning animation
-            "@keyframes glow": {
-              "0%": { filter: "drop-shadow(0px 0px 5px #b19cd9)" },
-              "50%": { filter: "drop-shadow(0px 0px 10px #9a86fd)" },
-              "100%": { filter: "drop-shadow(0px 0px 15px #e5d9f2)" }
-            }
           }}
         />
-        
-        {/* TA Vision Text with Glowing AI Effect */}
         <Text
           fontSize="lg"
           fontWeight="bold"
@@ -78,16 +74,14 @@ const Sidebar = () => {
         </Text>
       </HStack>
 
-      {/* Navigation & Logout Section */}
+      {/* Navigation Section */}
       <VStack align="stretch" spacing="3">
-        {/* Main Navigation with Sports Icons */}
         {[
           { to: "/", label: "Home", icon: FaHome },
           { to: "/candidates", label: "Candidates", icon: FaUsers },
-          { to: "/insights", label: "Insights", icon: FaBasketballBall }, // Basketball for insights
-          { to: "/recommendations", label: "Recommendations", icon: FaTrophy }, // Trophy for recommendations
-          { to: "/competency-framework-planner", label: "Competency Framework", icon: FaFutbol }, // Football for competency
-          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye }, // ✅ Added Interviewer Dashboard
+          { to: "/insights", label: "Insights", icon: FaBasketballBall },
+          { to: "/recommendations", label: "Recommendations", icon: FaTrophy },
+          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye },
         ].map((item) => (
           <Button 
             as={Link} 
@@ -103,6 +97,61 @@ const Sidebar = () => {
             {item.label}
           </Button>
         ))}
+
+        {/* ✅ Competency Tools Section (Collapsible) */}
+        <Button 
+          variant="ghost" 
+          justifyContent="space-between" 
+          onClick={() => setIsCompetencyOpen(prev => !prev)}
+          _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
+          transition="all 0.2s ease-in-out"
+          leftIcon={<Icon as={FaTools} />}
+        >
+          Competency Tools 
+          <Icon as={isCompetencyOpen ? FaChevronUp : FaChevronDown} />
+        </Button>
+        <Collapse in={isCompetencyOpen}>
+          <VStack align="stretch" pl="4">
+            <Button 
+              as={Link} 
+              to="/competency-framework-generator" 
+              variant="ghost" 
+              justifyContent="flex-start" 
+              bg={location.pathname === "/competency-framework-generator" ? activeBg : inactiveBg}
+              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
+              transition="all 0.2s ease-in-out"
+              leftIcon={<Icon as={FaClipboardList} />}
+            >
+              Competency Framework Generator
+            </Button>
+
+            <Button 
+              as={Link} 
+              to="/department-competency-view" 
+              variant="ghost" 
+              justifyContent="flex-start" 
+              bg={location.pathname === "/department-competency-view" ? activeBg : inactiveBg}
+              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
+              transition="all 0.2s ease-in-out"
+              leftIcon={<Icon as={FaFutbol} />}
+            >
+              Department Competency View
+            </Button>
+
+            <Button 
+              as={Link} 
+              to="/competency-framework-planner" 
+              variant="ghost" 
+              justifyContent="flex-start" 
+              bg={location.pathname === "/competency-framework-planner" ? activeBg : inactiveBg}
+              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
+              transition="all 0.2s ease-in-out"
+              leftIcon={<Icon as={FaClipboardList} />}
+            >
+              Competency Framework Manager
+            </Button>
+          </VStack>
+        </Collapse>
 
         {/* Admin Section (Collapsible) */}
         <Button 
