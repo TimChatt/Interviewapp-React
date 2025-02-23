@@ -46,10 +46,18 @@ const DepartmentFrameworkPage = () => {
         "https://interviewappbe-production.up.railway.app/api/get-departments"
       );
       if (!response.ok) throw new Error("Failed to fetch departments.");
+      
       const data = await response.json();
-      setDepartments(data.departments || []);
+      console.log("Fetched Departments:", data); // ✅ Check the response in console
+  
+      if (data.departments && Array.isArray(data.departments)) {
+        setDepartments(data.departments);
+      } else {
+        console.error("Invalid department data format:", data);
+      }
     } catch (err) {
       setError(err.message);
+      console.error("Error fetching departments:", err);
     }
   };
 
@@ -107,11 +115,18 @@ const DepartmentFrameworkPage = () => {
           setDepartment(e.target.value);
           fetchCompetencies(e.target.value);
         }}
+        value={department} // ✅ Ensure the value is set correctly
         mb="4"
       >
-        {departments.map((dept, index) => (
-          <option key={index} value={dept}>{dept}</option>
-        ))}
+        {departments.length > 0 ? (
+          departments.map((dept, index) => (
+            <option key={index} value={dept}>
+              {dept}
+            </option>
+          ))
+        ) : (
+          <option disabled>No departments found</option>
+        )}
       </Select>
 
       {loading && <Spinner size="xl" color="purple.500" />}
