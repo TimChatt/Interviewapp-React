@@ -69,22 +69,28 @@ const DepartmentFrameworkPage = () => {
     try {
       console.log("Selected department before fetching ID:", selectedDepartment); // ✅ Debugging log
   
-      // 🔥 Step 1: Fetch department IDs first
+      // 🔥 Fetch department IDs first
       const departmentResponse = await fetch(
         "https://interviewappbe-production.up.railway.app/api/get-departments"
       );
       if (!departmentResponse.ok) throw new Error("Failed to fetch departments.");
-      
+  
       const departmentData = await departmentResponse.json();
       console.log("Fetched department data:", departmentData); // ✅ Debugging
   
-      // 🔥 Step 2: Fetch `department_id` from backend
-      const departmentEntry = departmentData.departments.find((d) => d.department === selectedDepartment);
-      if (!departmentEntry || !departmentEntry.id) throw new Error("Department ID not found.");
+      // 🔥 Look up the department entry
+      const departmentEntry = departmentData.departments.find((d) => 
+        typeof d === "object" && d.department === selectedDepartment
+      );
+  
+      if (!departmentEntry || !departmentEntry.id) {
+        console.error("❌ Department ID lookup failed! API Response:", departmentData);
+        throw new Error("Department ID not found.");
+      }
   
       console.log("Resolved Department ID:", departmentEntry.id); // ✅ Debugging
   
-      // 🔥 Step 3: Fetch competencies using department ID
+      // 🔥 Fetch competencies using department ID
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/get-framework/${departmentEntry.id}`
       );
@@ -93,7 +99,7 @@ const DepartmentFrameworkPage = () => {
       const data = await response.json();
       console.log("Fetched competencies:", data); // ✅ Debugging
   
-      // 🔥 Step 4: Categorize competencies
+      // 🔥 Categorize competencies
       let categorizedCompetencies = {};
       STATIC_CATEGORIES.forEach((category) => {
         categorizedCompetencies[category] = [];
@@ -118,7 +124,6 @@ const DepartmentFrameworkPage = () => {
     }
   };
 
-  
   return (
     <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
