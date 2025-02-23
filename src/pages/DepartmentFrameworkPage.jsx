@@ -82,8 +82,8 @@ const DepartmentFrameworkPage = () => {
       const data = await response.json();
       console.log("Fetched categorized competencies:", data); // ✅ Debugging
 
-      // ✅ Ensure the competencies data structure is valid
-      setCompetenciesByCategory(data.competencies || {});
+      // ✅ Ensure competencies are stored properly (handle empty responses)
+      setCompetenciesByCategory(data.competencies_by_category || {});
     } catch (err) {
       console.error("Error fetching competencies:", err);
       setError("Failed to fetch competencies.");
@@ -139,49 +139,51 @@ const DepartmentFrameworkPage = () => {
 
       {/* ✅ Competency List with Categories */}
       {!loading && !error && competenciesByCategory && Object.keys(competenciesByCategory).length > 0 ? (
-        Object.entries(competenciesByCategory).map(([category, competencies]) => (
-          <Box key={category} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
-            <Heading
-              size="md"
-              onClick={() => toggleCategory(category)}
-              cursor="pointer"
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              {category}
-              <Icon as={expandedCategories[category] ? FaChevronUp : FaChevronDown} />
-            </Heading>
-            <Collapse in={expandedCategories[category]}>
-              <Table variant="simple" mt="2">
-                <Thead>
-                  <Tr>
-                    <Th>Competency</Th>
-                    <Th>Description</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {Array.isArray(competencies) && competencies.length > 0 ? (
-                    competencies.map((comp, index) => (
+        Object.entries(competenciesByCategory).map(([category, competencies]) => {
+          // ✅ Normalize category names (Fixing "Uncategorized" issue)
+          const normalizedCategory = category.replace(/['"]+/g, "");
+
+          // ✅ Ensure competencies is an array and not empty
+          if (!Array.isArray(competencies) || competencies.length === 0) return null;
+
+          return (
+            <Box key={normalizedCategory} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
+              <Heading
+                size="md"
+                onClick={() => toggleCategory(normalizedCategory)}
+                cursor="pointer"
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                {normalizedCategory}
+                <Icon as={expandedCategories[normalizedCategory] ? FaChevronUp : FaChevronDown} />
+              </Heading>
+              <Collapse in={expandedCategories[normalizedCategory]}>
+                <Table variant="simple" mt="2">
+                  <Thead>
+                    <Tr>
+                      <Th>Competency</Th>
+                      <Th>Description</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {competencies.map((comp, index) => (
                       <Tr key={index}>
                         <Td>{comp.name || "Unnamed Competency"}</Td>
                         <Td>
                           {comp.descriptions && typeof comp.descriptions === "object"
-                            ? Object.values(comp.descriptions).join(" | ") // Flatten descriptions into a readable string
+                            ? Object.values(comp.descriptions).join(" | ") // Flatten descriptions into readable string
                             : "No description available"}
                         </Td>
                       </Tr>
-                    ))
-                  ) : (
-                    <Tr>
-                      <Td colSpan={2} textAlign="center">No competencies found</Td>
-                    </Tr>
-                  )}
-                </Tbody>
-              </Table>
-            </Collapse>
-          </Box>
-        ))
+                    ))}
+                  </Tbody>
+                </Table>
+              </Collapse>
+            </Box>
+          );
+        })
       ) : (
         !loading && !error && (
           <Alert status="warning" mt="4">
