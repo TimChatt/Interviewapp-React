@@ -17,8 +17,10 @@ import {
   Tag,
   VStack,
   HStack,
-  Tooltip,
+  Collapse,
+  Icon,
 } from "@chakra-ui/react";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const DepartmentFrameworkPage = () => {
   const { department } = useParams();
@@ -26,6 +28,7 @@ const DepartmentFrameworkPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedRows, setExpandedRows] = useState({});
 
   useEffect(() => {
     const fetchCompetencies = async () => {
@@ -42,33 +45,11 @@ const DepartmentFrameworkPage = () => {
         setLoading(false);
       }
     };
-
     fetchCompetencies();
   }, [department]);
 
-  // Extract unique job titles
-  const jobTitles = [...new Set(competencies.flatMap(c => c.job_titles))];
-
-  // Filter competencies based on search input
-  const filteredCompetencies = competencies.filter(c =>
-    c.competency.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Function to export data as CSV
-  const handleExportCSV = () => {
-    let csvContent = "data:text/csv;charset=utf-8,Competency," + jobTitles.join(",") + "\n";
-
-    filteredCompetencies.forEach(({ competency, job_titles }) => {
-      const row = [competency, ...jobTitles.map(title => (job_titles.includes(title) ? "✓" : ""))];
-      csvContent += row.join(",") + "\n";
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${department}-competencies.csv`);
-    document.body.appendChild(link);
-    link.click();
+  const toggleRowExpansion = (index) => {
+    setExpandedRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   return (
@@ -85,7 +66,7 @@ const DepartmentFrameworkPage = () => {
         </Alert>
       )}
 
-      {/* Search & Export Buttons */}
+      {/* Search Input */}
       <HStack justify="space-between" mb="6">
         <Input
           placeholder="🔍 Search for a competency..."
@@ -96,40 +77,38 @@ const DepartmentFrameworkPage = () => {
           shadow="md"
           borderRadius="md"
         />
-        <Button colorScheme="blue" onClick={handleExportCSV}>
-          Export CSV 📥
-        </Button>
       </HStack>
 
-      {/* Competency Table - Modern UI */}
+      {/* Competency Table */}
       <Box overflowX="auto">
         <Table variant="striped" colorScheme="gray" size="md" shadow="md" borderRadius="lg">
           <Thead bg="purple.600">
             <Tr>
               <Th color="white" fontSize="md">Competency</Th>
-              {jobTitles.map((title, idx) => (
-                <Th key={idx} color="white" fontSize="md">{title}</Th>
-              ))}
+              <Th color="white" fontSize="md">Details</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {filteredCompetencies.map(({ competency, job_titles }, index) => (
-              <Tr key={index} _hover={{ bg: "gray.100" }}>
-                <Td fontWeight="bold" color="gray.700">
-                  <Tooltip label="Click for details" aria-label="A tooltip">
-                    {competency}
-                  </Tooltip>
-                </Td>
-                {jobTitles.map((title, idx) => (
-                  <Td key={idx} textAlign="center">
-                    {job_titles.includes(title) ? (
-                      <Tag colorScheme="green" size="lg">✓</Tag>
-                    ) : (
-                      <Tag colorScheme="gray" size="lg">—</Tag>
-                    )}
+            {competencies.map(({ competency, description }, index) => (
+              <React.Fragment key={index}>
+                <Tr _hover={{ bg: "gray.100" }}>
+                  <Td fontWeight="bold" color="gray.700">{competency}</Td>
+                  <Td textAlign="center">
+                    <Button size="sm" onClick={() => toggleRowExpansion(index)}>
+                      <Icon as={expandedRows[index] ? FaChevronUp : FaChevronDown} />
+                    </Button>
                   </Td>
-                ))}
-              </Tr>
+                </Tr>
+                <Tr>
+                  <Td colSpan={2}>
+                    <Collapse in={expandedRows[index]}>
+                      <Box p={4} bg="gray.50" borderRadius="md">
+                        <strong>Description:</strong> {description || "No description available"}
+                      </Box>
+                    </Collapse>
+                  </Td>
+                </Tr>
+              </React.Fragment>
             ))}
           </Tbody>
         </Table>
