@@ -7,7 +7,7 @@ import {
 import { keyframes } from "@emotion/react";
 import { 
   FaEye, FaChevronDown, FaChevronUp, FaHome, FaFutbol, 
-  FaBasketballBall, FaTrophy, FaUsers, FaTools, FaClipboardList 
+  FaBasketballBall, FaTrophy, FaUsers, FaTools, FaClipboardList, FaTable 
 } from "react-icons/fa";
 
 // Keyframe animation for spinning effect
@@ -41,7 +41,7 @@ const Sidebar = () => {
   return (
     <Box 
       as="nav" 
-      w="250px" 
+      w="300px"  // ✅ Increased width from 250px → 300px
       h="100vh" 
       bg={useColorModeValue("white", "gray.900")}
       boxShadow="xl"
@@ -127,10 +127,10 @@ const Sidebar = () => {
 
             <Button 
               as={Link} 
-              to="/department-competency-view" 
+              to="/SavedFrameworks.jsx" 
               variant="ghost" 
               justifyContent="flex-start" 
-              bg={location.pathname === "/department-competency-view" ? activeBg : inactiveBg}
+              bg={location.pathname === "/SavedFrameworks.jsx" ? activeBg : inactiveBg}
               _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
               transition="all 0.2s ease-in-out"
               leftIcon={<Icon as={FaFutbol} />}
@@ -140,15 +140,15 @@ const Sidebar = () => {
 
             <Button 
               as={Link} 
-              to="/competency-framework-planner" 
+              to="/competency-dashboard" 
               variant="ghost" 
               justifyContent="flex-start" 
-              bg={location.pathname === "/competency-framework-planner" ? activeBg : inactiveBg}
+              bg={location.pathname === "/competency-dashboard" ? activeBg : inactiveBg}
               _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
               transition="all 0.2s ease-in-out"
-              leftIcon={<Icon as={FaClipboardList} />}
+              leftIcon={<Icon as={FaTable} />}
             >
-              Competency Framework Manager
+              Competency Dashboard
             </Button>
           </VStack>
         </Collapse>
