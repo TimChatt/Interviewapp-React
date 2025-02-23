@@ -9,15 +9,19 @@ import {
   Tr,
   Th,
   Td,
+  Input,
+  Button,
   Spinner,
   Alert,
   AlertIcon,
-  Input,
-  Button
+  Tag,
+  VStack,
+  HStack,
+  Tooltip,
 } from "@chakra-ui/react";
 
 const DepartmentFrameworkPage = () => {
-  const { department } = useParams(); // Get department from URL
+  const { department } = useParams();
   const [competencies, setCompetencies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,12 +49,12 @@ const DepartmentFrameworkPage = () => {
   // Extract unique job titles
   const jobTitles = [...new Set(competencies.flatMap(c => c.job_titles))];
 
-  // Filter competencies based on search
+  // Filter competencies based on search input
   const filteredCompetencies = competencies.filter(c =>
     c.competency.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Function to export table data as CSV
+  // Function to export data as CSV
   const handleExportCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,Competency," + jobTitles.join(",") + "\n";
 
@@ -68,7 +72,7 @@ const DepartmentFrameworkPage = () => {
   };
 
   return (
-    <Box maxW="1200px" mx="auto" py="6">
+    <Box maxW="1400px" mx="auto" py="6" px="6" bg="gray.50" borderRadius="lg">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         {department} - Competency Framework
       </Heading>
@@ -81,42 +85,55 @@ const DepartmentFrameworkPage = () => {
         </Alert>
       )}
 
-      {/* Search and Export Buttons */}
-      <Box display="flex" justifyContent="space-between" mb="4">
+      {/* Search & Export Buttons */}
+      <HStack justify="space-between" mb="6">
         <Input
-          placeholder="Search for a competency..."
+          placeholder="🔍 Search for a competency..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          width="300px"
+          width="350px"
+          bg="white"
+          shadow="md"
+          borderRadius="md"
         />
         <Button colorScheme="blue" onClick={handleExportCSV}>
-          Export CSV
+          Export CSV 📥
         </Button>
-      </Box>
+      </HStack>
 
-      {/* Competency Table */}
-      <Table variant="simple" size="sm">
-        <Thead>
-          <Tr>
-            <Th>Competency</Th>
-            {jobTitles.map((title, idx) => (
-              <Th key={idx}>{title}</Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredCompetencies.map(({ competency, job_titles }, index) => (
-            <Tr key={index}>
-              <Td fontWeight="bold">{competency}</Td>
+      {/* Competency Table - Modern UI */}
+      <Box overflowX="auto">
+        <Table variant="striped" colorScheme="gray" size="md" shadow="md" borderRadius="lg">
+          <Thead bg="purple.600">
+            <Tr>
+              <Th color="white" fontSize="md">Competency</Th>
               {jobTitles.map((title, idx) => (
-                <Td key={idx} textAlign="center">
-                  {job_titles.includes(title) ? "✓" : ""}
-                </Td>
+                <Th key={idx} color="white" fontSize="md">{title}</Th>
               ))}
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {filteredCompetencies.map(({ competency, job_titles }, index) => (
+              <Tr key={index} _hover={{ bg: "gray.100" }}>
+                <Td fontWeight="bold" color="gray.700">
+                  <Tooltip label="Click for details" aria-label="A tooltip">
+                    {competency}
+                  </Tooltip>
+                </Td>
+                {jobTitles.map((title, idx) => (
+                  <Td key={idx} textAlign="center">
+                    {job_titles.includes(title) ? (
+                      <Tag colorScheme="green" size="lg">✓</Tag>
+                    ) : (
+                      <Tag colorScheme="gray" size="lg">—</Tag>
+                    )}
+                  </Td>
+                ))}
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Box>
     </Box>
   );
 };
