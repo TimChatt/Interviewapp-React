@@ -60,24 +60,43 @@ const DepartmentFrameworkPage = () => {
       console.error("Error fetching departments:", err);
     }
   };
-
+  
   const fetchCompetencies = async (selectedDepartment) => {
     setLoading(true);
     setError(null);
     setCompetenciesByCategory({});
-
+  
     try {
+      console.log("Fetching competencies for department:", selectedDepartment); // ✅ Debugging
+  
+      // 🔥 Step 1: Fetch department ID first
+      const departmentResponse = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/get-departments"
+      );
+      if (!departmentResponse.ok) throw new Error("Failed to fetch departments.");
+      
+      const departmentData = await departmentResponse.json();
+      console.log("Fetched department data:", departmentData); // ✅ Debugging
+  
+      // Find the department ID by matching the name
+      const departmentEntry = departmentData.departments.find((d) => d === selectedDepartment);
+      if (!departmentEntry) throw new Error("Department not found.");
+  
+      // 🔥 Step 2: Fetch competencies using department ID
       const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/get-framework/${selectedDepartment}`
+        `https://interviewappbe-production.up.railway.app/api/get-framework/${departmentEntry.id}`
       );
       if (!response.ok) throw new Error("Failed to fetch competencies.");
+      
       const data = await response.json();
-
+      console.log("Fetched competencies:", data); // ✅ Debugging
+  
+      // 🔥 Step 3: Categorize competencies
       let categorizedCompetencies = {};
       STATIC_CATEGORIES.forEach((category) => {
         categorizedCompetencies[category] = [];
       });
-      
+  
       data.job_titles.forEach((job) => {
         job.competencies.forEach((competency) => {
           let category = competency.category || "Uncategorized";
@@ -87,22 +106,16 @@ const DepartmentFrameworkPage = () => {
           categorizedCompetencies[category].push(competency);
         });
       });
-      
+  
       setCompetenciesByCategory(categorizedCompetencies);
     } catch (err) {
-      setError(err.message);
+      console.error("Error fetching competencies:", err);
+      setError("Failed to fetch competencies.");
     } finally {
       setLoading(false);
     }
   };
-
-  const toggleCategory = (category) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
-  };
-
+  
   return (
     <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
