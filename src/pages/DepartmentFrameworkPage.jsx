@@ -67,9 +67,9 @@ const DepartmentFrameworkPage = () => {
     setCompetenciesByCategory({});
   
     try {
-      console.log("Fetching competencies for department:", selectedDepartment); // ✅ Debugging
+      console.log("Selected department before fetching ID:", selectedDepartment); // ✅ Debugging log
   
-      // 🔥 Step 1: Fetch department ID first
+      // 🔥 Step 1: Fetch department IDs first
       const departmentResponse = await fetch(
         "https://interviewappbe-production.up.railway.app/api/get-departments"
       );
@@ -78,11 +78,13 @@ const DepartmentFrameworkPage = () => {
       const departmentData = await departmentResponse.json();
       console.log("Fetched department data:", departmentData); // ✅ Debugging
   
-      // Find the department ID by matching the name
-      const departmentEntry = departmentData.departments.find((d) => d === selectedDepartment);
-      if (!departmentEntry) throw new Error("Department not found.");
+      // 🔥 Step 2: Fetch `department_id` from backend
+      const departmentEntry = departmentData.departments.find((d) => d.department === selectedDepartment);
+      if (!departmentEntry || !departmentEntry.id) throw new Error("Department ID not found.");
   
-      // 🔥 Step 2: Fetch competencies using department ID
+      console.log("Resolved Department ID:", departmentEntry.id); // ✅ Debugging
+  
+      // 🔥 Step 3: Fetch competencies using department ID
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/get-framework/${departmentEntry.id}`
       );
@@ -91,7 +93,7 @@ const DepartmentFrameworkPage = () => {
       const data = await response.json();
       console.log("Fetched competencies:", data); // ✅ Debugging
   
-      // 🔥 Step 3: Categorize competencies
+      // 🔥 Step 4: Categorize competencies
       let categorizedCompetencies = {};
       STATIC_CATEGORIES.forEach((category) => {
         categorizedCompetencies[category] = [];
@@ -115,6 +117,7 @@ const DepartmentFrameworkPage = () => {
       setLoading(false);
     }
   };
+
   
   return (
     <Box maxW="1200px" mx="auto" py="6">
