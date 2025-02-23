@@ -122,7 +122,7 @@ const Sidebar = () => {
               transition="all 0.2s ease-in-out"
               leftIcon={<Icon as={FaClipboardList} />}
             >
-              Competency Framework Generator
+              Competency Generator
             </Button>
 
             <Button 
@@ -135,7 +135,7 @@ const Sidebar = () => {
               transition="all 0.2s ease-in-out"
               leftIcon={<Icon as={FaFutbol} />}
             >
-              Department Competency View
+              Department View
             </Button>
 
             <Button 
