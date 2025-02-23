@@ -13,8 +13,7 @@ import {
   Alert,
   AlertIcon,
   Collapse,
-  Icon,
-  Button
+  Icon
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
@@ -68,39 +67,38 @@ const DepartmentFrameworkPage = () => {
 
   /** ✅ Fetch Competencies using Department ID */
   const fetchCompetencies = async (departmentId) => {
-      setLoading(true);
-      setError(null);
-      setCompetenciesByCategory({});
-  
-      try {
-          console.log("Fetching competencies for Department ID:", departmentId); // ✅ Debugging
-  
-          const response = await fetch(
-              `https://interviewappbe-production.up.railway.app/api/get-categorized-framework/${departmentId}`
-          );
-          if (!response.ok) throw new Error("Failed to fetch competencies.");
-  
-          const data = await response.json();
-          console.log("Fetched categorized competencies:", data); // ✅ Debugging
-  
-          // ✅ Set the categorized competencies directly (since backend already does the work)
-          setCompetenciesByCategory(data.competencies);
-      } catch (err) {
-          console.error("Error fetching competencies:", err);
-          setError("Failed to fetch competencies.");
-      } finally {
-          setLoading(false);
-      }
-  };
-  
-  /** ✅ Toggle Categories */
-  const toggleCategory = (category) => {
-      setExpandedCategories((prev) => ({
-          ...prev,
-          [category]: !prev[category],
-      }));
+    setLoading(true);
+    setError(null);
+    setCompetenciesByCategory({});
+
+    try {
+      console.log("Fetching competencies for Department ID:", departmentId); // ✅ Debugging
+
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/get-categorized-framework/${departmentId}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch competencies.");
+
+      const data = await response.json();
+      console.log("Fetched categorized competencies:", data); // ✅ Debugging
+
+      // ✅ Ensure the competencies data structure is valid
+      setCompetenciesByCategory(data.competencies || {});
+    } catch (err) {
+      console.error("Error fetching competencies:", err);
+      setError("Failed to fetch competencies.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  /** ✅ Toggle Categories */
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   return (
     <Box maxW="1200px" mx="auto" py="6">
@@ -140,7 +138,7 @@ const DepartmentFrameworkPage = () => {
       )}
 
       {/* ✅ Competency List with Categories */}
-      {!loading && !error && Object.keys(competenciesByCategory).length > 0 && (
+      {!loading && !error && competenciesByCategory && Object.keys(competenciesByCategory).length > 0 ? (
         Object.entries(competenciesByCategory).map(([category, competencies]) => (
           <Box key={category} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
             <Heading
@@ -151,7 +149,7 @@ const DepartmentFrameworkPage = () => {
               justifyContent="space-between"
               alignItems="center"
             >
-              {category}{" "}
+              {category}
               <Icon as={expandedCategories[category] ? FaChevronUp : FaChevronDown} />
             </Heading>
             <Collapse in={expandedCategories[category]}>
@@ -163,11 +161,15 @@ const DepartmentFrameworkPage = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {competencies.length > 0 ? (
+                  {Array.isArray(competencies) && competencies.length > 0 ? (
                     competencies.map((comp, index) => (
                       <Tr key={index}>
-                        <Td>{comp.name}</Td>
-                        <Td>{comp.descriptions?.default || "No description available"}</Td>
+                        <Td>{comp.name || "Unnamed Competency"}</Td>
+                        <Td>
+                          {comp.descriptions && typeof comp.descriptions === "object"
+                            ? Object.values(comp.descriptions).join(" | ") // Flatten descriptions into a readable string
+                            : "No description available"}
+                        </Td>
                       </Tr>
                     ))
                   ) : (
@@ -180,6 +182,13 @@ const DepartmentFrameworkPage = () => {
             </Collapse>
           </Box>
         ))
+      ) : (
+        !loading && !error && (
+          <Alert status="warning" mt="4">
+            <AlertIcon />
+            No competencies available
+          </Alert>
+        )
       )}
     </Box>
   );
