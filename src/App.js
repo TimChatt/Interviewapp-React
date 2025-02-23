@@ -20,6 +20,7 @@ import DepartmentFrameworks from "./pages/DepartmentFrameworks";
 import JobDescriptionPage from "./pages/JobDescriptionPage";
 import JobTitleDetails from "./pages/JobTitleDetails";
 import InterviewerDashboard from "./pages/InterviewerDashboard"; 
+import DepartmentFrameworkPage from "./pages/DepartmentFrameworkPage";
 import PrivateRoute from "./components/PrivateRoute"; // Private Routes
 
 // Handles Sidebar Visibility Based on Route
@@ -60,6 +61,7 @@ const AppContent = () => {
             <Route path="/frameworks/:department" element={<DepartmentFrameworks />} />
             <Route path="/job-description/:department/:jobTitle" element={<JobDescriptionPage />} />
             <Route path="/frameworks/:department/:jobTitle/:jobLevel" element={<JobTitleDetails />} />
+            <Route path="/frameworks/:department" element={<DepartmentFrameworkPage />} />
             <Route path="/edit-framework/:id" element={<EditFramework />} />
             <Route path="/interviewer/:jobTitle" element={<InterviewerDashboard />} /> 
           </Route>
