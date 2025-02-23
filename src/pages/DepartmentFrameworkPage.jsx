@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import {
   Box,
   Heading,
@@ -9,82 +8,114 @@ import {
   Tr,
   Th,
   Td,
-  Input,
-  Button,
+  Select,
   Spinner,
   Alert,
   AlertIcon,
-  Tag,
-  VStack,
-  HStack,
   Collapse,
   Icon,
-  Select,
+  Button
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
+const STATIC_CATEGORIES = [
+  "Technical Skills",
+  "Leadership & Management",
+  "Soft Skills",
+  "Process & Delivery",
+  "Domain-Specific Knowledge",
+  "Innovation & Problem-Solving",
+  "Customer & Business Acumen"
+];
+
 const DepartmentFrameworkPage = () => {
-  const { department: initialDepartment } = useParams();
-  const [departments, setDepartments] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState(initialDepartment || "");
-  const [competencies, setCompetencies] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [department, setDepartment] = useState("");
+  const [competenciesByCategory, setCompetenciesByCategory] = useState({});
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-departments");
-        if (!response.ok) throw new Error("Failed to fetch departments.");
-        const data = await response.json();
-        setDepartments(data.departments || []);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
     fetchDepartments();
   }, []);
 
-  useEffect(() => {
-    if (!selectedDepartment) return;
-    const fetchCompetencies = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-department-competencies/${selectedDepartment}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch competencies.");
-        const data = await response.json();
-        setCompetencies(data.competencies);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCompetencies();
-  }, [selectedDepartment]);
-
-  const toggleCategoryExpansion = (category) => {
-    setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] }));
+  const fetchDepartments = async () => {
+    try {
+      const response = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/get-departments"
+      );
+      if (!response.ok) throw new Error("Failed to fetch departments.");
+      const data = await response.json();
+      setDepartments(data.departments || []);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const categorizedCompetencies = competencies.reduce((acc, competency) => {
-    const category = competency.category || "Uncategorized";
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(competency);
-    return acc;
-  }, {});
+  const fetchCompetencies = async (selectedDepartment) => {
+    setLoading(true);
+    setError(null);
+    setCompetenciesByCategory({});
+
+    try {
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/get-framework/${selectedDepartment}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch competencies.");
+      const data = await response.json();
+
+      let categorizedCompetencies = {};
+      STATIC_CATEGORIES.forEach((category) => {
+        categorizedCompetencies[category] = [];
+      });
+      
+      data.job_titles.forEach((job) => {
+        job.competencies.forEach((competency) => {
+          let category = competency.category || "Uncategorized";
+          if (!categorizedCompetencies[category]) {
+            categorizedCompetencies[category] = [];
+          }
+          categorizedCompetencies[category].push(competency);
+        });
+      });
+      
+      setCompetenciesByCategory(categorizedCompetencies);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   return (
-    <Box maxW="1400px" mx="auto" py="6" px="6" bg="gray.50" borderRadius="lg">
+    <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         Competency Framework
       </Heading>
 
+      <Select
+        placeholder="Select a department"
+        onChange={(e) => {
+          setDepartment(e.target.value);
+          fetchCompetencies(e.target.value);
+        }}
+        mb="4"
+      >
+        {departments.map((dept, index) => (
+          <option key={index} value={dept}>{dept}</option>
+        ))}
+      </Select>
+
       {loading && <Spinner size="xl" color="purple.500" />}
+
       {error && (
         <Alert status="error" mt="4">
           <AlertIcon />
@@ -92,68 +123,47 @@ const DepartmentFrameworkPage = () => {
         </Alert>
       )}
 
-      {/* Department Selection Dropdown */}
-      <Select
-        placeholder="Select a Department"
-        value={selectedDepartment}
-        onChange={(e) => setSelectedDepartment(e.target.value)}
-        bg="white"
-        shadow="md"
-        mb="6"
-      >
-        {departments.map((dept) => (
-          <option key={dept} value={dept}>{dept}</option>
-        ))}
-      </Select>
-
-      <HStack justify="space-between" mb="6">
-        <Input
-          placeholder="🔍 Search for a competency..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          width="350px"
-          bg="white"
-          shadow="md"
-          borderRadius="md"
-        />
-      </HStack>
-
-      <Box overflowX="auto">
-        {Object.entries(categorizedCompetencies).map(([category, competencies]) => (
-          <Box key={category} mb={6}>
-            <HStack
-              onClick={() => toggleCategoryExpansion(category)}
+      {!loading && !error && Object.keys(competenciesByCategory).length > 0 && (
+        Object.entries(competenciesByCategory).map(([category, competencies]) => (
+          <Box key={category} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
+            <Heading
+              size="md"
+              onClick={() => toggleCategory(category)}
               cursor="pointer"
-              bg="purple.100"
-              p={3}
-              borderRadius="md"
-              _hover={{ bg: "purple.200" }}
-              justify="space-between"
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <Heading size="md" color="purple.700">{category}</Heading>
+              {category} {" "}
               <Icon as={expandedCategories[category] ? FaChevronUp : FaChevronDown} />
-            </HStack>
+            </Heading>
             <Collapse in={expandedCategories[category]}>
-              <Table variant="striped" colorScheme="gray" size="md" shadow="md" borderRadius="lg" mt={3}>
-                <Thead bg="purple.600">
+              <Table variant="simple" mt="2">
+                <Thead>
                   <Tr>
-                    <Th color="white" fontSize="md">Competency</Th>
-                    <Th color="white" fontSize="md">Description</Th>
+                    <Th>Competency</Th>
+                    <Th>Description</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {competencies.map(({ competency, description }, index) => (
-                    <Tr key={index} _hover={{ bg: "gray.100" }}>
-                      <Td fontWeight="bold" color="gray.700">{competency}</Td>
-                      <Td>{description || "No description available"}</Td>
+                  {competencies.length > 0 ? (
+                    competencies.map((comp, index) => (
+                      <Tr key={index}>
+                        <Td>{comp.name}</Td>
+                        <Td>{comp.descriptions?.default || "No description available"}</Td>
+                      </Tr>
+                    ))
+                  ) : (
+                    <Tr>
+                      <Td colSpan={2} textAlign="center">No competencies found</Td>
                     </Tr>
-                  ))}
+                  )}
                 </Tbody>
               </Table>
             </Collapse>
           </Box>
-        ))}
-      </Box>
+        ))
+      )}
     </Box>
   );
 };
