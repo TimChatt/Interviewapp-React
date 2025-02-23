@@ -29,7 +29,7 @@ const STATIC_CATEGORIES = [
 ];
 
 const DepartmentFrameworkPage = () => {
-  const [department, setDepartment] = useState("");
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
   const [competenciesByCategory, setCompetenciesByCategory] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,18 +40,23 @@ const DepartmentFrameworkPage = () => {
     fetchDepartments();
   }, []);
 
+  /** ✅ Fetch Departments and Store IDs & Names */
   const fetchDepartments = async () => {
     try {
       const response = await fetch(
         "https://interviewappbe-production.up.railway.app/api/get-departments"
       );
       if (!response.ok) throw new Error("Failed to fetch departments.");
-      
+
       const data = await response.json();
-      console.log("Fetched Departments:", data); // ✅ Check the response in console
-  
+      console.log("Fetched Departments:", data); // ✅ Debugging Log
+
       if (data.departments && Array.isArray(data.departments)) {
         setDepartments(data.departments);
+        if (data.departments.length > 0) {
+          setSelectedDepartmentId(data.departments[0].id); // ✅ Default to first department
+          fetchCompetencies(data.departments[0].id); // ✅ Fetch competencies for default
+        }
       } else {
         console.error("Invalid department data format:", data);
       }
@@ -60,51 +65,29 @@ const DepartmentFrameworkPage = () => {
       console.error("Error fetching departments:", err);
     }
   };
-  
-  const fetchCompetencies = async (selectedDepartment) => {
+
+  /** ✅ Fetch Competencies using Department ID */
+  const fetchCompetencies = async (departmentId) => {
     setLoading(true);
     setError(null);
     setCompetenciesByCategory({});
-  
+
     try {
-      console.log("Selected department before fetching ID:", selectedDepartment); // ✅ Debugging log
-  
-      // 🔥 Fetch department IDs first
-      const departmentResponse = await fetch(
-        "https://interviewappbe-production.up.railway.app/api/get-departments"
-      );
-      if (!departmentResponse.ok) throw new Error("Failed to fetch departments.");
-  
-      const departmentData = await departmentResponse.json();
-      console.log("Fetched department data:", departmentData); // ✅ Debugging
-  
-      // 🔥 Look up the department entry
-      const departmentEntry = departmentData.departments.find((d) => 
-        typeof d === "object" && d.department === selectedDepartment
-      );
-  
-      if (!departmentEntry || !departmentEntry.id) {
-        console.error("❌ Department ID lookup failed! API Response:", departmentData);
-        throw new Error("Department ID not found.");
-      }
-  
-      console.log("Resolved Department ID:", departmentEntry.id); // ✅ Debugging
-  
-      // 🔥 Fetch competencies using department ID
+      console.log("Fetching competencies for Department ID:", departmentId); // ✅ Debugging
+
       const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/get-framework/${departmentEntry.id}`
+        `https://interviewappbe-production.up.railway.app/api/get-framework/${departmentId}`
       );
       if (!response.ok) throw new Error("Failed to fetch competencies.");
-      
+
       const data = await response.json();
       console.log("Fetched competencies:", data); // ✅ Debugging
-  
-      // 🔥 Categorize competencies
+
       let categorizedCompetencies = {};
       STATIC_CATEGORIES.forEach((category) => {
         categorizedCompetencies[category] = [];
       });
-  
+
       data.job_titles.forEach((job) => {
         job.competencies.forEach((competency) => {
           let category = competency.category || "Uncategorized";
@@ -114,7 +97,7 @@ const DepartmentFrameworkPage = () => {
           categorizedCompetencies[category].push(competency);
         });
       });
-  
+
       setCompetenciesByCategory(categorizedCompetencies);
     } catch (err) {
       console.error("Error fetching competencies:", err);
@@ -124,25 +107,35 @@ const DepartmentFrameworkPage = () => {
     }
   };
 
+  /** ✅ Toggle Categories */
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
   return (
     <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         Competency Framework
       </Heading>
 
+      {/* ✅ Department Dropdown (Stores ID, Displays Name) */}
       <Select
         placeholder="Select a department"
         onChange={(e) => {
-          setDepartment(e.target.value);
-          fetchCompetencies(e.target.value);
+          const selectedId = e.target.value;
+          setSelectedDepartmentId(selectedId);
+          fetchCompetencies(selectedId);
         }}
-        value={department} // ✅ Ensure the value is set correctly
+        value={selectedDepartmentId || ""}
         mb="4"
       >
         {departments.length > 0 ? (
-          departments.map((dept, index) => (
-            <option key={index} value={dept}>
-              {dept}
+          departments.map((dept) => (
+            <option key={dept.id} value={dept.id}>
+              {dept.department}
             </option>
           ))
         ) : (
@@ -159,6 +152,7 @@ const DepartmentFrameworkPage = () => {
         </Alert>
       )}
 
+      {/* ✅ Competency List with Categories */}
       {!loading && !error && Object.keys(competenciesByCategory).length > 0 && (
         Object.entries(competenciesByCategory).map(([category, competencies]) => (
           <Box key={category} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
@@ -170,7 +164,7 @@ const DepartmentFrameworkPage = () => {
               justifyContent="space-between"
               alignItems="center"
             >
-              {category} {" "}
+              {category}{" "}
               <Icon as={expandedCategories[category] ? FaChevronUp : FaChevronDown} />
             </Heading>
             <Collapse in={expandedCategories[category]}>
