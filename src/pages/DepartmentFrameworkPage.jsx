@@ -28,7 +28,7 @@ const DepartmentFrameworkPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedRows, setExpandedRows] = useState({});
+  const [expandedCategories, setExpandedCategories] = useState({});
 
   useEffect(() => {
     const fetchCompetencies = async () => {
@@ -48,9 +48,17 @@ const DepartmentFrameworkPage = () => {
     fetchCompetencies();
   }, [department]);
 
-  const toggleRowExpansion = (index) => {
-    setExpandedRows((prev) => ({ ...prev, [index]: !prev[index] }));
+  const toggleCategoryExpansion = (category) => {
+    setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] }));
   };
+
+  // Group competencies by category
+  const categorizedCompetencies = competencies.reduce((acc, competency) => {
+    const category = competency.category || "Uncategorized";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(competency);
+    return acc;
+  }, {});
 
   return (
     <Box maxW="1400px" mx="auto" py="6" px="6" bg="gray.50" borderRadius="lg">
@@ -79,39 +87,42 @@ const DepartmentFrameworkPage = () => {
         />
       </HStack>
 
-      {/* Competency Table */}
+      {/* Competency Table with Categories */}
       <Box overflowX="auto">
-        <Table variant="striped" colorScheme="gray" size="md" shadow="md" borderRadius="lg">
-          <Thead bg="purple.600">
-            <Tr>
-              <Th color="white" fontSize="md">Competency</Th>
-              <Th color="white" fontSize="md">Details</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {competencies.map(({ competency, description }, index) => (
-              <React.Fragment key={index}>
-                <Tr _hover={{ bg: "gray.100" }}>
-                  <Td fontWeight="bold" color="gray.700">{competency}</Td>
-                  <Td textAlign="center">
-                    <Button size="sm" onClick={() => toggleRowExpansion(index)}>
-                      <Icon as={expandedRows[index] ? FaChevronUp : FaChevronDown} />
-                    </Button>
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td colSpan={2}>
-                    <Collapse in={expandedRows[index]}>
-                      <Box p={4} bg="gray.50" borderRadius="md">
-                        <strong>Description:</strong> {description || "No description available"}
-                      </Box>
-                    </Collapse>
-                  </Td>
-                </Tr>
-              </React.Fragment>
-            ))}
-          </Tbody>
-        </Table>
+        {Object.entries(categorizedCompetencies).map(([category, competencies]) => (
+          <Box key={category} mb={6}>
+            <HStack
+              onClick={() => toggleCategoryExpansion(category)}
+              cursor="pointer"
+              bg="purple.100"
+              p={3}
+              borderRadius="md"
+              _hover={{ bg: "purple.200" }}
+              justify="space-between"
+            >
+              <Heading size="md" color="purple.700">{category}</Heading>
+              <Icon as={expandedCategories[category] ? FaChevronUp : FaChevronDown} />
+            </HStack>
+            <Collapse in={expandedCategories[category]}>
+              <Table variant="striped" colorScheme="gray" size="md" shadow="md" borderRadius="lg" mt={3}>
+                <Thead bg="purple.600">
+                  <Tr>
+                    <Th color="white" fontSize="md">Competency</Th>
+                    <Th color="white" fontSize="md">Description</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {competencies.map(({ competency, description }, index) => (
+                    <Tr key={index} _hover={{ bg: "gray.100" }}>
+                      <Td fontWeight="bold" color="gray.700">{competency}</Td>
+                      <Td>{description || "No description available"}</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </Collapse>
+          </Box>
+        ))}
       </Box>
     </Box>
   );
