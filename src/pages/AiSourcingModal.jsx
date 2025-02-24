@@ -1,140 +1,172 @@
 import React, { useState } from "react";
 import {
+  Box,
+  Input,
+  Button,
+  IconButton,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalBody,
   ModalCloseButton,
-  Button,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Text,
   VStack,
   HStack,
-  Input,
+  Spinner,
   Select,
   Checkbox,
-  Text,
+  CheckboxGroup,
 } from "@chakra-ui/react";
+import { FaSlidersH, FaSearch } from "react-icons/fa";
 
-const AiSourcingModal = ({ isOpen, onClose, filters, setFilters }) => {
-  // Handle filter updates
-  const updateFilter = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
+const AISourcingTool = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [sortField, setSortField] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  // Filter States
+  const [location, setLocation] = useState("");
+  const [experience, setExperience] = useState("");
+  const [skills, setSkills] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [degree, setDegree] = useState("");
+  const [graduationYear, setGraduationYear] = useState("");
+  const [languages, setLanguages] = useState([]);
+  const [diversityFilters, setDiversityFilters] = useState([]);
+
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+    
+    setLoading(true);
+    setSearchResults([]);
+
+    setSearchHistory([searchQuery, ...searchHistory]);
+    
+    try {
+      const response = await fetch("https://api.example.com/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchQuery, filters: { location, experience, skills, jobTitle, company, degree, graduationYear, languages, diversityFilters } }),
+      });
+      
+      if (!response.ok) throw new Error("Failed to fetch results");
+      const results = await response.json();
+      
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Edit Search Filters</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <VStack spacing={4} align="stretch">
-            {/* Location */}
-            <Text fontWeight="bold">Location(s)</Text>
-            <Input
-              placeholder="Enter locations (comma-separated)"
-              value={filters.locations || ""}
-              onChange={(e) => updateFilter("locations", e.target.value)}
-            />
+    <Box display="flex" flexDirection="column" p={6}>
+      {/* Search Input Box */}
+      <HStack spacing={3} mb={4}>
+        <Input
+          placeholder="Describe the ideal candidate (e.g. 'Senior Frontend Engineer with React experience in London')"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+        />
+        <IconButton icon={<FaSlidersH />} onClick={onOpen} aria-label="Edit Filters" />
+        <Button colorScheme="blue" leftIcon={<FaSearch />} onClick={handleSearch}>
+          Search
+        </Button>
+      </HStack>
 
-            {/* Experience */}
-            <HStack>
-              <VStack align="start">
-                <Text fontWeight="bold">Min Experience (Years)</Text>
-                <Input
-                  type="number"
-                  placeholder="Min"
-                  value={filters.minExperience || ""}
-                  onChange={(e) => updateFilter("minExperience", e.target.value)}
-                />
-              </VStack>
-              <VStack align="start">
-                <Text fontWeight="bold">Max Experience (Years)</Text>
-                <Input
-                  type="number"
-                  placeholder="Max"
-                  value={filters.maxExperience || ""}
-                  onChange={(e) => updateFilter("maxExperience", e.target.value)}
-                />
-              </VStack>
-            </HStack>
+      {/* Search Moves to Top */}
+      {searchHistory.length > 0 && (
+        <Box mb={4} p={3} bg="gray.100" borderRadius="md">
+          <Text fontSize="md" fontWeight="bold">Latest Search:</Text>
+          <Text fontSize="sm">{searchHistory[0]}</Text>
+        </Box>
+      )}
 
-            {/* Job Title */}
-            <Text fontWeight="bold">Job Title</Text>
-            <Input
-              placeholder="Enter job title"
-              value={filters.jobTitle || ""}
-              onChange={(e) => updateFilter("jobTitle", e.target.value)}
-            />
+      {loading ? (
+        <Spinner size="xl" color="blue.500" mt={4} alignSelf="center" />
+      ) : (
+        <HStack spacing={6} align="flex-start">
+          <Box flex={1}>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Job Title</Th>
+                  <Th>Company</Th>
+                  <Th>Location</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {searchResults.map((candidate) => (
+                  <Tr key={candidate.id} onClick={() => setSelectedCandidate(candidate)}>
+                    <Td>{candidate.name}</Td>
+                    <Td>{candidate.jobTitle}</Td>
+                    <Td>{candidate.company}</Td>
+                    <Td>{candidate.location}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Box>
 
-            {/* Skills/Keywords */}
-            <Text fontWeight="bold">Skills/Keywords</Text>
-            <Input
-              placeholder="Enter skills (comma-separated)"
-              value={filters.skills || ""}
-              onChange={(e) => updateFilter("skills", e.target.value)}
-            />
+          {selectedCandidate && (
+            <Box flex={0.4} p={4} bg="gray.50" borderRadius="md">
+              <Text fontSize="lg" fontWeight="bold">{selectedCandidate.name}</Text>
+              <Text>Job Title: {selectedCandidate.jobTitle}</Text>
+              <Text>Company: {selectedCandidate.company}</Text>
+              <Text>Location: {selectedCandidate.location}</Text>
+            </Box>
+          )}
+        </HStack>
+      )}
 
-            {/* Company Filters */}
-            <Text fontWeight="bold">Companies</Text>
-            <Input
-              placeholder="Enter company names (comma-separated)"
-              value={filters.companies || ""}
-              onChange={(e) => updateFilter("companies", e.target.value)}
-            />
-
-            <Text fontWeight="bold">Exclude Companies</Text>
-            <Input
-              placeholder="Enter companies to exclude"
-              value={filters.excludeCompanies || ""}
-              onChange={(e) => updateFilter("excludeCompanies", e.target.value)}
-            />
-
-            {/* Degree & University Filters */}
-            <Text fontWeight="bold">Degree Requirements</Text>
-            <Select
-              placeholder="Select degree level"
-              value={filters.degree || ""}
-              onChange={(e) => updateFilter("degree", e.target.value)}
-            >
-              <option value="bachelor">Bachelor's</option>
-              <option value="master">Master's</option>
-              <option value="phd">PhD</option>
-              <option value="none">No Degree Required</option>
-            </Select>
-
-            <Text fontWeight="bold">University</Text>
-            <Input
-              placeholder="Enter university names (comma-separated)"
-              value={filters.universities || ""}
-              onChange={(e) => updateFilter("universities", e.target.value)}
-            />
-
-            {/* Power Filters */}
-            <Text fontWeight="bold">Power Filters</Text>
-            <HStack spacing={4}>
-              <Checkbox
-                isChecked={filters.diversityHiring || false}
-                onChange={(e) => updateFilter("diversityHiring", e.target.checked)}
-              >
-                Diversity Focus
-              </Checkbox>
-              <Checkbox
-                isChecked={filters.highAchievers || false}
-                onChange={(e) => updateFilter("highAchievers", e.target.checked)}
-              >
-                High Achievers
-              </Checkbox>
-            </HStack>
-          </VStack>
-
-          <Button mt={4} colorScheme="blue" onClick={onClose} width="full">
-            Apply Filters
-          </Button>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+      {/* Filters Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit Search Filters</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={3} align="stretch">
+              <Input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+              <Input placeholder="Experience (years)" value={experience} onChange={(e) => setExperience(e.target.value)} />
+              <Input placeholder="Skills/Keywords" value={skills} onChange={(e) => setSkills(e.target.value)} />
+              <Input placeholder="Job Title" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} />
+              <Input placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} />
+              <Input placeholder="Degree Requirements" value={degree} onChange={(e) => setDegree(e.target.value)} />
+              <Input placeholder="Graduation Year" value={graduationYear} onChange={(e) => setGraduationYear(e.target.value)} />
+              <Input placeholder="Languages" value={languages} onChange={(e) => setLanguages(e.target.value.split(","))} />
+              <CheckboxGroup value={diversityFilters} onChange={setDiversityFilters}>
+                <Checkbox value="gender">Gender Diversity</Checkbox>
+                <Checkbox value="ethnicity">Ethnic Diversity</Checkbox>
+                <Checkbox value="career-growth">Career Growth Potential</Checkbox>
+              </CheckboxGroup>
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={onClose}>Save Filters</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 };
 
-export default AiSourcingModal;
+export default AISourcingTool;
