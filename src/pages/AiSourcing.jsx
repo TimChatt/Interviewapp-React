@@ -23,8 +23,9 @@ import {
   HStack,
   Spinner,
   Select,
+  Link,
 } from "@chakra-ui/react";
-import { FaSlidersH, FaSearch } from "react-icons/fa";
+import { FaSlidersH, FaSearch, FaLinkedin, FaGithub, FaGlobe, FaUserPlus } from "react-icons/fa";
 
 const AISourcingTool = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,6 +61,18 @@ const AISourcingTool = () => {
       console.error("Error fetching search results:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCandidateDetails = async (candidateId) => {
+    try {
+      setSelectedCandidate(null);
+      const response = await fetch(`https://api.example.com/candidate/${candidateId}`);
+      if (!response.ok) throw new Error("Failed to fetch candidate details");
+      const details = await response.json();
+      setSelectedCandidate(details);
+    } catch (error) {
+      console.error("Error fetching candidate details:", error);
     }
   };
 
@@ -117,7 +130,7 @@ const AISourcingTool = () => {
               </Thead>
               <Tbody>
                 {searchResults.map((candidate) => (
-                  <Tr key={candidate.id} onClick={() => setSelectedCandidate(candidate)}>
+                  <Tr key={candidate.id} onClick={() => fetchCandidateDetails(candidate.id)}>
                     <Td>{candidate.name}</Td>
                     <Td>{candidate.jobTitle}</Td>
                     <Td>{candidate.company}</Td>
@@ -130,11 +143,38 @@ const AISourcingTool = () => {
 
           {/* Candidate Profile */}
           {selectedCandidate && (
-            <Box flex={0.4} p={4} bg="gray.50" borderRadius="md">
-              <Text fontSize="lg" fontWeight="bold">{selectedCandidate.name}</Text>
-              <Text>Job Title: {selectedCandidate.jobTitle}</Text>
-              <Text>Company: {selectedCandidate.company}</Text>
-              <Text>Location: {selectedCandidate.location}</Text>
+            <Box flex={0.5} p={4} bg="gray.50" borderRadius="md" boxShadow="lg">
+              <Text fontSize="xl" fontWeight="bold">{selectedCandidate.name}</Text>
+              <Text fontSize="md" color="gray.600">{selectedCandidate.jobTitle} at {selectedCandidate.company}</Text>
+              <Text fontSize="sm" color="gray.500">{selectedCandidate.location}</Text>
+
+              <Box mt={4}>
+                <Text fontWeight="bold">Work Experience:</Text>
+                {selectedCandidate.experience?.map((exp, idx) => (
+                  <Text key={idx} fontSize="sm">{exp.title} at {exp.company} ({exp.years})</Text>
+                ))}
+              </Box>
+
+              <Box mt={4}>
+                <Text fontWeight="bold">Skills:</Text>
+                <Text fontSize="sm">{selectedCandidate.skills?.join(", ") || "N/A"}</Text>
+              </Box>
+
+              <Box mt={4}>
+                <Text fontWeight="bold">Education:</Text>
+                <Text fontSize="sm">{selectedCandidate.education?.degree} at {selectedCandidate.education?.university} ({selectedCandidate.education?.year})</Text>
+              </Box>
+
+              <Box mt={4}>
+                <Text fontWeight="bold">Contact:</Text>
+                {selectedCandidate.linkedin && <Link href={selectedCandidate.linkedin} isExternal><Icon as={FaLinkedin} mr={2} />LinkedIn</Link>}
+                {selectedCandidate.github && <Link href={selectedCandidate.github} isExternal ml={2}><Icon as={FaGithub} mr={2} />GitHub</Link>}
+                {selectedCandidate.website && <Link href={selectedCandidate.website} isExternal ml={2}><Icon as={FaGlobe} mr={2} />Portfolio</Link>}
+              </Box>
+              
+              <Button leftIcon={<FaUserPlus />} colorScheme="blue" mt={4}>
+                Save to Project
+              </Button>
             </Box>
           )}
         </HStack>
