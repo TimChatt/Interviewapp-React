@@ -24,8 +24,10 @@ import {
   Spinner,
   Select,
   Link,
+  Image,
+  Collapse,
 } from "@chakra-ui/react";
-import { FaSlidersH, FaSearch, FaLinkedin, FaGithub, FaGlobe, FaUserPlus } from "react-icons/fa";
+import { FaSlidersH, FaSearch, FaLinkedin, FaGithub, FaGlobe, FaUserPlus, FaBriefcase } from "react-icons/fa";
 
 const AISourcingTool = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,8 +36,7 @@ const AISourcingTool = () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [sortField, setSortField] = useState("name");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [expandedJobs, setExpandedJobs] = useState({});
 
   const handleSearch = async () => {
     if (!searchQuery) return;
@@ -43,7 +44,6 @@ const AISourcingTool = () => {
     setLoading(true);
     setSearchResults([]);
 
-    // Add search to history (moving to top)
     setSearchHistory([searchQuery, ...searchHistory]);
     
     try {
@@ -76,23 +76,12 @@ const AISourcingTool = () => {
     }
   };
 
-  const handleSort = (field) => {
-    const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
-    setSortField(field);
-    setSortOrder(order);
-    
-    const sortedResults = [...searchResults].sort((a, b) => {
-      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
-      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
-      return 0;
-    });
-    
-    setSearchResults(sortedResults);
+  const toggleJobDetails = (index) => {
+    setExpandedJobs((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   return (
     <Box display="flex" flexDirection="column" p={6}>
-      {/* Search Input Box */}
       <HStack spacing={3} mb={4}>
         <Input
           placeholder="Describe the ideal candidate (e.g. 'Senior Frontend Engineer with React experience in London')"
@@ -106,7 +95,6 @@ const AISourcingTool = () => {
         </Button>
       </HStack>
 
-      {/* Search Moves to Top */}
       {searchHistory.length > 0 && (
         <Box mb={4} p={3} bg="gray.100" borderRadius="md">
           <Text fontSize="md" fontWeight="bold">Latest Search:</Text>
@@ -122,10 +110,10 @@ const AISourcingTool = () => {
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th onClick={() => handleSort("name")}>Name</Th>
-                  <Th onClick={() => handleSort("jobTitle")}>Job Title</Th>
-                  <Th onClick={() => handleSort("company")}>Company</Th>
-                  <Th onClick={() => handleSort("location")}>Location</Th>
+                  <Th>Name</Th>
+                  <Th>Job Title</Th>
+                  <Th>Company</Th>
+                  <Th>Location</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -141,29 +129,38 @@ const AISourcingTool = () => {
             </Table>
           </Box>
 
-          {/* Candidate Profile */}
           {selectedCandidate && (
             <Box flex={0.5} p={4} bg="gray.50" borderRadius="md" boxShadow="lg">
               <Text fontSize="xl" fontWeight="bold">{selectedCandidate.name}</Text>
               <Text fontSize="md" color="gray.600">{selectedCandidate.jobTitle} at {selectedCandidate.company}</Text>
               <Text fontSize="sm" color="gray.500">{selectedCandidate.location}</Text>
+              
+              {selectedCandidate.companyLogo && (
+                <Image src={selectedCandidate.companyLogo} alt="Company Logo" boxSize="50px" mt={2} />
+              )}
 
               <Box mt={4}>
-                <Text fontWeight="bold">Work Experience:</Text>
-                {selectedCandidate.experience?.map((exp, idx) => (
-                  <Text key={idx} fontSize="sm">{exp.title} at {exp.company} ({exp.years})</Text>
-                ))}
+                <Text fontWeight="bold">Career Timeline:</Text>
+                <VStack align="start" spacing={3}>
+                  {selectedCandidate.experience?.map((exp, idx) => (
+                    <Box key={idx} p={2} w="full" bg="gray.100" borderRadius="md" _hover={{ bg: "gray.200" }} cursor="pointer" onClick={() => toggleJobDetails(idx)}>
+                      <HStack align="center">
+                        <Icon as={FaBriefcase} color="blue.500" />
+                        <Box>
+                          <Text fontSize="sm" fontWeight="bold">{exp.title} at {exp.company}</Text>
+                          <Text fontSize="xs" color="gray.600">{exp.years}</Text>
+                        </Box>
+                      </HStack>
+                      <Collapse in={expandedJobs[idx]}>
+                        <Text fontSize="xs" mt={2}>{exp.description}</Text>
+                      </Collapse>
+                    </Box>
+                  ))}
+                </VStack>
               </Box>
 
-              <Box mt={4}>
-                <Text fontWeight="bold">Skills:</Text>
-                <Text fontSize="sm">{selectedCandidate.skills?.join(", ") || "N/A"}</Text>
-              </Box>
-
-              <Box mt={4}>
-                <Text fontWeight="bold">Education:</Text>
-                <Text fontSize="sm">{selectedCandidate.education?.degree} at {selectedCandidate.education?.university} ({selectedCandidate.education?.year})</Text>
-              </Box>
+              <Box mt={4}><Text fontWeight="bold">Skills:</Text> <Text fontSize="sm">{selectedCandidate.skills?.join(", ") || "N/A"}</Text></Box>
+              <Box mt={4}><Text fontWeight="bold">Education:</Text> <Text fontSize="sm">{selectedCandidate.education?.degree} at {selectedCandidate.education?.university} ({selectedCandidate.education?.year})</Text></Box>
 
               <Box mt={4}>
                 <Text fontWeight="bold">Contact:</Text>
@@ -171,10 +168,6 @@ const AISourcingTool = () => {
                 {selectedCandidate.github && <Link href={selectedCandidate.github} isExternal ml={2}><Icon as={FaGithub} mr={2} />GitHub</Link>}
                 {selectedCandidate.website && <Link href={selectedCandidate.website} isExternal ml={2}><Icon as={FaGlobe} mr={2} />Portfolio</Link>}
               </Box>
-              
-              <Button leftIcon={<FaUserPlus />} colorScheme="blue" mt={4}>
-                Save to Project
-              </Button>
             </Box>
           )}
         </HStack>
