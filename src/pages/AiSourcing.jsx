@@ -84,7 +84,7 @@ const AISourcingTool = () => {
     <Box display="flex" flexDirection="column" p={6}>
       <HStack spacing={3} mb={4}>
         <Input
-          placeholder="Describe the ideal candidate (e.g. 'Senior Frontend Engineer with React experience in London')"
+          placeholder="Describe the ideal candidate (e.g. 'Senior IOS Engineer with SwiftUI experience in Hungary')"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleSearch()}
