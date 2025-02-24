@@ -13,7 +13,9 @@ import {
   Alert,
   AlertIcon,
   Collapse,
-  Icon
+  Icon,
+  Card,
+  CardBody,
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
@@ -130,39 +132,44 @@ const DepartmentFrameworkPage = () => {
           if (!Array.isArray(competencies) || competencies.length === 0) return null;
 
           return (
-            <Box key={level} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
-              <Heading
-                size="md"
-                onClick={() => toggleLevel(level)}
-                cursor="pointer"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                {level}
-                <Icon as={expandedLevels[level] ? FaChevronUp : FaChevronDown} />
-              </Heading>
-              <Collapse in={expandedLevels[level]}>
-                <Table variant="simple" mt="2">
-                  <Thead>
-                    <Tr>
-                      <Th>Competency</Th>
-                      <Th>Description</Th>
-                      <Th>Job Title</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {competencies.map((comp, index) => (
-                      <Tr key={index}>
-                        <Td>{comp.name || "Unnamed Competency"}</Td>
-                        <Td>{comp.description || "No description available"}</Td>
-                        <Td>{comp.job_title || "N/A"}</Td>
+            <Card key={level} mt="6" border="1px solid #ccc" borderRadius="lg" overflow="hidden">
+              <CardBody>
+                <Heading
+                  size="md"
+                  onClick={() => toggleLevel(level)}
+                  cursor="pointer"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  bg="purple.100"
+                  p="3"
+                  borderRadius="md"
+                >
+                  {level}
+                  <Icon as={expandedLevels[level] ? FaChevronUp : FaChevronDown} />
+                </Heading>
+                <Collapse in={expandedLevels[level]}>
+                  <Table variant="striped" mt="2">
+                    <Thead>
+                      <Tr bg="gray.100">
+                        <Th>Competency</Th>
+                        <Th>Description</Th>
+                        <Th>Job Title</Th>
                       </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </Collapse>
-            </Box>
+                    </Thead>
+                    <Tbody>
+                      {competencies.map((comp, index) => (
+                        <Tr key={index}>
+                          <Td fontWeight="bold">{comp.name || "Unnamed Competency"}</Td>
+                          <Td>{comp.description || "No description available"}</Td>
+                          <Td>{comp.job_title || "N/A"}</Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </Collapse>
+              </CardBody>
+            </Card>
           );
         })
       ) : (
