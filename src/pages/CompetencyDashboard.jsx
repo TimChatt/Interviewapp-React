@@ -20,7 +20,7 @@ const CompetencyDashboard = () => {
   const [competencyHistory, setCompetencyHistory] = useState([]);
   const [trends, setTrends] = useState([]);
   const [selectedCompetency, setSelectedCompetency] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRows, setExpandedRows] = useState({});
@@ -29,35 +29,63 @@ const CompetencyDashboard = () => {
     fetchRecentChanges();
   }, []);
 
+  /** ✅ Fetch Competency Trends */
   const fetchRecentChanges = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
+      console.log("🔍 Fetching competency trends...");
+
       const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-trends-over-time");
-      if (!response.ok) throw new Error("Failed to fetch competency trends");
+      if (!response.ok) throw new Error(`❌ Failed to fetch competency trends (${response.status})`);
+
       const data = await response.json();
+      console.log("✅ Trends Data:", data);
+
       setTrends(data.trends || []);
     } catch (err) {
+      console.error("❌ Error fetching trends:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  /** ✅ Fetch Competency History */
   const fetchCompetencyHistory = async (competency) => {
     setLoading(true);
+    setError(null);
+    setCompetencyHistory([]);
+
+    if (!competency) {
+      console.warn("⚠️ No competency selected.");
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log(`🔍 Fetching history for competency: ${competency}`);
+
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/get-competency-history/${competency}`
       );
-      if (!response.ok) throw new Error("Failed to fetch competency history");
+
+      if (!response.ok) throw new Error(`❌ Failed to fetch competency history (${response.status})`);
+
       const data = await response.json();
+      console.log("✅ Competency History Data:", data);
+
       setCompetencyHistory(data.history || []);
     } catch (err) {
+      console.error("❌ Error fetching competency history:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  /** ✅ Toggle Row Expansion */
   const toggleRowExpansion = (index) => {
     setExpandedRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -77,6 +105,7 @@ const CompetencyDashboard = () => {
 
       {loading && <Spinner size="xl" color="purple.500" />}
 
+      {/* ✅ Search Input */}
       <Input
         placeholder="Search competency..."
         value={searchTerm}
@@ -84,12 +113,15 @@ const CompetencyDashboard = () => {
         mb="4"
       />
 
+      {/* ✅ Competency Selector */}
       <Select
         placeholder="Select a competency"
         onChange={(e) => {
-          setSelectedCompetency(e.target.value);
-          fetchCompetencyHistory(e.target.value);
+          const selected = e.target.value;
+          setSelectedCompetency(selected);
+          fetchCompetencyHistory(selected);
         }}
+        value={selectedCompetency}
       >
         {Array.from(new Set(trends.map((item) => item.competency_name))).map((competency) => (
           <option key={competency} value={competency}>
@@ -98,6 +130,7 @@ const CompetencyDashboard = () => {
         ))}
       </Select>
 
+      {/* ✅ Competency History Table */}
       <Table variant="simple" mt="6">
         <Thead>
           <Tr>
@@ -132,19 +165,22 @@ const CompetencyDashboard = () => {
                   </Td>
                   <Td>{new Date(change.date_changed).toLocaleDateString()}</Td>
                 </Tr>
-                <Tr>
-                  <Td colSpan={4}>
-                    <Collapse in={expandedRows[index]}>
-                      <Box p={4} bg="gray.50" borderRadius="md">
-                        <strong>Job Level:</strong> {change.job_level}
-                        <br />
-                        <strong>Old Score:</strong> {change.old_score}
-                        <br />
-                        <strong>Change Type:</strong> {change.change_type}
-                      </Box>
-                    </Collapse>
-                  </Td>
-                </Tr>
+                {/* ✅ Expandable Details Row */}
+                {expandedRows[index] && (
+                  <Tr>
+                    <Td colSpan={4}>
+                      <Collapse in={expandedRows[index]}>
+                        <Box p={4} bg="gray.50" borderRadius="md">
+                          <strong>Job Level:</strong> {change.job_level}
+                          <br />
+                          <strong>Old Score:</strong> {change.old_score}
+                          <br />
+                          <strong>Change Type:</strong> {change.change_type}
+                        </Box>
+                      </Collapse>
+                    </Td>
+                  </Tr>
+                )}
               </React.Fragment>
             ))}
         </Tbody>
