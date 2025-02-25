@@ -4,7 +4,7 @@ import {
   Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, Collapse, Icon
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Import the modal component
+import JobTitleDetailsModal from "./JobTitleDetailsModal"; 
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
