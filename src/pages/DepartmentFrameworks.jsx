@@ -61,23 +61,35 @@ const DepartmentFrameworks = () => {
     navigate(`/job-description/${department}/${jobTitle}`);
   };
 
-  // ✅ Groups job titles by category and level
-  const groupedTitles = jobTitles.reduce((acc, job) => {
-    const category = extractJobCategory(job.job_title);
-    const level = extractJobLevel(job.job_title);
-    if (!acc[category]) acc[category] = {};
-    if (!acc[category][level]) acc[category][level] = [];
-    acc[category][level].push(job);
-    return acc;
-  }, {});
+// ✅ Groups job titles by category and level
+const groupedTitles = jobTitles.reduce((acc, job) => {
+  const category = extractJobCategory(job.job_title);
+  const level = extractJobLevel(job.job_title);
 
-  const toggleLevel = (category, level) => {
-    setExpandedLevels((prev) => ({
-      ...prev,
-      [`${category}-${level}`]: !prev[`${category}-${level}`],
-    }));
-  };
+  if (!acc[category]) acc[category] = {};
+  if (!acc[category][level]) acc[category][level] = [];
 
+  acc[category][level].push(job);
+  return acc;
+}, {});
+
+// ✅ Sort Levels in Ascending Order (L1 → L2 → L3 → L4 → L5)
+Object.keys(groupedTitles).forEach((category) => {
+  groupedTitles[category] = Object.fromEntries(
+    Object.entries(groupedTitles[category]).sort(([levelA], [levelB]) => {
+      const numA = parseInt(levelA.replace("L", ""), 10);
+      const numB = parseInt(levelB.replace("L", ""), 10);
+      return numA - numB; // 🔥 Ensures correct order
+    })
+  );
+});
+
+const toggleLevel = (category, level) => {
+  setExpandedLevels((prev) => ({
+    ...prev,
+    [`${category}-${level}`]: !prev[`${category}-${level}`],
+  }));
+};
   return (
     <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
