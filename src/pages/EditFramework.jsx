@@ -14,31 +14,40 @@ const EditFramework = () => {
   const [updatedFramework, setUpdatedFramework] = useState({
     department: "",
     job_title: "",
-    job_levels: "",
+    job_levels: [],
     competencies: [],
   });
 
-  // Fetch the framework details by ID
+  /** ✅ Fetch the framework details by ID */
   useEffect(() => {
     const fetchFramework = async () => {
       setLoading(true);
       try {
+        console.log(`🔍 Fetching framework with ID: ${id}`);
+
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-framework/${id}`
         );
+
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          throw new Error(`❌ Failed to fetch framework (${response.status})`);
         }
+
         const data = await response.json();
+        console.log("✅ Fetched Framework Data:", data);
+
         setFramework(data);
+
+        // Ensure proper formatting of job_levels and competencies
         setUpdatedFramework({
-          department: data.department,
-          job_title: data.job_title,
-          job_levels: data.job_levels,
-          competencies: data.competencies,
+          department: data.department || "",
+          job_title: data.job_title || "",
+          job_levels: Array.isArray(data.job_levels) ? data.job_levels : [],
+          competencies: Array.isArray(data.competencies) ? data.competencies : [],
         });
-        setError(null);
+
       } catch (err) {
+        console.error("❌ Error fetching framework:", err);
         setError("Failed to fetch framework details. Please try again.");
       } finally {
         setLoading(false);
@@ -48,17 +57,20 @@ const EditFramework = () => {
     fetchFramework();
   }, [id]);
 
-  // Handle input changes
+  /** ✅ Handle input changes */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUpdatedFramework((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission to update the framework
+  /** ✅ Handle form submission to update the framework */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+      console.log("🚀 Updating framework...", updatedFramework);
+
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/update-framework/${id}`,
         {
@@ -67,11 +79,15 @@ const EditFramework = () => {
           body: JSON.stringify(updatedFramework),
         }
       );
+
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        throw new Error(`❌ Update failed (${response.status})`);
       }
+
+      console.log("✅ Framework updated successfully.");
       navigate("/frameworks"); // Redirect to the frameworks page after successful update
     } catch (err) {
+      console.error("❌ Error updating framework:", err);
       setError("Failed to update framework. Please try again.");
     } finally {
       setLoading(false);
@@ -125,12 +141,17 @@ const EditFramework = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Job Levels</FormLabel>
+                  <FormLabel>Job Levels (comma-separated)</FormLabel>
                   <Input
                     type="text"
                     name="job_levels"
-                    value={updatedFramework.job_levels}
-                    onChange={handleChange}
+                    value={updatedFramework.job_levels.join(", ")}
+                    onChange={(e) =>
+                      setUpdatedFramework((prev) => ({
+                        ...prev,
+                        job_levels: e.target.value.split(",").map((lvl) => lvl.trim()),
+                      }))
+                    }
                   />
                 </FormControl>
 
@@ -139,12 +160,17 @@ const EditFramework = () => {
                   <Textarea
                     name="competencies"
                     value={JSON.stringify(updatedFramework.competencies, null, 2)}
-                    onChange={(e) =>
-                      setUpdatedFramework((prev) => ({
-                        ...prev,
-                        competencies: JSON.parse(e.target.value),
-                      }))
-                    }
+                    onChange={(e) => {
+                      try {
+                        setUpdatedFramework((prev) => ({
+                          ...prev,
+                          competencies: JSON.parse(e.target.value),
+                        }));
+                        setError(null); // Clear any previous JSON errors
+                      } catch (err) {
+                        setError("Invalid JSON format for competencies.");
+                      }
+                    }}
                     rows={5}
                   />
                 </FormControl>
