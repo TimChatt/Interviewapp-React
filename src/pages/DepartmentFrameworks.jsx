@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, Collapse, Icon
+  Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, Collapse, Icon, Flex
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import JobTitleDetailsModal from "./JobTitleDetailsModal"; // ✅ Import the modal component
+import JobTitleDetailsModal from "./JobTitleDetailsModal";
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
@@ -61,37 +61,38 @@ const DepartmentFrameworks = () => {
     navigate(`/job-description/${department}/${jobTitle}`);
   };
 
-// ✅ Groups job titles by category and level
-const groupedTitles = jobTitles.reduce((acc, job) => {
-  const category = extractJobCategory(job.job_title);
-  const level = extractJobLevel(job.job_title);
+  // ✅ Groups job titles by category and level
+  const groupedTitles = jobTitles.reduce((acc, job) => {
+    const category = extractJobCategory(job.job_title);
+    const level = extractJobLevel(job.job_title);
 
-  if (!acc[category]) acc[category] = {};
-  if (!acc[category][level]) acc[category][level] = [];
+    if (!acc[category]) acc[category] = {};
+    if (!acc[category][level]) acc[category][level] = [];
 
-  acc[category][level].push(job);
-  return acc;
-}, {});
+    acc[category][level].push(job);
+    return acc;
+  }, {});
 
-// ✅ Sort Levels in Ascending Order (L1 → L2 → L3 → L4 → L5)
-Object.keys(groupedTitles).forEach((category) => {
-  groupedTitles[category] = Object.fromEntries(
-    Object.entries(groupedTitles[category]).sort(([levelA], [levelB]) => {
-      const numA = parseInt(levelA.replace("L", ""), 10);
-      const numB = parseInt(levelB.replace("L", ""), 10);
-      return numA - numB; // 🔥 Ensures correct order
-    })
-  );
-});
+  // ✅ Sort Levels in Ascending Order (L1 → L2 → L3 → L4 → L5)
+  Object.keys(groupedTitles).forEach((category) => {
+    groupedTitles[category] = Object.fromEntries(
+      Object.entries(groupedTitles[category]).sort(([levelA], [levelB]) => {
+        const numA = parseInt(levelA.replace("L", ""), 10);
+        const numB = parseInt(levelB.replace("L", ""), 10);
+        return numA - numB; // 🔥 Ensures correct order
+      })
+    );
+  });
 
-const toggleLevel = (category, level) => {
-  setExpandedLevels((prev) => ({
-    ...prev,
-    [`${category}-${level}`]: !prev[`${category}-${level}`],
-  }));
-};
+  const toggleLevel = (category, level) => {
+    setExpandedLevels((prev) => ({
+      ...prev,
+      [`${category}-${level}`]: !prev[`${category}-${level}`],
+    }));
+  };
+
   return (
-    <Box maxW="1200px" mx="auto" py="6">
+    <Box maxW="1000px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         {department} Frameworks
       </Heading>
@@ -119,45 +120,58 @@ const toggleLevel = (category, level) => {
         Object.entries(groupedTitles).map(([category, levels], idx) => (
           <Box key={idx} mb="8">
             <Heading size="lg" color="purple.700" mb="4">{category}</Heading>
-            {Object.entries(levels).map(([level, jobs]) => (
-              <Card key={level} mt="4" border="1px solid #ccc" borderRadius="lg" overflow="hidden">
-                <CardBody>
-                  <Heading
-                    size="md"
-                    onClick={() => toggleLevel(category, level)}
-                    cursor="pointer"
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    bg="purple.100"
-                    p="3"
-                    borderRadius="md"
-                  >
-                    {level}
-                    <Icon as={expandedLevels[`${category}-${level}`] ? FaChevronUp : FaChevronDown} />
-                  </Heading>
-                  <Collapse in={expandedLevels[`${category}-${level}`]}>
-                    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mt="4">
-                      {jobs.map((job, index) => (
-                        <GridItem key={index}>
-                          <Card bg="white" shadow="md" borderRadius="lg">
-                            <CardBody textAlign="center">
-                              <Heading size="md" mb="2">{job.job_title}</Heading>
-                              <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
-                                View Details
-                              </Button>
-                              <Button colorScheme="purple" size="sm" onClick={() => handleViewJobDescription(job.job_title)}>
-                                View Job Description
-                              </Button>
-                            </CardBody>
-                          </Card>
-                        </GridItem>
-                      ))}
-                    </Grid>
-                  </Collapse>
-                </CardBody>
-              </Card>
-            ))}
+            {Object.entries(levels).map(([level, jobs]) => {
+              const levelNumber = parseInt(level.replace("L", ""), 10) || 1;
+              return (
+                <Card key={level} mt="4" border="1px solid #ccc" borderRadius="lg" overflow="hidden">
+                  <CardBody p="3">
+                    <Flex
+                      alignItems="center"
+                      justifyContent="space-between"
+                      cursor="pointer"
+                      bg="purple.100"
+                      p="2"
+                      borderRadius="md"
+                      onClick={() => toggleLevel(category, level)}
+                    >
+                      <Box
+                        w={`${levelNumber * 10}%`} // 🔥 Adjusts width dynamically (L1 = 10%, L2 = 20%, etc.)
+                        minW="50px"
+                        bg="purple.300"
+                        color="white"
+                        p="2"
+                        textAlign="center"
+                        borderRadius="md"
+                        fontWeight="bold"
+                      >
+                        {level}
+                      </Box>
+                      <Icon as={expandedLevels[`${category}-${level}`] ? FaChevronUp : FaChevronDown} />
+                    </Flex>
+
+                    <Collapse in={expandedLevels[`${category}-${level}`]}>
+                      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mt="4">
+                        {jobs.map((job, index) => (
+                          <GridItem key={index}>
+                            <Card bg="white" shadow="md" borderRadius="lg">
+                              <CardBody textAlign="center">
+                                <Heading size="md" mb="2">{job.job_title}</Heading>
+                                <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
+                                  View Details
+                                </Button>
+                                <Button colorScheme="purple" size="sm" onClick={() => handleViewJobDescription(job.job_title)}>
+                                  View Job Description
+                                </Button>
+                              </CardBody>
+                            </Card>
+                          </GridItem>
+                        ))}
+                      </Grid>
+                    </Collapse>
+                  </CardBody>
+                </Card>
+              );
+            })}
           </Box>
         ))
       )}
