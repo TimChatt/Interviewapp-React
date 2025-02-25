@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+iimport React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,9 +13,6 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer
-} from "recharts";
 
 const SavedFrameworks = () => {
   const [frameworks, setFrameworks] = useState([]);
@@ -38,13 +35,12 @@ const SavedFrameworks = () => {
       );
       if (!frameworksResponse.ok) throw new Error("Failed to fetch frameworks.");
       const frameworksData = await frameworksResponse.json();
-      const frameworksList = frameworksData.frameworks;
+      const frameworksList = frameworksData.frameworks || [];
 
       console.log("✅ Frameworks:", frameworksList);
 
       // ✅ Fetch job titles for each department separately
       const departmentJobCounts = {};
-      const departmentJobLevels = {};
 
       for (const framework of frameworksList) {
         const departmentName = framework.department;
@@ -62,26 +58,16 @@ const SavedFrameworks = () => {
 
         const jobTitlesData = await jobTitlesResponse.json();
 
-        // ✅ Store job title count
-        departmentJobCounts[departmentName] = jobTitlesData.job_titles.length || 0;
-
-        // ✅ Count job levels per department
-        departmentJobLevels[departmentName] = {
-          L1: jobTitlesData.job_titles.filter((job) => job.job_levels.includes("L1")).length,
-          L2: jobTitlesData.job_titles.filter((job) => job.job_levels.includes("L2")).length,
-          L3: jobTitlesData.job_titles.filter((job) => job.job_levels.includes("L3")).length,
-          L4: jobTitlesData.job_titles.filter((job) => job.job_levels.includes("L4")).length,
-        };
+        // ✅ Store the number of job titles for each department
+        departmentJobCounts[departmentName] = jobTitlesData.job_titles?.length || 0;
       }
 
       console.log("✅ Job Title Counts:", departmentJobCounts);
-      console.log("✅ Job Levels Data:", departmentJobLevels);
 
-      // ✅ Attach job title counts & job level data to frameworks
+      // ✅ Attach job title counts to frameworks
       const frameworksWithCounts = frameworksList.map((framework) => ({
         department: framework.department,
-        jobTitleCount: departmentJobCounts[framework.department] || 0,
-        jobLevels: departmentJobLevels[framework.department] || { L1: 0, L2: 0, L3: 0, L4: 0 },
+        jobTitleCount: departmentJobCounts[framework.department] || 0, // Default to 0 if missing
       }));
 
       setFrameworks(frameworksWithCounts);
@@ -94,15 +80,15 @@ const SavedFrameworks = () => {
     }
   };
 
+  /** ✅ Filter Frameworks */
+  const filteredFrameworks = frameworks.filter((framework) =>
+    framework.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  /** ✅ Navigate to Department Framework */
   const handleDepartmentClick = (department) => {
     navigate(`/frameworks/${department}`);
   };
-
-  /** ✅ Prepare Data for Graph */
-  const graphData = frameworks.map((framework) => ({
-    department: framework.department,
-    ...framework.jobLevels,
-  }));
 
   return (
     <Box minH="100vh" p={8} bg="gray.50">
@@ -128,62 +114,44 @@ const SavedFrameworks = () => {
           <Spinner size="xl" />
         </Box>
       )}
+
       {error && (
-        <Alert status="error">
+        <Alert status="error" mt={4}>
           <AlertIcon />
           {error}
         </Alert>
       )}
 
-      {!loading && !error && frameworks.length === 0 && (
-        <Box textAlign="center">
+      {!loading && !error && filteredFrameworks.length === 0 && (
+        <Box textAlign="center" color="gray.600" mt="4">
           <Text>No saved frameworks found. Start by generating a new framework.</Text>
         </Box>
       )}
 
-      {!loading && !error && frameworks.length > 0 && (
-        <>
-          {/* 📊 Bar Chart for Job Levels */}
-          <Box mt="6">
-            <Heading size="md" mb="4">📊 Job Levels Distribution</Heading>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={graphData} layout="vertical">
-                <XAxis type="number" />
-                <YAxis dataKey="department" type="category" />
-                <Tooltip />
-                <Bar dataKey="L1" fill="#8884d8" />
-                <Bar dataKey="L2" fill="#82ca9d" />
-                <Bar dataKey="L3" fill="#ffc658" />
-                <Bar dataKey="L4" fill="#d84b4b" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Box>
-
-          {/* 🔥 Department Frameworks */}
-          <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6} mt="8">
-            {frameworks.map((group, index) => (
-              <Card
-                key={index}
-                p={6}
-                shadow="md"
-                borderRadius="lg"
-                bg="white"
-                cursor="pointer"
-                _hover={{ bg: "gray.100" }}
-                onClick={() => handleDepartmentClick(group.department)}
-              >
-                <CardBody>
-                  <Heading size="md" color="blue.600">
-                    {group.department}
-                  </Heading>
-                  <Text mt={2} fontSize="sm" color="gray.600">
-                    {group.jobTitleCount} Job Titles
-                  </Text>
-                </CardBody>
-              </Card>
-            ))}
-          </Grid>
-        </>
+      {!loading && !error && filteredFrameworks.length > 0 && (
+        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6}>
+          {filteredFrameworks.map((group, index) => (
+            <Card
+              key={index}
+              p={6}
+              shadow="md"
+              borderRadius="lg"
+              bg="white"
+              cursor="pointer"
+              _hover={{ bg: "gray.100" }}
+              onClick={() => handleDepartmentClick(group.department)}
+            >
+              <CardBody>
+                <Heading size="md" color="blue.600">
+                  {group.department}
+                </Heading>
+                <Text mt={2} fontSize="sm" color="gray.600">
+                  {group.jobTitleCount} Job Titles
+                </Text>
+              </CardBody>
+            </Card>
+          ))}
+        </Grid>
       )}
     </Box>
   );
