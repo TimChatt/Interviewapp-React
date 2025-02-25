@@ -65,7 +65,7 @@ const AppContent = () => {
             <Route path="/framework-overview/:department" element={<DepartmentFrameworkPage />} /> 
             <Route path="/edit-framework/:id" element={<EditFramework />} />
             <Route path="/interviewer/:jobTitle" element={<InterviewerDashboard />} /> 
-            <Route path="/ai-sourcing" element={<AISourcingTool />} />
+            <Route path="/ai-sourcing" element={<AISourcing />} />
           </Route>
         </Routes>
       </Container>
