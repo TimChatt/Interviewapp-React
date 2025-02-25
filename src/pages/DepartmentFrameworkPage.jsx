@@ -34,8 +34,10 @@ const DepartmentFrameworkPage = () => {
   /** ✅ Fetch Departments */
   const fetchDepartments = async () => {
     try {
+      console.log("Fetching department list...");
       const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-departments");
-      if (!response.ok) throw new Error("Failed to fetch departments.");
+
+      if (!response.ok) throw new Error(`Failed to fetch departments. Status: ${response.status}`);
 
       const data = await response.json();
       console.log("Fetched Departments:", data);
@@ -44,10 +46,10 @@ const DepartmentFrameworkPage = () => {
         setDepartments(data.departments);
         if (data.departments.length > 0) {
           setSelectedDepartment(data.departments[0].department); // ✅ Default to first department
-          fetchCompetenciesByLevel(data.departments[0].department); // ✅ Fetch competencies by level
+          fetchCompetenciesByLevel(data.departments[0].department);
         }
       } else {
-        console.error("Invalid department data format:", data);
+        throw new Error("Invalid department data format received.");
       }
     } catch (err) {
       setError(err.message);
@@ -57,28 +59,30 @@ const DepartmentFrameworkPage = () => {
 
   /** ✅ Fetch Competencies and Map to Levels */
   const fetchCompetenciesByLevel = async (department) => {
+    if (!department) return;
     setLoading(true);
     setError(null);
     setCompetenciesByLevel({});
 
     try {
-      console.log("Fetching competencies for Department:", department);
+      console.log(`Fetching competencies for department: ${department}`);
 
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/get-department-competencies/${department}`
       );
-      if (!response.ok) throw new Error("Failed to fetch competencies.");
+
+      if (!response.ok) throw new Error(`Failed to fetch competencies. Status: ${response.status}`);
 
       const data = await response.json();
       console.log("Fetched competencies:", data);
 
       if (data.competencies) {
-        // Convert category-based response to level-based structure
+        // ✅ Convert category-based response to level-based structure
         const transformedData = {};
 
         Object.entries(data.competencies).forEach(([category, competencies]) => {
           competencies.forEach((comp) => {
-            const level = comp.job_level || "Uncategorized"; // Handle missing levels
+            const level = comp.job_level || "Uncategorized"; // ✅ Handle missing levels
             if (!transformedData[level]) {
               transformedData[level] = [];
             }
@@ -93,7 +97,7 @@ const DepartmentFrameworkPage = () => {
         console.log("Transformed Competencies by Level:", transformedData);
         setCompetenciesByLevel(transformedData);
       } else {
-        setError("Invalid data format received.");
+        throw new Error("Invalid data format received.");
       }
     } catch (err) {
       console.error("Error fetching competencies:", err);
