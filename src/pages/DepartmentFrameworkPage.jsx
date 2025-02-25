@@ -13,43 +13,51 @@ import {
   Alert,
   AlertIcon,
   Collapse,
-  Icon,
-  Card,
-  CardBody,
+  Icon
 } from "@chakra-ui/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
+const STATIC_CATEGORIES = [
+  "Technical Skills",
+  "Leadership & Management",
+  "Soft Skills",
+  "Process & Delivery",
+  "Domain-Specific Knowledge",
+  "Innovation & Problem-Solving",
+  "Customer & Business Acumen"
+];
+
 const DepartmentFrameworkPage = () => {
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [competenciesByLevel, setCompetenciesByLevel] = useState({});
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+  const [competenciesByCategory, setCompetenciesByCategory] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [expandedLevels, setExpandedLevels] = useState({});
+  const [expandedCategories, setExpandedCategories] = useState({});
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
     fetchDepartments();
   }, []);
 
-  /** ✅ Fetch Departments */
+  /** ✅ Fetch Departments and Store IDs & Names */
   const fetchDepartments = async () => {
     try {
-      console.log("Fetching department list...");
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-departments");
-
-      if (!response.ok) throw new Error(`Failed to fetch departments. Status: ${response.status}`);
+      const response = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/get-departments"
+      );
+      if (!response.ok) throw new Error("Failed to fetch departments.");
 
       const data = await response.json();
-      console.log("Fetched Departments:", data);
+      console.log("Fetched Departments:", data); // ✅ Debugging Log
 
       if (data.departments && Array.isArray(data.departments)) {
         setDepartments(data.departments);
         if (data.departments.length > 0) {
-          setSelectedDepartment(data.departments[0].department); // ✅ Default to first department
-          fetchCompetenciesByLevel(data.departments[0].department);
+          setSelectedDepartmentId(data.departments[0].id); // ✅ Default to first department
+          fetchCompetencies(data.departments[0].id); // ✅ Fetch competencies for default
         }
       } else {
-        throw new Error("Invalid department data format received.");
+        console.error("Invalid department data format:", data);
       }
     } catch (err) {
       setError(err.message);
@@ -57,48 +65,25 @@ const DepartmentFrameworkPage = () => {
     }
   };
 
-  /** ✅ Fetch Competencies and Map to Levels */
-  const fetchCompetenciesByLevel = async (department) => {
-    if (!department) return;
+  /** ✅ Fetch Competencies using Department ID */
+  const fetchCompetencies = async (departmentId) => {
     setLoading(true);
     setError(null);
-    setCompetenciesByLevel({});
+    setCompetenciesByCategory({});
 
     try {
-      console.log(`Fetching competencies for department: ${department}`);
+      console.log("Fetching competencies for Department ID:", departmentId); // ✅ Debugging
 
       const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/get-department-competencies/${department}`
+        `https://interviewappbe-production.up.railway.app/api/get-categorized-framework/${departmentId}`
       );
-
-      if (!response.ok) throw new Error(`Failed to fetch competencies. Status: ${response.status}`);
+      if (!response.ok) throw new Error("Failed to fetch competencies.");
 
       const data = await response.json();
-      console.log("Fetched competencies:", data);
+      console.log("Fetched categorized competencies:", data); // ✅ Debugging
 
-      if (data.competencies) {
-        // ✅ Convert category-based response to level-based structure
-        const transformedData = {};
-
-        Object.entries(data.competencies).forEach(([category, competencies]) => {
-          competencies.forEach((comp) => {
-            const level = comp.job_level || "Uncategorized"; // ✅ Handle missing levels
-            if (!transformedData[level]) {
-              transformedData[level] = [];
-            }
-            transformedData[level].push({
-              name: comp.competency || "Unknown",
-              description: comp.description || "No description available",
-              job_title: comp.job_title || "N/A",
-            });
-          });
-        });
-
-        console.log("Transformed Competencies by Level:", transformedData);
-        setCompetenciesByLevel(transformedData);
-      } else {
-        throw new Error("Invalid data format received.");
-      }
+      // ✅ Ensure competencies are stored properly (handle empty responses)
+      setCompetenciesByCategory(data.competencies_by_category || {});
     } catch (err) {
       console.error("Error fetching competencies:", err);
       setError("Failed to fetch competencies.");
@@ -107,34 +92,34 @@ const DepartmentFrameworkPage = () => {
     }
   };
 
-  /** ✅ Toggle Levels */
-  const toggleLevel = (level) => {
-    setExpandedLevels((prev) => ({
+  /** ✅ Toggle Categories */
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
       ...prev,
-      [level]: !prev[level],
+      [category]: !prev[category],
     }));
   };
 
   return (
     <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        Competency Framework by Level
+        Competency Framework
       </Heading>
 
-      {/* ✅ Department Dropdown */}
+      {/* ✅ Department Dropdown (Stores ID, Displays Name) */}
       <Select
         placeholder="Select a department"
         onChange={(e) => {
-          const selectedDept = e.target.value;
-          setSelectedDepartment(selectedDept);
-          fetchCompetenciesByLevel(selectedDept);
+          const selectedId = e.target.value;
+          setSelectedDepartmentId(selectedId);
+          fetchCompetencies(selectedId);
         }}
-        value={selectedDepartment || ""}
+        value={selectedDepartmentId || ""}
         mb="4"
       >
         {departments.length > 0 ? (
           departments.map((dept) => (
-            <option key={dept.id} value={dept.department}>
+            <option key={dept.id} value={dept.id}>
               {dept.department}
             </option>
           ))
@@ -152,50 +137,51 @@ const DepartmentFrameworkPage = () => {
         </Alert>
       )}
 
-      {/* ✅ Competency List Grouped by Level */}
-      {!loading && !error && competenciesByLevel && Object.keys(competenciesByLevel).length > 0 ? (
-        Object.entries(competenciesByLevel).map(([level, competencies]) => {
+      {/* ✅ Competency List with Categories */}
+      {!loading && !error && competenciesByCategory && Object.keys(competenciesByCategory).length > 0 ? (
+        Object.entries(competenciesByCategory).map(([category, competencies]) => {
+          // ✅ Normalize category names (Fixing "Uncategorized" issue)
+          const normalizedCategory = category.replace(/['"]+/g, "");
+
+          // ✅ Ensure competencies is an array and not empty
           if (!Array.isArray(competencies) || competencies.length === 0) return null;
 
           return (
-            <Card key={level} mt="6" border="1px solid #ccc" borderRadius="lg" overflow="hidden">
-              <CardBody>
-                <Heading
-                  size="md"
-                  onClick={() => toggleLevel(level)}
-                  cursor="pointer"
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  bg="purple.100"
-                  p="3"
-                  borderRadius="md"
-                >
-                  {level}
-                  <Icon as={expandedLevels[level] ? FaChevronUp : FaChevronDown} />
-                </Heading>
-                <Collapse in={expandedLevels[level]}>
-                  <Table variant="striped" mt="2">
-                    <Thead>
-                      <Tr bg="gray.100">
-                        <Th>Competency</Th>
-                        <Th>Description</Th>
-                        <Th>Job Title</Th>
+            <Box key={normalizedCategory} mt="6" border="1px solid #ccc" p="4" borderRadius="md">
+              <Heading
+                size="md"
+                onClick={() => toggleCategory(normalizedCategory)}
+                cursor="pointer"
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                {normalizedCategory}
+                <Icon as={expandedCategories[normalizedCategory] ? FaChevronUp : FaChevronDown} />
+              </Heading>
+              <Collapse in={expandedCategories[normalizedCategory]}>
+                <Table variant="simple" mt="2">
+                  <Thead>
+                    <Tr>
+                      <Th>Competency</Th>
+                      <Th>Description</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {competencies.map((comp, index) => (
+                      <Tr key={index}>
+                        <Td>{comp.name || "Unnamed Competency"}</Td>
+                        <Td>
+                          {comp.descriptions && typeof comp.descriptions === "object"
+                            ? Object.values(comp.descriptions).join(" | ") // Flatten descriptions into readable string
+                            : "No description available"}
+                        </Td>
                       </Tr>
-                    </Thead>
-                    <Tbody>
-                      {competencies.map((comp, index) => (
-                        <Tr key={index}>
-                          <Td fontWeight="bold">{comp.name || "Unnamed Competency"}</Td>
-                          <Td>{comp.description || "No description available"}</Td>
-                          <Td>{comp.job_title || "N/A"}</Td>
-                        </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
-                </Collapse>
-              </CardBody>
-            </Card>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Collapse>
+            </Box>
           );
         })
       ) : (
