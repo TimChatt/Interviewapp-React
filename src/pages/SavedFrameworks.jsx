@@ -23,53 +23,63 @@ const SavedFrameworks = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // ✅ Fetch all frameworks (departments)
+        const queryParam = searchQuery.trim() ? searchQuery : "default";
+
         const frameworksResponse = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=`
+          `https://interviewappbe-production.up.railway.app/api/search-frameworks?query=${encodeURIComponent(queryParam)}`
         );
-        if (!frameworksResponse.ok) throw new Error("Failed to fetch frameworks.");
-        const frameworksData = await frameworksResponse.json();
-        const frameworksList = frameworksData.frameworks;
+
+        if (!frameworksResponse.ok) {
+          throw new Error(`Failed to fetch frameworks. Status: ${frameworksResponse.status}`);
+        }
+
+        let frameworksData;
+        try {
+          frameworksData = await frameworksResponse.json();
+        } catch (jsonError) {
+          throw new Error("Invalid JSON response from the server.");
+        }
+
+        const frameworksList = frameworksData.frameworks || [];
 
         console.log("✅ Frameworks:", frameworksList);
 
-        // ✅ Fetch job titles for each department separately
         const departmentJobCounts = {};
 
         for (const framework of frameworksList) {
           const departmentName = framework.department;
-
-          // 🔥 Make sure departmentName exists before making API call
           if (!departmentName) continue;
 
-          const jobTitlesResponse = await fetch(
-            `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${encodeURIComponent(departmentName)}`
-          );
+          let jobTitlesData = { job_titles: [] };
+          try {
+            const jobTitlesResponse = await fetch(
+              `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${encodeURIComponent(departmentName)}`
+            );
 
-          if (!jobTitlesResponse.ok) {
-            console.error(`❌ Failed to fetch job titles for ${departmentName}`);
-            continue;
+            if (!jobTitlesResponse.ok) {
+              throw new Error(`Failed to fetch job titles for ${departmentName}`);
+            }
+
+            jobTitlesData = await jobTitlesResponse.json();
+          } catch (error) {
+            console.error(`❌ Error fetching job titles for ${departmentName}:`, error.message);
           }
 
-          const jobTitlesData = await jobTitlesResponse.json();
-
-          // ✅ Store the number of job titles for each department
           departmentJobCounts[departmentName] = jobTitlesData.job_titles.length || 0;
         }
 
         console.log("✅ Job Title Counts:", departmentJobCounts);
 
-        // ✅ Attach job title counts to frameworks
         const frameworksWithCounts = frameworksList.map((framework) => ({
           department: framework.department,
-          jobTitleCount: departmentJobCounts[framework.department] || 0, // Default to 0 if missing
+          jobTitleCount: departmentJobCounts[framework.department] || 0,
         }));
 
         setFrameworks(frameworksWithCounts);
         setError(null);
       } catch (err) {
-        console.error("❌ Error fetching data:", err);
-        setError("Failed to fetch data. Please try again.");
+        console.error("❌ Error fetching data:", err.message, err);
+        setError(err.message || "Failed to fetch data. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -88,7 +98,6 @@ const SavedFrameworks = () => {
         Saved Competency Frameworks
       </Heading>
 
-      {/* Search Input */}
       <VStack spacing={4} mb={6} align="center">
         <Input
           placeholder="Search by department"
