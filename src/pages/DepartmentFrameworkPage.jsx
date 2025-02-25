@@ -55,24 +55,46 @@ const DepartmentFrameworkPage = () => {
     }
   };
 
-  /** ✅ Fetch Competencies Grouped by Level */
+  /** ✅ Fetch Competencies and Map to Levels */
   const fetchCompetenciesByLevel = async (department) => {
     setLoading(true);
     setError(null);
     setCompetenciesByLevel({});
 
     try {
-      console.log("Fetching competencies by level for Department:", department);
+      console.log("Fetching competencies for Department:", department);
 
       const response = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/get-framework-by-level/${department}`
+        `https://interviewappbe-production.up.railway.app/api/get-department-competencies/${department}`
       );
       if (!response.ok) throw new Error("Failed to fetch competencies.");
 
       const data = await response.json();
-      console.log("Fetched competencies by level:", data);
+      console.log("Fetched competencies:", data);
 
-      setCompetenciesByLevel(data.competencies_by_level || {});
+      if (data.competencies) {
+        // Convert category-based response to level-based structure
+        const transformedData = {};
+
+        Object.entries(data.competencies).forEach(([category, competencies]) => {
+          competencies.forEach((comp) => {
+            const level = comp.job_level || "Uncategorized"; // Handle missing levels
+            if (!transformedData[level]) {
+              transformedData[level] = [];
+            }
+            transformedData[level].push({
+              name: comp.competency || "Unknown",
+              description: comp.description || "No description available",
+              job_title: comp.job_title || "N/A",
+            });
+          });
+        });
+
+        console.log("Transformed Competencies by Level:", transformedData);
+        setCompetenciesByLevel(transformedData);
+      } else {
+        setError("Invalid data format received.");
+      }
     } catch (err) {
       console.error("Error fetching competencies:", err);
       setError("Failed to fetch competencies.");
