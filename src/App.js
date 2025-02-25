@@ -21,7 +21,7 @@ import JobDescriptionPage from "./pages/JobDescriptionPage";
 import JobTitleDetails from "./pages/JobTitleDetails";
 import InterviewerDashboard from "./pages/InterviewerDashboard"; 
 import DepartmentFrameworkPage from "./pages/DepartmentFrameworkPage";
-import AISourcing from "./pages/AISourcing";
+import AISourcing from "./pages/AISourcing.jsx";
 import PrivateRoute from "./components/PrivateRoute"; // Private Routes
 
 // Handles Sidebar Visibility Based on Route
