@@ -13,64 +13,80 @@ const DepartmentFrameworks = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [expandedLevels, setExpandedLevels] = useState({});
-
-  // ✅ Modal State for Job Details
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJobTitle, setSelectedJobTitle] = useState(null);
   const [selectedJobLevel, setSelectedJobLevel] = useState(null);
 
   useEffect(() => {
-    const fetchDepartmentJobTitles = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch job titles.");
-        }
-        const data = await response.json();
-        setJobTitles(data.job_titles || []);
-      } catch (err) {
-        setError("Failed to fetch job titles for this department.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!department) return; // ✅ Avoid unnecessary API calls
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // ✅ Extracts job category (e.g., "Machine Learning" from "Machine Learning L1")
-  const extractJobCategory = (jobTitle) => jobTitle.replace(/L\d+/, "").trim();
+  /** ✅ Fetch Job Titles */
+  const fetchDepartmentJobTitles = async () => {
+    setLoading(true);
+    setError(null);
+    setJobTitles([]); // Reset before fetching
 
-  // ✅ Extracts the job level (e.g., "L1" from "Machine Learning L1")
-  const extractJobLevel = (jobTitle) => {
-    const match = jobTitle.match(/L\d+/);
-    return match ? match[0] : "L1";
+    try {
+      console.log(`Fetching job titles for department: ${department}`);
+      const response = await fetch(
+        `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
+      );
+      
+      if (!response.ok) throw new Error(`Failed to fetch job titles. Status: ${response.status}`);
+      
+      const data = await response.json();
+      console.log("Job Titles API Response:", data);
+      
+      if (!data.job_titles || !Array.isArray(data.job_titles)) {
+        throw new Error("Invalid job titles data format.");
+      }
+      
+      setJobTitles(data.job_titles);
+    } catch (err) {
+      console.error("Error fetching job titles:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ✅ Open the modal and pass job details
+  /** ✅ Extract Job Category */
+  const extractJobCategory = (jobTitle) => jobTitle.replace(/L\d+/, "").trim();
+
+  /** ✅ Extract Job Level */
+  const extractJobLevel = (jobTitle) => {
+    const match = jobTitle.match(/L\d+/);
+    return match ? match[0] : "Uncategorized"; // ✅ Fix empty levels
+  };
+
+  /** ✅ Open Modal */
   const openModal = (jobTitle) => {
     setSelectedJobTitle(jobTitle);
     setSelectedJobLevel(extractJobLevel(jobTitle));
     setIsModalOpen(true);
   };
 
-  // ✅ Navigate to Job Description Builder
+  /** ✅ Navigate to Job Description */
   const handleViewJobDescription = (jobTitle) => {
     navigate(`/job-description/${department}/${jobTitle}`);
   };
 
-  // ✅ Groups job titles by category and level
+  /** ✅ Group Job Titles by Category & Level */
   const groupedTitles = jobTitles.reduce((acc, job) => {
+    if (!job.job_title) return acc; // ✅ Skip invalid data
     const category = extractJobCategory(job.job_title);
     const level = extractJobLevel(job.job_title);
+    
     if (!acc[category]) acc[category] = {};
     if (!acc[category][level]) acc[category][level] = [];
+    
     acc[category][level].push(job);
     return acc;
   }, {});
 
+  /** ✅ Toggle Level */
   const toggleLevel = (category, level) => {
     setExpandedLevels((prev) => ({
       ...prev,
