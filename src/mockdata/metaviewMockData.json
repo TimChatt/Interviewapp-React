@@ -3,24 +3,33 @@
     "transcriptId": "T-001",
     "candidateName": "Alice Johnson",
     "jobTitle": "Frontend Developer",
-    "interviewers": [
-      "John Doe",
-      "Jane Smith"
-    ],
+    "interviewers": ["John Doe", "Jane Smith"],
+    "speakingRatio": {
+      "candidateWords": 320,
+      "interviewerWords": 150
+    },
     "transcript": [
       {
         "speaker": "John Doe (Interviewer)",
         "timestamp": "00:00:05",
         "questionId": "q1",
+        "category": "Technical - Project Experience",
         "question": "Can you describe a challenging React project you've worked on?",
-        "candidateAnswer": "Sure, I built a complex dashboard using React hooks, focusing on performance optimizations..."
+        "candidateAnswer": "Sure, I built a complex dashboard using React hooks, focusing on performance optimizations...",
+        "sentiment": "Positive",
+        "confidenceLevel": "High",
+        "suggestedBestAnswer": "A strong answer would describe the project’s complexity, key challenges, and the solutions applied, including trade-offs."
       },
       {
         "speaker": "Jane Smith (Interviewer)",
         "timestamp": "00:05:10",
         "questionId": "q2",
+        "category": "State Management",
         "question": "How do you handle state management across large components?",
-        "candidateAnswer": "I typically rely on React context or Redux, depending on complexity..."
+        "candidateAnswer": "I typically rely on React context or Redux, depending on complexity...",
+        "sentiment": "Neutral",
+        "confidenceLevel": "Medium",
+        "suggestedBestAnswer": "Top candidates discuss when to use different state management techniques, their trade-offs, and scalability considerations."
       }
     ]
   },
@@ -28,23 +37,33 @@
     "transcriptId": "T-002",
     "candidateName": "Bob Smith",
     "jobTitle": "Frontend Developer",
-    "interviewers": [
-      "John Doe"
-    ],
+    "interviewers": ["John Doe"],
+    "speakingRatio": {
+      "candidateWords": 210,
+      "interviewerWords": 180
+    },
     "transcript": [
       {
         "speaker": "John Doe (Interviewer)",
         "timestamp": "00:00:15",
         "questionId": "q1",
+        "category": "Performance Optimization",
         "question": "Walk me through how you'd optimize a React app with performance issues.",
-        "candidateAnswer": "I might look at the code structure, maybe memoize some components..."
+        "candidateAnswer": "I might look at the code structure, maybe memoize some components...",
+        "sentiment": "Neutral",
+        "confidenceLevel": "Medium",
+        "suggestedBestAnswer": "A great response includes specific optimization techniques, like profiling with React DevTools and analyzing render performance."
       },
       {
         "speaker": "John Doe (Interviewer)",
         "timestamp": "00:03:30",
         "questionId": "q2",
+        "category": "Advanced Hooks",
         "question": "What are advanced use cases for useCallback and useMemo?",
-        "candidateAnswer": "Well, I'd use them to avoid re-renders, though I'm not super familiar with all scenarios..."
+        "candidateAnswer": "Well, I'd use them to avoid re-renders, though I'm not super familiar with all scenarios...",
+        "sentiment": "Negative",
+        "confidenceLevel": "Low",
+        "suggestedBestAnswer": "Ideal responses cover scenarios such as preventing unnecessary prop re-renders, memoizing expensive computations, and performance benchmarks."
       }
     ]
   },
@@ -52,23 +71,33 @@
     "transcriptId": "T-003",
     "candidateName": "Jen Williams",
     "jobTitle": "Backend Developer",
-    "interviewers": [
-      "Sam Green"
-    ],
+    "interviewers": ["Sam Green"],
+    "speakingRatio": {
+      "candidateWords": 400,
+      "interviewerWords": 140
+    },
     "transcript": [
       {
         "speaker": "Sam Green (Interviewer)",
         "timestamp": "00:01:00",
         "questionId": "q2",
+        "category": "System Design",
         "question": "What's your experience designing APIs for high-volume traffic?",
-        "candidateAnswer": "I focus on horizontal scaling, caching layers, and ensuring database queries are optimized..."
+        "candidateAnswer": "I focus on horizontal scaling, caching layers, and ensuring database queries are optimized...",
+        "sentiment": "Positive",
+        "confidenceLevel": "High",
+        "suggestedBestAnswer": "A complete response should mention load balancing strategies, API gateways, rate limiting, and database sharding."
       },
       {
         "speaker": "Sam Green (Interviewer)",
         "timestamp": "00:05:20",
         "questionId": "q3",
+        "category": "Incident Management",
         "question": "Could you talk about a time you had to resolve a major production incident?",
-        "candidateAnswer": "Yes, once we had a memory leak that caused downtime. I led the debugging using logs and heap snapshots..."
+        "candidateAnswer": "Yes, once we had a memory leak that caused downtime. I led the debugging using logs and heap snapshots...",
+        "sentiment": "Positive",
+        "confidenceLevel": "High",
+        "suggestedBestAnswer": "Top candidates describe identifying the root cause, impact mitigation strategies, and long-term preventative measures."
       }
     ]
   },
@@ -76,23 +105,33 @@
     "transcriptId": "T-004",
     "candidateName": "Michael Lee",
     "jobTitle": "Backend Developer",
-    "interviewers": [
-      "Sandra Kim"
-    ],
+    "interviewers": ["Sandra Kim"],
+    "speakingRatio": {
+      "candidateWords": 190,
+      "interviewerWords": 160
+    },
     "transcript": [
       {
         "speaker": "Sandra Kim (Interviewer)",
         "timestamp": "00:02:10",
         "questionId": "q1",
+        "category": "Architecture Design",
         "question": "Explain how you'd design a microservice architecture for real-time analytics.",
-        "candidateAnswer": "I'd start with a message queue, but I'm not entirely sure how I'd partition the data across shards..."
+        "candidateAnswer": "I'd start with a message queue, but I'm not entirely sure how I'd partition the data across shards...",
+        "sentiment": "Neutral",
+        "confidenceLevel": "Medium",
+        "suggestedBestAnswer": "Strong answers discuss event-driven architectures, sharding strategies, and real-time data streaming technologies."
       },
       {
         "speaker": "Sandra Kim (Interviewer)",
         "timestamp": "00:05:45",
         "questionId": "q3",
+        "category": "High Availability",
         "question": "What approach do you take to ensure high availability in your API?",
-        "candidateAnswer": "I'd replicate databases and use load balancing, but I'd need more details to really be sure..."
+        "candidateAnswer": "I'd replicate databases and use load balancing, but I'd need more details to really be sure...",
+        "sentiment": "Negative",
+        "confidenceLevel": "Low",
+        "suggestedBestAnswer": "Ideal answers cover multi-region deployments, auto-scaling, circuit breakers, and failover mechanisms."
       }
     ]
   }
