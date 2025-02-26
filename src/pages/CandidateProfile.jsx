@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box, Heading, Text, Button, Grid, GridItem, VStack, Card, CardBody, Tag, Flex, Divider, Tooltip
+  Box, Heading, Text, Button, Tag, Flex, Divider, Tooltip, Tabs, TabList, TabPanels, Tab, TabPanel, Progress, VStack, Card, CardBody
 } from "@chakra-ui/react";
 import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, PieChart, Pie, Cell
 } from "recharts";
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
-import interviewerTrainingMock from "../mockdata/InterviewerTrainingMock.json";
 
 // Helper function to get speaking ratio
 function getSpeakingRatio(transcriptEntries) {
@@ -24,6 +23,7 @@ function getSpeakingRatio(transcriptEntries) {
 const CandidateProfile = () => {
   const { candidateId } = useParams();
   const navigate = useNavigate();
+  const [selectedTab, setSelectedTab] = useState(0);
 
   // Merge Ashby & Metaview data
   const candidate = ashbyMockData.find((_, index) => index + 1 === parseInt(candidateId));
@@ -51,6 +51,9 @@ const CandidateProfile = () => {
     candidateScore: score
   }));
 
+  // AI Summary (Mocked for now)
+  const aiSummary = `This candidate performed well in ${Object.keys(candidate.scores)[0]} but could improve in ${Object.keys(candidate.scores)[Object.keys(candidate.scores).length - 1]}.`;
+
   return (
     <Box maxW="1000px" mx="auto" py="6">
       {/* Back Button */}
@@ -73,68 +76,80 @@ const CandidateProfile = () => {
         </CardBody>
       </Card>
 
-      {/* AI Insights & Feedback */}
-      <Card mb="6" p="6" bg="white" shadow="md">
-        <CardBody>
-          <Heading size="md" mb="4">AI Review & Feedback</Heading>
-          <Text fontSize="md" color="gray.600" mb="2">{candidate.aiAdvice.general}</Text>
-          <Heading size="sm" mt="3">Strengths</Heading>
-          {candidate.aiAdvice.didWell.map((item, index) => (
-            <Text key={index}><strong>{item.point}</strong> ({item.citation})</Text>
-          ))}
-          <Heading size="sm" mt="3">Areas for Improvement</Heading>
-          {candidate.aiAdvice.couldImprove.map((item, index) => (
-            <Text key={index}><strong>{item.point}</strong> ({item.citation})</Text>
-          ))}
-        </CardBody>
-      </Card>
+      {/* Tabbed Navigation */}
+      <Tabs variant="enclosed" index={selectedTab} onChange={setSelectedTab}>
+        <TabList>
+          <Tab>AI Summary</Tab>
+          <Tab>Scorecard</Tab>
+          <Tab>Competency Radar</Tab>
+          <Tab>Interview Transcript</Tab>
+        </TabList>
 
-      {/* Scorecard */}
-      <Card mb="6" p="6" bg="white" shadow="md">
-        <CardBody>
-          <Heading size="md" mb="4">Scorecard</Heading>
-          {candidate.scores ? (
-            <VStack align="start">
-              {Object.entries(candidate.scores).map(([skill, score]) => (
-                <Text key={skill}><strong>{skill}:</strong> {score}</Text>
-              ))}
-            </VStack>
-          ) : <Text>No scores available.</Text>}
-        </CardBody>
-      </Card>
+        <TabPanels>
+          {/* AI Summary Panel */}
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">AI-Generated Summary</Heading>
+                <Text fontSize="md" color="gray.600">{aiSummary}</Text>
+              </CardBody>
+            </Card>
+          </TabPanel>
 
-      {/* Radar Chart */}
-      <Card mb="6" p="6" bg="white" shadow="md">
-        <CardBody>
-          <Heading size="md" mb="4">Competency Radar</Heading>
-          {radarData.length > 0 ? (
-            <RadarChart outerRadius={90} width={400} height={300} data={radarData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="skill" />
-              <PolarRadiusAxis angle={30} domain={[0, 5]} />
-              <Radar name="Candidate" dataKey="candidateScore" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-              <Tooltip />
-              <Legend />
-            </RadarChart>
-          ) : <Text>No radar data available.</Text>}
-        </CardBody>
-      </Card>
+          {/* Scorecard Panel */}
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">Scorecard</Heading>
+                {candidate.scores ? (
+                  <VStack align="start">
+                    {Object.entries(candidate.scores).map(([skill, score]) => (
+                      <Box key={skill} w="100%">
+                        <Text><strong>{skill}:</strong> {score}/5</Text>
+                        <Progress value={(score / 5) * 100} size="sm" colorScheme="purple" mt="1" />
+                      </Box>
+                    ))}
+                  </VStack>
+                ) : <Text>No scores available.</Text>}
+              </CardBody>
+            </Card>
+          </TabPanel>
 
-      {/* Interview Transcript */}
-      <Card mb="6" p="6" bg="white" shadow="md">
-        <CardBody>
-          <Heading size="md" mb="4">Interview Transcript</Heading>
-          {transcript.length > 0 ? (
-            transcript.map((entry, idx) => (
-              <Box key={idx} mb="4">
-                <Text><strong>Q:</strong> {entry.question}</Text>
-                <Text><em>A: {entry.candidateAnswer}</em></Text>
-                <Divider my="2" />
-              </Box>
-            ))
-          ) : <Text>No transcript available.</Text>}
-        </CardBody>
-      </Card>
+          {/* Radar Chart Panel */}
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">Competency Radar</Heading>
+                <RadarChart outerRadius={90} width={400} height={300} data={radarData}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="skill" />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} />
+                  <Radar name="Candidate" dataKey="candidateScore" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  <Legend />
+                </RadarChart>
+              </CardBody>
+            </Card>
+          </TabPanel>
+
+          {/* Interview Transcript Panel */}
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">Interview Transcript</Heading>
+                {transcript.length > 0 ? (
+                  transcript.map((entry, idx) => (
+                    <Box key={idx} mb="4">
+                      <Text><strong>Q:</strong> {entry.question}</Text>
+                      <Text><em>A: {entry.candidateAnswer}</em></Text>
+                      <Divider my="2" />
+                    </Box>
+                  ))
+                ) : <Text>No transcript available.</Text>}
+              </CardBody>
+            </Card>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };
