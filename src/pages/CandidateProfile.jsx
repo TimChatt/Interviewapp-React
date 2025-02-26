@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
-import interviewerTrainingMock from "../mockdata/interviewerTrainingMock.json";
+import interviewerTrainingMock from "../mockdata/InterviewerTrainingMock.json";
 
 // Helper function to get speaking ratio
 function getSpeakingRatio(transcriptEntries) {
