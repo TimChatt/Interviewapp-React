@@ -26,7 +26,7 @@ const CandidateProfile = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const candidate = ashbyMockData.find((_, index) => index + 1 === parseInt(candidateId));
+  const candidate = ashbyMockData.find((c) => c.id === parseInt(candidateId));
   const transcriptData = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName);
   const transcript = transcriptData?.transcript || [];
   const interviewTraining = interviewerTrainingMock.find(job => job.jobTitle === candidate?.jobTitle)?.questions || [];
@@ -47,10 +47,10 @@ const CandidateProfile = () => {
   const candidateRatio = ((candidateWords / totalWords) * 100).toFixed(1);
   const interviewerRatio = ((interviewerWords / totalWords) * 100).toFixed(1);
 
-  const radarData = Object.entries(candidate.scores || {}).map(([skill, score]) => ({
+  const radarData = candidate?.scores ? Object.entries(candidate.scores).map(([skill, score]) => ({
     skill,
     candidateScore: score
-  }));
+  })) : [];
 
   return (
     <Box maxW="1000px" mx="auto" py="6">
@@ -86,7 +86,24 @@ const CandidateProfile = () => {
             <Card p="6" bg="white" shadow="md">
               <CardBody>
                 <Heading size="md" mb="4">AI-Generated Summary</Heading>
-                <Text fontSize="md" color="gray.600">{candidate.aiAdvice.general}</Text>
+                <Text fontSize="md" color="gray.600">{candidate?.aiAdvice?.general || "No AI summary available."}</Text>
+              </CardBody>
+            </Card>
+          </TabPanel>
+
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">Competency Radar</Heading>
+                {radarData.length > 0 ? (
+                  <RadarChart outerRadius={90} width={400} height={300} data={radarData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="skill" />
+                    <PolarRadiusAxis angle={30} domain={[0, 5]} />
+                    <Radar name="Candidate" dataKey="candidateScore" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                    <Legend />
+                  </RadarChart>
+                ) : <Text>No competency data available.</Text>}
               </CardBody>
             </Card>
           </TabPanel>
@@ -112,15 +129,17 @@ const CandidateProfile = () => {
             <Card p="6" bg="white" shadow="md">
               <CardBody>
                 <Heading size="md" mb="4">Interview Training</Heading>
-                {interviewTraining.map((question, idx) => (
-                  <Box key={idx} mb="4">
-                    <Text fontWeight="bold">{question.question} ({question.category})</Text>
-                    <Text><strong>Expected Answer:</strong> {question.expectedAnswer}</Text>
-                    <Text><strong>Common Mistakes:</strong> {question.commonMistakes.join(", ")}</Text>
-                    <Text><strong>Follow-Up:</strong> {question.followUp}</Text>
-                    <Divider my="2" />
-                  </Box>
-                ))}
+                {interviewTraining.length > 0 ? (
+                  interviewTraining.map((question, idx) => (
+                    <Box key={idx} mb="4">
+                      <Text fontWeight="bold">{question.question} ({question.category})</Text>
+                      <Text><strong>Expected Answer:</strong> {question.expectedAnswer}</Text>
+                      <Text><strong>Common Mistakes:</strong> {question.commonMistakes?.join(", ") || "None listed"}</Text>
+                      <Text><strong>Follow-Up:</strong> {question.followUp}</Text>
+                      <Divider my="2" />
+                    </Box>
+                  ))
+                ) : <Text>No interview training available.</Text>}
               </CardBody>
             </Card>
           </TabPanel>
