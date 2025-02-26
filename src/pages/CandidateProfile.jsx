@@ -26,7 +26,7 @@ const CandidateProfile = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const candidate = ashbyMockData.find((c) => c.id === parseInt(candidateId));
+  const candidate = ashbyMockData[parseInt(candidateId) - 1]; // Use index-based lookup
   const transcriptData = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName);
   const transcript = transcriptData?.transcript || [];
   const interviewTraining = interviewerTrainingMock.find(job => job.jobTitle === candidate?.jobTitle)?.questions || [];
