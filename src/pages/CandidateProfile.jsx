@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import ashbyMockData from "../mockdata/ashbyMockData.json";
 import metaviewMockData from "../mockdata/metaviewMockData.json";
-import interviewerTrainingMock from "../mockdata/InterviewerTrainingMock.json";
+import interviewerTrainingMock from "../mockdata/interviewerTrainingMock.json";
 
 // Helper function to get speaking ratio
 function getSpeakingRatio(transcriptEntries) {
@@ -95,21 +95,49 @@ const CandidateProfile = () => {
           <TabPanel>
             <Card p="6" bg="white" shadow="md">
               <CardBody>
-                <Heading size="md" mb="4">Interview Training</Heading>
-                {interviewTraining.length > 0 ? (
-                  interviewTraining.map((question, idx) => (
+                <Heading size="md" mb="4">Scorecard</Heading>
+                {candidate?.scores ? (
+                  Object.entries(candidate.scores).map(([skill, score]) => (
+                    <Box key={skill} mb="3">
+                      <Text><strong>{skill}:</strong> {score}/5</Text>
+                      <Progress value={(score / 5) * 100} size="sm" colorScheme="purple" mt="1" />
+                    </Box>
+                  ))
+                ) : <Text>No score data available.</Text>}
+              </CardBody>
+            </Card>
+          </TabPanel>
+
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">Competency Radar</Heading>
+                {radarData.length > 0 ? (
+                  <RadarChart outerRadius={90} width={400} height={300} data={radarData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="skill" />
+                    <PolarRadiusAxis angle={30} domain={[0, 5]} />
+                    <Radar name="Candidate" dataKey="candidateScore" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                    <Legend />
+                  </RadarChart>
+                ) : <Text>No competency data available.</Text>}
+              </CardBody>
+            </Card>
+          </TabPanel>
+
+          <TabPanel>
+            <Card p="6" bg="white" shadow="md">
+              <CardBody>
+                <Heading size="md" mb="4">Interview Transcript</Heading>
+                {transcript.length > 0 ? (
+                  transcript.map((entry, idx) => (
                     <Box key={idx} mb="4">
-                      <Text fontWeight="bold">{question.question} ({question.category})</Text>
-                      <Badge colorScheme="purple">{question.difficulty}</Badge>
-                      <Text><strong>Expected Answer:</strong> {question.expectedAnswer}</Text>
-                      <Text><strong>Common Mistakes:</strong> {question.commonMistakes?.join(", ") || "None listed"}</Text>
-                      <Text><strong>Scoring Rubric:</strong> {JSON.stringify(question.scoringRubric, null, 2)}</Text>
-                      <Text><strong>Best Practices:</strong> {question.bestPractices}</Text>
-                      <Text><strong>Suggested Answer:</strong> {question.suggestedBestAnswer}</Text>
+                      <Text><strong>Q:</strong> {entry.question}</Text>
+                      <Text><em>A: {entry.candidateAnswer}</em></Text>
                       <Divider my="2" />
                     </Box>
                   ))
-                ) : <Text>No interview training available.</Text>}
+                ) : <Text>No transcript available.</Text>}
               </CardBody>
             </Card>
           </TabPanel>
@@ -120,3 +148,4 @@ const CandidateProfile = () => {
 };
 
 export default CandidateProfile;
+
