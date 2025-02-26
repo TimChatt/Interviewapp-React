@@ -2,6 +2,10 @@
   {
     "candidateName": "Alice Johnson",
     "jobTitle": "Frontend Developer",
+    "yearsExperience": 5,
+    "previousRoles": ["UI Engineer at XYZ Corp", "Junior Developer at ABC Ltd"],
+    "education": "BSc in Computer Science, University of Manchester",
+    "diversityTags": ["Women in Tech"],
     "interviewStage": "Onsite",
     "interviewDate": "2025-02-05T10:00:00Z",
     "status": "Hired",
@@ -28,25 +32,17 @@
       { "stage": "Onsite", "date": "2025-02-01" }
     ],
     "aiAdvice": {
-      "general": "Alice performed strongly overall. She can continue refining performance optimization techniques and consistent code patterns to align even more with top historic hires.",
+      "general": "Alice performed strongly overall. She should continue refining performance optimization techniques and consistent code patterns to align even more with top historic hires.",
       "didWell": [
         {
           "point": "Demonstrated deep React Hooks knowledge",
           "citation": "Question q1 (Metaview) – historically high correlation with success"
-        },
-        {
-          "point": "Clear communication of state management approaches",
-          "citation": "Feedback from John Doe"
         }
       ],
       "couldImprove": [
         {
           "point": "Offer more detailed approach to code splitting and lazy loading",
           "citation": "Historic data shows top frontend hires elaborate on advanced bundling strategies"
-        },
-        {
-          "point": "Slightly more structured approach to problem-solving questions",
-          "citation": "Question q2 (Metaview) – referencing deeper scenario planning"
         }
       ]
     }
@@ -54,6 +50,10 @@
   {
     "candidateName": "Bob Smith",
     "jobTitle": "Frontend Developer",
+    "yearsExperience": 3,
+    "previousRoles": ["Junior Developer at WebStart Inc"],
+    "education": "Self-Taught (No Degree)",
+    "diversityTags": ["Career Changer"],
     "interviewStage": "Onsite",
     "interviewDate": "2025-02-07T14:00:00Z",
     "status": "Archived",
@@ -85,10 +85,6 @@
       ],
       "couldImprove": [
         {
-          "point": "Discuss more explicit use cases for useCallback/useMemo",
-          "citation": "Question q2 (Metaview) – top hires mention real-world examples"
-        },
-        {
           "point": "Practice debugging performance bottlenecks thoroughly",
           "citation": "Historic data: high-scoring frontenders show advanced knowledge in Q1 follow-ups"
         }
@@ -98,6 +94,10 @@
   {
     "candidateName": "Jen Williams",
     "jobTitle": "Backend Developer",
+    "yearsExperience": 7,
+    "previousRoles": ["Software Engineer at FinTech Ltd", "Backend Developer at CodeCraft"],
+    "education": "MSc in Software Engineering, University of Leeds",
+    "diversityTags": ["Women in Tech", "First-Generation College Graduate"],
     "interviewStage": "Phone Screen",
     "interviewDate": "2025-02-02T09:15:00Z",
     "status": "Hired",
@@ -130,10 +130,6 @@
         {
           "point": "More in-depth discussion of system resiliency (circuit breakers, fallback strategies)",
           "citation": "Top-tier backend hires often detail fail-safe mechanisms"
-        },
-        {
-          "point": "Refine communication under pressure",
-          "citation": "Feedback suggests slightly scattered explanation in final scenario"
         }
       ]
     }
@@ -141,6 +137,10 @@
   {
     "candidateName": "Michael Lee",
     "jobTitle": "Backend Developer",
+    "yearsExperience": 4,
+    "previousRoles": ["Backend Engineer at CloudTech", "Software Developer at StartUpX"],
+    "education": "BEng in Computer Science, Imperial College London",
+    "diversityTags": ["Ex-Military"],
     "interviewStage": "Technical Screen",
     "interviewDate": "2025-02-03T09:00:00Z",
     "status": "Archived",
@@ -174,10 +174,6 @@
         {
           "point": "Offer practical examples of load balancing and sharding",
           "citation": "Historic data: successful hires thoroughly detail real-time analytics architecture in Q1"
-        },
-        {
-          "point": "Practice discussing trade-offs more succinctly",
-          "citation": "Feedback from Sandra Kim suggests under-explored design reasoning"
         }
       ]
     }
