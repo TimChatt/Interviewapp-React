@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import CandidateTable from "../components/CandidateTable";
 import { 
-  Box, Heading, Text, Select, Grid, GridItem, Flex, VStack, Card, CardBody, Spinner 
+  Box, Heading, Text, Select, Grid, GridItem, Flex, Spinner, Card, CardBody, Alert, AlertIcon 
 } from "@chakra-ui/react";
+
+const BACKEND_URL = "https://interviewappbe-production.up.railway.app"; // ✅ Use correct backend URL
 
 const Candidate = () => {
     const [candidates, setCandidates] = useState([]);
@@ -10,36 +12,42 @@ const Candidate = () => {
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("All");
 
-    // Fetch candidates from Ashby API
-    useEffect(() => {
-        const fetchCandidates = async () => {
-            try {
-                const response = await fetch("/candidates"); // API endpoint from FastAPI
-                if (!response.ok) {
-                    throw new Error("Failed to fetch candidates");
-                }
-                const data = await response.json();
-
-                // Transform data to match table expectations
-                const transformedCandidates = data.map((candidate, index) => ({
-                    candidate_id: candidate.id, 
-                    name: candidate.name,
-                    department: candidate.department_id || "Unknown",
-                    interview_date: candidate.application_stage || "N/A", 
-                    status: candidate.status,
-                }));
-
-                setCandidates(transformedCandidates);
-            } catch (error) {
-                console.error("Error fetching candidates:", error);
-                setError(error.message);
-            } finally {
-                setLoading(false);
+    // Fetch candidates from backend
+    const fetchCandidates = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            console.log("🔍 Fetching candidates...");
+            const response = await fetch(`${BACKEND_URL}/candidates`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        };
 
-        fetchCandidates();
+            const data = await response.json();
+            console.log("✅ Fetched Candidates:", data);
+
+            // Transform data to match table expectations
+            const transformedCandidates = data.map((candidate) => ({
+                candidate_id: candidate.id, 
+                name: candidate.name,
+                department: candidate.department_id || "Unknown",
+                interview_date: candidate.application_stage || "N/A", 
+                status: candidate.status,
+            }));
+
+            setCandidates(transformedCandidates);
+        } catch (err) {
+            console.error("❌ Error fetching candidates:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchCandidates();
+    }, [fetchCandidates]);
 
     // Filter candidates based on status
     const filteredCandidates = candidates.filter((candidate) => 
@@ -59,7 +67,12 @@ const Candidate = () => {
 
             {/* Loading & Error Handling */}
             {loading && <Spinner size="xl" color="purple.500" />}
-            {error && <Text color="red.500">{error}</Text>}
+            {error && (
+                <Alert status="error" mb="4">
+                    <AlertIcon />
+                    {error}
+                </Alert>
+            )}
 
             {!loading && !error && (
                 <>
@@ -96,7 +109,7 @@ const Candidate = () => {
     );
 };
 
-// Reusable StatCard Component
+// ✅ Reusable StatCard Component
 const StatCard = ({ title, value, color = "purple.500" }) => {
     return (
         <GridItem>
