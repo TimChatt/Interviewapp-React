@@ -68,6 +68,11 @@ const CandidateTable = ({ candidates }) => {
                 {sortKey === "name" &&
                   (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
               </Th>
+              <Th cursor="pointer" onClick={() => handleSort("job_title")}>
+                Job Title{" "}
+                {sortKey === "job_title" &&
+                  (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
+              </Th>
               <Th cursor="pointer" onClick={() => handleSort("department")}>
                 Department{" "}
                 {sortKey === "department" &&
@@ -90,9 +95,14 @@ const CandidateTable = ({ candidates }) => {
             {sortedCandidates.map((candidate) => (
               <Tr key={candidate.candidate_id} _hover={{ bg: "gray.50" }}>
                 <Td>{candidate.name}</Td>
+                <Td>{candidate.job_title}</Td> {/* ✅ Show Job Title */}
                 <Td>{candidate.department}</Td>
                 <Td>{candidate.interview_stage}</Td>
-                <Td>{candidate.interview_date}</Td>
+                <Td>
+                  {candidate.interview_date !== "N/A"
+                    ? new Date(candidate.interview_date).toLocaleDateString()
+                    : "N/A"}
+                </Td>
                 <Td>
                   <Button
                     colorScheme="blue"
