@@ -18,27 +18,22 @@ const Candidate = () => {
         try {
             console.log("🔍 Fetching interview stages...");
             const response = await fetch(`${BACKEND_URL}/interview-stages`);
-
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
+    
             const data = await response.json();
             console.log("✅ Interview Stages Response:", data);
-
-            // Transform response into a dictionary { id: stageName }
-            const stageMap = data.reduce((acc, stage) => {
-                acc[stage.id] = stage.title; // Mapping ID to Stage Name
-                return acc;
-            }, {});
-
-            console.log("🎯 Interview Stage Map:", stageMap);
-            setInterviewStages(stageMap);
+    
+            // ✅ Ensure we store it as an object
+            setInterviewStages(data);
+    
         } catch (err) {
             console.error("❌ Error fetching interview stages:", err);
-            setError(err.message);
         }
     }, []);
+
 
     /** ✅ Fetch Candidates & Cross-Reference Interview Stages */
     const fetchCandidates = useCallback(async () => {
