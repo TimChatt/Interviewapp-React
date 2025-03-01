@@ -35,11 +35,10 @@ const Candidate = () => {
     }, []);
 
 
-    /** ✅ Fetch Candidates & Cross-Reference Interview Stages */
+    // Fetch candidates from backend
     const fetchCandidates = useCallback(async () => {
         setLoading(true);
         setError(null);
-
         try {
             console.log("🔍 Fetching candidates...");
             const response = await fetch(`${BACKEND_URL}/candidates`);
@@ -50,15 +49,16 @@ const Candidate = () => {
     
             const data = await response.json();
             console.log("✅ Full API Response:", data);
-
+    
             // Transform data to match table expectations
             const transformedCandidates = data.map((candidate) => ({
-                candidate_id: candidate.id, 
-                name: candidate.name || "Unknown",
-                department: candidate.department_id || "Unknown",
-                interview_date: candidate.updatedAt ? new Date(candidate.updatedAt).toLocaleDateString() : "N/A",
-                status: candidate.status || "Unknown",
-                interview_stage: interviewStages[candidate.applicationStageId] || "N/A", // ✅ Use mapped stage name
+                candidate_id: candidate.candidate_id, 
+                name: candidate.name,
+                job_title: candidate.job_title, // ✅ Pass job title
+                department: candidate.department || "Unknown",
+                interview_date: candidate.interview_date || "N/A",
+                interview_stage: candidate.interview_stage || "N/A",
+                status: candidate.status,
             }));
     
             console.log("🔹 Transformed Candidates:", transformedCandidates);
@@ -69,12 +69,8 @@ const Candidate = () => {
         } finally {
             setLoading(false);
         }
-    }, [interviewStages]);
-
-    /** ✅ Fetch data on component mount */
-    useEffect(() => {
-        fetchInterviewStages(); // Fetch Interview Stages first
     }, []);
+
 
     useEffect(() => {
         if (Object.keys(interviewStages).length > 0) {
