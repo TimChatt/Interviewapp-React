@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -22,13 +22,9 @@ const CandidateTable = ({ candidates }) => {
   const [sortOrder, setSortOrder] = useState("asc");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("📌 Candidates received in Table:", candidates);
-  }, [candidates]);
-
   // Filter candidates based on name
   const filteredCandidates = candidates.filter((candidate) =>
-    candidate.name?.toLowerCase().includes(filter.toLowerCase())
+    candidate.name.toLowerCase().includes(filter.toLowerCase())
   );
 
   // Sort candidates based on sortKey and sortOrder
@@ -77,6 +73,11 @@ const CandidateTable = ({ candidates }) => {
                 {sortKey === "department" &&
                   (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
               </Th>
+              <Th cursor="pointer" onClick={() => handleSort("interview_stage")}>
+                Interview Stage{" "}
+                {sortKey === "interview_stage" &&
+                  (sortOrder === "asc" ? <ArrowUpIcon /> : <ArrowDownIcon />)}
+              </Th>
               <Th cursor="pointer" onClick={() => handleSort("interview_date")}>
                 Interview Date{" "}
                 {sortKey === "interview_date" &&
@@ -86,36 +87,23 @@ const CandidateTable = ({ candidates }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {sortedCandidates.length > 0 ? (
-              sortedCandidates.map((candidate) => (
-                <Tr key={candidate.candidate_id} _hover={{ bg: "gray.50" }}>
-                  <Td>{candidate.name || "N/A"}</Td>
-                  <Td>{candidate.department || "Unknown"}</Td>
-                  <Td>
-                    {candidate.interview_date
-                      ? new Date(candidate.interview_date).toLocaleDateString()
-                      : "N/A"}
-                  </Td>
-                  <Td>
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      onClick={() =>
-                        navigate(`/candidate/${candidate.candidate_id}`)
-                      }
-                    >
-                      View
-                    </Button>
-                  </Td>
-                </Tr>
-              ))
-            ) : (
-              <Tr>
-                <Td colSpan="4" textAlign="center" color="gray.500">
-                  No candidates found.
+            {sortedCandidates.map((candidate) => (
+              <Tr key={candidate.candidate_id} _hover={{ bg: "gray.50" }}>
+                <Td>{candidate.name}</Td>
+                <Td>{candidate.department}</Td>
+                <Td>{candidate.interview_stage}</Td>
+                <Td>{candidate.interview_date}</Td>
+                <Td>
+                  <Button
+                    colorScheme="blue"
+                    size="sm"
+                    onClick={() => navigate(`/candidate/${candidate.candidate_id}`)}
+                  >
+                    View
+                  </Button>
                 </Td>
               </Tr>
-            )}
+            ))}
           </Tbody>
         </Table>
       </TableContainer>
@@ -124,4 +112,3 @@ const CandidateTable = ({ candidates }) => {
 };
 
 export default CandidateTable;
-
