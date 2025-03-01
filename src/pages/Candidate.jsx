@@ -4,18 +4,47 @@ import {
   Box, Heading, Text, Select, Grid, GridItem, Flex, Spinner, Card, CardBody, Alert, AlertIcon 
 } from "@chakra-ui/react";
 
-const BACKEND_URL = "https://interviewappbe-production.up.railway.app"; // ✅ Use correct backend URL
+const BACKEND_URL = "https://interviewappbe-production.up.railway.app"; // ✅ Backend URL
 
 const Candidate = () => {
     const [candidates, setCandidates] = useState([]);
+    const [interviewStages, setInterviewStages] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("All");
 
-    // Fetch candidates from backend
+    /** ✅ Fetch Interview Stages from Ashby */
+    const fetchInterviewStages = useCallback(async () => {
+        try {
+            console.log("🔍 Fetching interview stages...");
+            const response = await fetch(`${BACKEND_URL}/interview-stages`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("✅ Interview Stages Response:", data);
+
+            // Transform response into a dictionary { id: stageName }
+            const stageMap = data.reduce((acc, stage) => {
+                acc[stage.id] = stage.title; // Mapping ID to Stage Name
+                return acc;
+            }, {});
+
+            console.log("🎯 Interview Stage Map:", stageMap);
+            setInterviewStages(stageMap);
+        } catch (err) {
+            console.error("❌ Error fetching interview stages:", err);
+            setError(err.message);
+        }
+    }, []);
+
+    /** ✅ Fetch Candidates & Cross-Reference Interview Stages */
     const fetchCandidates = useCallback(async () => {
         setLoading(true);
         setError(null);
+
         try {
             console.log("🔍 Fetching candidates...");
             const response = await fetch(`${BACKEND_URL}/candidates`);
@@ -25,19 +54,19 @@ const Candidate = () => {
             }
     
             const data = await response.json();
-            console.log("✅ Full API Response:", data);  // ✅ Log API response
-    
+            console.log("✅ Full API Response:", data);
+
             // Transform data to match table expectations
             const transformedCandidates = data.map((candidate) => ({
                 candidate_id: candidate.id, 
-                name: candidate.name,
+                name: candidate.name || "Unknown",
                 department: candidate.department_id || "Unknown",
-                interview_date: candidate.applicationStage || "N/A", 
-                status: candidate.status,
+                interview_date: candidate.updatedAt ? new Date(candidate.updatedAt).toLocaleDateString() : "N/A",
+                status: candidate.status || "Unknown",
+                interview_stage: interviewStages[candidate.applicationStageId] || "N/A", // ✅ Use mapped stage name
             }));
     
-            console.log("🔹 Transformed Candidates:", transformedCandidates); // ✅ Log transformed data
-    
+            console.log("🔹 Transformed Candidates:", transformedCandidates);
             setCandidates(transformedCandidates);
         } catch (err) {
             console.error("❌ Error fetching candidates:", err);
@@ -45,12 +74,18 @@ const Candidate = () => {
         } finally {
             setLoading(false);
         }
+    }, [interviewStages]);
+
+    /** ✅ Fetch data on component mount */
+    useEffect(() => {
+        fetchInterviewStages(); // Fetch Interview Stages first
     }, []);
 
-
     useEffect(() => {
-        fetchCandidates();
-    }, [fetchCandidates]);
+        if (Object.keys(interviewStages).length > 0) {
+            fetchCandidates(); // Fetch Candidates only after stages are loaded
+        }
+    }, [interviewStages]);
 
     // Filter candidates based on status
     const filteredCandidates = candidates.filter((candidate) => 
