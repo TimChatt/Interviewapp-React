@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Badge, Select, Spinner, useToast, Input } from "@chakra-ui/react";
+import { Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Badge, Select, Spinner, useToast, Input, Switch, VStack } from "@chakra-ui/react";
 import { AuthContext } from "../contexts/AuthContext";
 import AdminDashboard from "./AdminDashboard";
 
@@ -11,11 +11,16 @@ const AdminPanel = () => {
   const [filterUser, setFilterUser] = useState("");
   const [filterAction, setFilterAction] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const [twoFA, setTwoFA] = useState(false);
+  const [passwordPolicy, setPasswordPolicy] = useState("Strong");
+  const [ipWhitelist, setIpWhitelist] = useState([]);
+  const [newIp, setNewIp] = useState("");
   const toast = useToast();
 
   useEffect(() => {
     fetchUsers();
     fetchLogs();
+    fetchIpWhitelist();
   }, []);
 
   const fetchUsers = async () => {
@@ -50,11 +55,55 @@ const AdminPanel = () => {
     }
   };
 
-  const filteredLogs = logs.filter(log => 
-    (filterUser ? log.username.includes(filterUser) : true) &&
-    (filterAction ? log.action.includes(filterAction) : true) &&
-    (filterDate ? log.timestamp.startsWith(filterDate) : true)
-  );
+  const fetchIpWhitelist = async () => {
+    try {
+      const response = await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      const data = await response.json();
+      setIpWhitelist(data);
+    } catch (error) {
+      console.error("Error fetching IP whitelist:", error);
+    }
+  };
+
+  const handleAddIp = async () => {
+    try {
+      await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({ ip: newIp })
+      });
+      toast({ title: "IP added to whitelist", status: "success", duration: 3000, isClosable: true });
+      setNewIp("");
+      fetchIpWhitelist();
+    } catch (error) {
+      console.error("Error adding IP:", error);
+    }
+  };
+
+  const handleRemoveIp = async (ip) => {
+    try {
+      await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({ ip })
+      });
+      toast({ title: "IP removed from whitelist", status: "success", duration: 3000, isClosable: true });
+      fetchIpWhitelist();
+    } catch (error) {
+      console.error("Error removing IP:", error);
+    }
+  };
 
   if (loading) {
     return <Spinner size="xl" color="purple.500" />;
@@ -82,74 +131,37 @@ const AdminPanel = () => {
             <AdminDashboard />
           </TabPanel>
           <TabPanel>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Username</Th>
-                  <Th>Email</Th>
-                  <Th>Status</Th>
-                  <Th>Role</Th>
-                  <Th>Actions</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {users.map((user) => (
-                  <Tr key={user.username}>
-                    <Td>{user.username}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>
-                      <Badge colorScheme={user.is_approved ? "green" : "yellow"}>{user.is_approved ? "Approved" : "Pending"}</Badge>
-                    </Td>
-                    <Td>
-                      <Select placeholder="Select Role" defaultValue={user.role} size="sm">
-                        <option value="Admin">Admin</option>
-                        <option value="Manager">Manager</option>
-                        <option value="User">User</option>
-                      </Select>
-                    </Td>
-                    <Td>
-                      {!user.is_approved && (
-                        <Button colorScheme="green" size="sm">Approve</Button>
-                      )}
-                    </Td>
+            <VStack spacing={4} align="stretch">
+              <Text fontWeight="bold">Two-Factor Authentication</Text>
+              <Switch isChecked={twoFA} onChange={(e) => setTwoFA(e.target.checked)} />
+              <Text fontWeight="bold">Password Policy</Text>
+              <Select value={passwordPolicy} onChange={(e) => setPasswordPolicy(e.target.value)}>
+                <option value="Weak">Weak</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Strong">Strong</option>
+              </Select>
+              <Text fontWeight="bold">IP Whitelist</Text>
+              <Input placeholder="Enter IP address" value={newIp} onChange={(e) => setNewIp(e.target.value)} />
+              <Button colorScheme="blue" onClick={handleAddIp}>Add IP</Button>
+              <Table variant="simple">
+                <Thead>
+                  <Tr>
+                    <Th>IP Address</Th>
+                    <Th>Actions</Th>
                   </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TabPanel>
-          <TabPanel>
-            <Text>Access Control: Role-Based Access, Permissions Management</Text>
-          </TabPanel>
-          <TabPanel>
-            <Box mb="4">
-              <Input placeholder="Filter by User" value={filterUser} onChange={(e) => setFilterUser(e.target.value)} mb={2} />
-              <Input placeholder="Filter by Action" value={filterAction} onChange={(e) => setFilterAction(e.target.value)} mb={2} />
-              <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
-            </Box>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Action</Th>
-                  <Th>User</Th>
-                  <Th>Timestamp</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {filteredLogs.map((log, index) => (
-                  <Tr key={index}>
-                    <Td>{log.action}</Td>
-                    <Td>{log.username}</Td>
-                    <Td>{new Date(log.timestamp).toLocaleString()}</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TabPanel>
-          <TabPanel>
-            <Text>Security: 2FA, Password Policy, IP Whitelisting</Text>
-          </TabPanel>
-          <TabPanel>
-            <Text>Data Management: Export Users, Logs, Activity (CSV/JSON)</Text>
+                </Thead>
+                <Tbody>
+                  {ipWhitelist.map((ip, index) => (
+                    <Tr key={index}>
+                      <Td>{ip}</Td>
+                      <Td>
+                        <Button colorScheme="red" size="sm" onClick={() => handleRemoveIp(ip)}>Remove</Button>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </VStack>
           </TabPanel>
         </TabPanels>
       </Tabs>
