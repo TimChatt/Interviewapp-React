@@ -30,9 +30,10 @@ import {
   Input,
   FormControl,
   FormLabel,
+  Select,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { FaCheck, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
+import { FaCheck, FaTimes, FaPlus, FaTrash, FaUserShield } from "react-icons/fa";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -41,6 +42,7 @@ const Admin = () => {
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [ipAddress, setIpAddress] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const toast = useToast();
 
   useEffect(() => {
@@ -76,6 +78,18 @@ const Admin = () => {
     }).then(() => {
       fetchUsers();
       toast({ title: `User ${action}d successfully`, status: "success" });
+    });
+  };
+
+  const handleRoleChange = (username) => {
+    fetch("/api/users/update", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, action: "update-role", role: selectedRole }),
+    }).then(() => {
+      fetchUsers();
+      toast({ title: `User role updated successfully`, status: "success" });
+      setIsModalOpen(false);
     });
   };
 
@@ -139,6 +153,12 @@ const Admin = () => {
                           ml={2}
                           onClick={() => handleUserAction(user.username, "suspend")}
                         />
+                        <IconButton
+                          icon={<FaUserShield />}
+                          colorScheme="blue"
+                          ml={2}
+                          onClick={() => { setModalType("update-role"); setSelectedUser(user.username); setIsModalOpen(true); }}
+                        />
                       </Td>
                     </Tr>
                   ))}
@@ -169,7 +189,7 @@ const Admin = () => {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{modalType === "add-ip" ? "Add IP Address" : "Confirm Action"}</ModalHeader>
+          <ModalHeader>{modalType === "add-ip" ? "Add IP Address" : "Update User Role"}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {modalType === "add-ip" ? (
@@ -178,12 +198,19 @@ const Admin = () => {
                 <Input value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} />
               </FormControl>
             ) : (
-              <Text>Are you sure you want to proceed?</Text>
+              <FormControl>
+                <FormLabel>Select Role</FormLabel>
+                <Select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+                  <option value="admin">Admin</option>
+                  <option value="manager">Manager</option>
+                  <option value="interviewer">Interviewer</option>
+                </Select>
+              </FormControl>
             )}
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="gray" mr={3} onClick={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button colorScheme="blue" onClick={() => handleIPAction("add")}>Confirm</Button>
+            <Button colorScheme="blue" onClick={() => handleRoleChange(selectedUser)}>Confirm</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
