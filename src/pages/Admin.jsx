@@ -30,19 +30,20 @@ const AdminPanel = () => {
     }
   };
 
-  const handleApprove = async (username) => {
+  const handleRoleChange = async (username, newRole) => {
     try {
-      await fetch(`https://interviewappbe-production.up.railway.app/api/users/${username}/approve`, {
+      await fetch(`https://interviewappbe-production.up.railway.app/api/users/${username}/role`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
         },
+        body: JSON.stringify({ role: newRole })
       });
-      toast({ title: "User Approved", status: "success", duration: 3000, isClosable: true });
+      toast({ title: `Role updated to ${newRole}`, status: "success", duration: 3000, isClosable: true });
       fetchUsers();
     } catch (error) {
-      console.error("Error approving user:", error);
+      console.error("Error updating role:", error);
     }
   };
 
@@ -91,7 +92,7 @@ const AdminPanel = () => {
                       <Badge colorScheme={user.is_approved ? "green" : "yellow"}>{user.is_approved ? "Approved" : "Pending"}</Badge>
                     </Td>
                     <Td>
-                      <Select placeholder="Select Role" defaultValue={user.role} size="sm">
+                      <Select placeholder="Select Role" defaultValue={user.role} size="sm" onChange={(e) => handleRoleChange(user.username, e.target.value)}>
                         <option value="Admin">Admin</option>
                         <option value="Manager">Manager</option>
                         <option value="User">User</option>
@@ -99,7 +100,7 @@ const AdminPanel = () => {
                     </Td>
                     <Td>
                       {!user.is_approved && (
-                        <Button colorScheme="green" size="sm" onClick={() => handleApprove(user.username)}>
+                        <Button colorScheme="green" size="sm" onClick={() => handleRoleChange(user.username, 'Approved')}>
                           Approve
                         </Button>
                       )}
