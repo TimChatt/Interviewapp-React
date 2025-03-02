@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Heading,
   Text,
   Button,
   VStack,
-  Link as ChakraLink,
   Tabs,
   TabList,
   TabPanels,
@@ -32,10 +31,13 @@ import {
   FormLabel,
   Select,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 import { FaCheck, FaTimes, FaPlus, FaTrash, FaUserShield } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [ips, setIps] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,9 +48,12 @@ const Admin = () => {
   const toast = useToast();
 
   useEffect(() => {
+    if (!user || user.role !== "admin") {
+      navigate("/unauthorized"); // Redirect unauthorized users
+    }
     fetchUsers();
     fetchIPs();
-  }, []);
+  }, [user, navigate]);
 
   const fetchUsers = async () => {
     try {
@@ -115,7 +120,7 @@ const Admin = () => {
       <Tabs variant="soft-rounded" colorScheme="purple">
         <TabList>
           <Tab>User Management</Tab>
-          <Tab>Security</Tab>
+          {user.role === "admin" && <Tab>Security</Tab>}
           <Tab>Audit Logs</Tab>
         </TabList>
 
@@ -129,37 +134,43 @@ const Admin = () => {
                     <Th>Email</Th>
                     <Th>Status</Th>
                     <Th>Role</Th>
-                    <Th>Actions</Th>
+                    {user.role === "admin" && <Th>Actions</Th>}
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {users.map((user) => (
-                    <Tr key={user.username}>
-                      <Td>{user.username}</Td>
-                      <Td>{user.email}</Td>
-                      <Td>{user.is_approved ? "Approved" : "Pending"}</Td>
-                      <Td>{user.role}</Td>
-                      <Td>
-                        {!user.is_approved && (
+                  {users.map((userData) => (
+                    <Tr key={userData.username}>
+                      <Td>{userData.username}</Td>
+                      <Td>{userData.email}</Td>
+                      <Td>{userData.is_approved ? "Approved" : "Pending"}</Td>
+                      <Td>{userData.role}</Td>
+                      {user.role === "admin" && (
+                        <Td>
+                          {!userData.is_approved && (
+                            <IconButton
+                              icon={<FaCheck />}
+                              colorScheme="green"
+                              onClick={() => handleUserAction(userData.username, "approve")}
+                            />
+                          )}
                           <IconButton
-                            icon={<FaCheck />}
-                            colorScheme="green"
-                            onClick={() => handleUserAction(user.username, "approve")}
+                            icon={<FaTimes />}
+                            colorScheme="red"
+                            ml={2}
+                            onClick={() => handleUserAction(userData.username, "suspend")}
                           />
-                        )}
-                        <IconButton
-                          icon={<FaTimes />}
-                          colorScheme="red"
-                          ml={2}
-                          onClick={() => handleUserAction(user.username, "suspend")}
-                        />
-                        <IconButton
-                          icon={<FaUserShield />}
-                          colorScheme="blue"
-                          ml={2}
-                          onClick={() => { setModalType("update-role"); setSelectedUser(user.username); setIsModalOpen(true); }}
-                        />
-                      </Td>
+                          <IconButton
+                            icon={<FaUserShield />}
+                            colorScheme="blue"
+                            ml={2}
+                            onClick={() => {
+                              setModalType("update-role");
+                              setSelectedUser(userData.username);
+                              setIsModalOpen(true);
+                            }}
+                          />
+                        </Td>
+                      )}
                     </Tr>
                   ))}
                 </Tbody>
@@ -167,53 +178,26 @@ const Admin = () => {
             </TableContainer>
           </TabPanel>
 
-          <TabPanel>
-            <VStack align="stretch">
-              <Heading size="md">IP Whitelist</Heading>
-              {ips.map((ip) => (
-                <Box key={ip} bg="gray.100" p="3" borderRadius="md" display="flex" justifyContent="space-between">
-                  <Text>{ip}</Text>
-                  <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleIPAction("delete")} />
-                </Box>
-              ))}
-              <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={() => { setModalType("add-ip"); setIsModalOpen(true); }}>Add IP</Button>
-            </VStack>
-          </TabPanel>
+          {user.role === "admin" && (
+            <TabPanel>
+              <VStack align="stretch">
+                <Heading size="md">IP Whitelist</Heading>
+                {ips.map((ip) => (
+                  <Box key={ip} bg="gray.100" p="3" borderRadius="md" display="flex" justifyContent="space-between">
+                    <Text>{ip}</Text>
+                    <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleIPAction("delete")} />
+                  </Box>
+                ))}
+                <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={() => { setModalType("add-ip"); setIsModalOpen(true); }}>Add IP</Button>
+              </VStack>
+            </TabPanel>
+          )}
 
           <TabPanel>
             <Text>Audit logs will be displayed here...</Text>
           </TabPanel>
         </TabPanels>
       </Tabs>
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{modalType === "add-ip" ? "Add IP Address" : "Update User Role"}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {modalType === "add-ip" ? (
-              <FormControl>
-                <FormLabel>IP Address</FormLabel>
-                <Input value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} />
-              </FormControl>
-            ) : (
-              <FormControl>
-                <FormLabel>Select Role</FormLabel>
-                <Select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
-                  <option value="admin">Admin</option>
-                  <option value="manager">Manager</option>
-                  <option value="interviewer">Interviewer</option>
-                </Select>
-              </FormControl>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button colorScheme="blue" onClick={() => handleRoleChange(selectedUser)}>Confirm</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Box>
   );
 };
