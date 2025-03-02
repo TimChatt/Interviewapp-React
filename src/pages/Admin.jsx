@@ -1,18 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Badge, Select, Spinner, useToast, Input, Switch, VStack } from "@chakra-ui/react";
 import { AuthContext } from "../contexts/AuthContext";
-import AdminDashboard from "./AdminDashboard";
 
 const AdminPanel = () => {
   const { user } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filterUser, setFilterUser] = useState("");
-  const [filterAction, setFilterAction] = useState("");
-  const [filterDate, setFilterDate] = useState("");
-  const [twoFA, setTwoFA] = useState(false);
-  const [passwordPolicy, setPasswordPolicy] = useState("Strong");
   const [ipWhitelist, setIpWhitelist] = useState([]);
   const [newIp, setNewIp] = useState("");
   const toast = useToast();
@@ -32,11 +25,30 @@ const AdminPanel = () => {
         },
       });
       const data = await response.json();
-      setUsers(data);
+      setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
+      toast({ title: "Error fetching users", status: "error" });
+    }
+  };
+
+  const updateUserStatus = async (username, action, role = null) => {
+    try {
+      const response = await fetch("https://interviewappbe-production.up.railway.app/api/users/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({ username, action, role }),
+      });
+      if (response.ok) {
+        toast({ title: `User ${action}d successfully`, status: "success" });
+        fetchUsers();
+      } else {
+        throw new Error("Failed to update user");
+      }
+    } catch (error) {
+      toast({ title: "Error updating user", status: "error" });
     }
   };
 
@@ -49,9 +61,9 @@ const AdminPanel = () => {
         },
       });
       const data = await response.json();
-      setLogs(data);
+      setLogs(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching logs:", error);
+      toast({ title: "Error fetching logs", status: "error" });
     }
   };
 
@@ -64,100 +76,106 @@ const AdminPanel = () => {
         },
       });
       const data = await response.json();
-      setIpWhitelist(data);
+      setIpWhitelist(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching IP whitelist:", error);
+      toast({ title: "Error fetching IP whitelist", status: "error" });
     }
   };
 
-  const handleAddIp = async () => {
+  const addIpToWhitelist = async () => {
     try {
-      await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
+      const response = await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
         },
-        body: JSON.stringify({ ip: newIp })
+        body: JSON.stringify({ ip: newIp }),
       });
-      toast({ title: "IP added to whitelist", status: "success", duration: 3000, isClosable: true });
-      setNewIp("");
-      fetchIpWhitelist();
+      if (response.ok) {
+        toast({ title: "IP added successfully", status: "success" });
+        fetchIpWhitelist();
+        setNewIp("");
+      }
     } catch (error) {
-      console.error("Error adding IP:", error);
+      toast({ title: "Error adding IP", status: "error" });
     }
   };
-
-  const handleRemoveIp = async (ip) => {
-    try {
-      await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify({ ip })
-      });
-      toast({ title: "IP removed from whitelist", status: "success", duration: 3000, isClosable: true });
-      fetchIpWhitelist();
-    } catch (error) {
-      console.error("Error removing IP:", error);
-    }
-  };
-
-  if (loading) {
-    return <Spinner size="xl" color="purple.500" />;
-  }
 
   return (
     <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         Admin Panel
       </Heading>
-
       <Tabs variant="enclosed">
         <TabList>
-          <Tab>Dashboard</Tab>
           <Tab>Users</Tab>
-          <Tab>Access Control</Tab>
           <Tab>Audit Logs</Tab>
-          <Tab>Settings</Tab>
-          <Tab>Security</Tab>
-          <Tab>Data & Exports</Tab>
+          <Tab>IP Whitelist</Tab>
         </TabList>
-
         <TabPanels>
           <TabPanel>
-            <AdminDashboard />
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>Username</Th>
+                  <Th>Email</Th>
+                  <Th>Status</Th>
+                  <Th>Role</Th>
+                  <Th>Actions</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {users.map((user) => (
+                  <Tr key={user.username}>
+                    <Td>{user.username}</Td>
+                    <Td>{user.email}</Td>
+                    <Td>{user.is_suspended ? "Suspended" : user.is_approved ? "Active" : "Pending"}</Td>
+                    <Td>{user.role}</Td>
+                    <Td>
+                      <Button onClick={() => updateUserStatus(user.username, "approve")} colorScheme="green" size="sm">Approve</Button>
+                      <Button onClick={() => updateUserStatus(user.username, "suspend")} colorScheme="red" size="sm" ml={2}>Suspend</Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
           </TabPanel>
           <TabPanel>
-            <VStack spacing={4} align="stretch">
-              <Text fontWeight="bold">Two-Factor Authentication</Text>
-              <Switch isChecked={twoFA} onChange={(e) => setTwoFA(e.target.checked)} />
-              <Text fontWeight="bold">Password Policy</Text>
-              <Select value={passwordPolicy} onChange={(e) => setPasswordPolicy(e.target.value)}>
-                <option value="Weak">Weak</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Strong">Strong</option>
-              </Select>
-              <Text fontWeight="bold">IP Whitelist</Text>
-              <Input placeholder="Enter IP address" value={newIp} onChange={(e) => setNewIp(e.target.value)} />
-              <Button colorScheme="blue" onClick={handleAddIp}>Add IP</Button>
-              <Table variant="simple">
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>Admin</Th>
+                  <Th>Action</Th>
+                  <Th>Target User</Th>
+                  <Th>Timestamp</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {logs.map((log, index) => (
+                  <Tr key={index}>
+                    <Td>{log.admin_username}</Td>
+                    <Td>{log.action}</Td>
+                    <Td>{log.target_username}</Td>
+                    <Td>{log.timestamp}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TabPanel>
+          <TabPanel>
+            <VStack>
+              <Input placeholder="Enter IP" value={newIp} onChange={(e) => setNewIp(e.target.value)} />
+              <Button onClick={addIpToWhitelist} colorScheme="blue">Add IP</Button>
+              <Table>
                 <Thead>
                   <Tr>
                     <Th>IP Address</Th>
-                    <Th>Actions</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {ipWhitelist.map((ip, index) => (
-                    <Tr key={index}>
-                      <Td>{ip}</Td>
-                      <Td>
-                        <Button colorScheme="red" size="sm" onClick={() => handleRemoveIp(ip)}>Remove</Button>
-                      </Td>
-                    </Tr>
+                    <Tr key={index}><Td>{ip}</Td></Tr>
                   ))}
                 </Tbody>
               </Table>
