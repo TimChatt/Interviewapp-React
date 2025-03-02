@@ -1,105 +1,95 @@
-import React, { useEffect, useState, useContext } from "react";
-import { Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Badge, Select, Spinner, useToast, Input, Switch, VStack } from "@chakra-ui/react";
-import { AuthContext } from "../contexts/AuthContext";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  Link as ChakraLink,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  IconButton,
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Input,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { FaCheck, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
 
-const AdminPanel = () => {
-  const { user } = useContext(AuthContext);
+const Admin = () => {
   const [users, setUsers] = useState([]);
-  const [logs, setLogs] = useState([]);
-  const [ipWhitelist, setIpWhitelist] = useState([]);
-  const [newIp, setNewIp] = useState("");
+  const [ips, setIps] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [ipAddress, setIpAddress] = useState("");
   const toast = useToast();
 
   useEffect(() => {
     fetchUsers();
-    fetchLogs();
-    fetchIpWhitelist();
+    fetchIPs();
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/users", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const response = await fetch("/api/users");
       const data = await response.json();
-      setUsers(Array.isArray(data) ? data : []);
+      setUsers(data);
     } catch (error) {
-      toast({ title: "Error fetching users", status: "error" });
+      console.error("Error fetching users:", error);
     }
   };
 
-  const updateUserStatus = async (username, action, role = null) => {
+  const fetchIPs = async () => {
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/users/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify({ username, action, role }),
-      });
-      if (response.ok) {
-        toast({ title: `User ${action}d successfully`, status: "success" });
-        fetchUsers();
-      } else {
-        throw new Error("Failed to update user");
-      }
-    } catch (error) {
-      toast({ title: "Error updating user", status: "error" });
-    }
-  };
-
-  const fetchLogs = async () => {
-    try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/audit-logs", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const response = await fetch("/api/ip-whitelist");
       const data = await response.json();
-      setLogs(Array.isArray(data) ? data : []);
+      setIps(data);
     } catch (error) {
-      toast({ title: "Error fetching logs", status: "error" });
+      console.error("Error fetching IP whitelist:", error);
     }
   };
 
-  const fetchIpWhitelist = async () => {
-    try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      const data = await response.json();
-      setIpWhitelist(Array.isArray(data) ? data : []);
-    } catch (error) {
-      toast({ title: "Error fetching IP whitelist", status: "error" });
-    }
+  const handleUserAction = (username, action) => {
+    fetch("/api/users/update", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, action }),
+    }).then(() => {
+      fetchUsers();
+      toast({ title: `User ${action}d successfully`, status: "success" });
+    });
   };
 
-  const addIpToWhitelist = async () => {
-    try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/ip-whitelist", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify({ ip: newIp }),
-      });
-      if (response.ok) {
-        toast({ title: "IP added successfully", status: "success" });
-        fetchIpWhitelist();
-        setNewIp("");
-      }
-    } catch (error) {
-      toast({ title: "Error adding IP", status: "error" });
-    }
+  const handleIPAction = (action) => {
+    fetch(`/api/ip-whitelist`, {
+      method: action === "add" ? "POST" : "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ip: ipAddress }),
+    }).then(() => {
+      fetchIPs();
+      toast({ title: `IP ${action}ed successfully`, status: "success" });
+      setIsModalOpen(false);
+      setIpAddress("");
+    });
   };
 
   return (
@@ -107,84 +97,98 @@ const AdminPanel = () => {
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         Admin Panel
       </Heading>
-      <Tabs variant="enclosed">
+
+      <Tabs variant="soft-rounded" colorScheme="purple">
         <TabList>
-          <Tab>Users</Tab>
+          <Tab>User Management</Tab>
+          <Tab>Security</Tab>
           <Tab>Audit Logs</Tab>
-          <Tab>IP Whitelist</Tab>
         </TabList>
+
         <TabPanels>
           <TabPanel>
-            <Table>
-              <Thead>
-                <Tr>
-                  <Th>Username</Th>
-                  <Th>Email</Th>
-                  <Th>Status</Th>
-                  <Th>Role</Th>
-                  <Th>Actions</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {users.map((user) => (
-                  <Tr key={user.username}>
-                    <Td>{user.username}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>{user.is_suspended ? "Suspended" : user.is_approved ? "Active" : "Pending"}</Td>
-                    <Td>{user.role}</Td>
-                    <Td>
-                      <Button onClick={() => updateUserStatus(user.username, "approve")} colorScheme="green" size="sm">Approve</Button>
-                      <Button onClick={() => updateUserStatus(user.username, "suspend")} colorScheme="red" size="sm" ml={2}>Suspend</Button>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TabPanel>
-          <TabPanel>
-            <Table>
-              <Thead>
-                <Tr>
-                  <Th>Admin</Th>
-                  <Th>Action</Th>
-                  <Th>Target User</Th>
-                  <Th>Timestamp</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {logs.map((log, index) => (
-                  <Tr key={index}>
-                    <Td>{log.admin_username}</Td>
-                    <Td>{log.action}</Td>
-                    <Td>{log.target_username}</Td>
-                    <Td>{log.timestamp}</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TabPanel>
-          <TabPanel>
-            <VStack>
-              <Input placeholder="Enter IP" value={newIp} onChange={(e) => setNewIp(e.target.value)} />
-              <Button onClick={addIpToWhitelist} colorScheme="blue">Add IP</Button>
-              <Table>
+            <TableContainer>
+              <Table variant="simple">
                 <Thead>
                   <Tr>
-                    <Th>IP Address</Th>
+                    <Th>Username</Th>
+                    <Th>Email</Th>
+                    <Th>Status</Th>
+                    <Th>Role</Th>
+                    <Th>Actions</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {ipWhitelist.map((ip, index) => (
-                    <Tr key={index}><Td>{ip}</Td></Tr>
+                  {users.map((user) => (
+                    <Tr key={user.username}>
+                      <Td>{user.username}</Td>
+                      <Td>{user.email}</Td>
+                      <Td>{user.is_approved ? "Approved" : "Pending"}</Td>
+                      <Td>{user.role}</Td>
+                      <Td>
+                        {!user.is_approved && (
+                          <IconButton
+                            icon={<FaCheck />}
+                            colorScheme="green"
+                            onClick={() => handleUserAction(user.username, "approve")}
+                          />
+                        )}
+                        <IconButton
+                          icon={<FaTimes />}
+                          colorScheme="red"
+                          ml={2}
+                          onClick={() => handleUserAction(user.username, "suspend")}
+                        />
+                      </Td>
+                    </Tr>
                   ))}
                 </Tbody>
               </Table>
+            </TableContainer>
+          </TabPanel>
+
+          <TabPanel>
+            <VStack align="stretch">
+              <Heading size="md">IP Whitelist</Heading>
+              {ips.map((ip) => (
+                <Box key={ip} bg="gray.100" p="3" borderRadius="md" display="flex" justifyContent="space-between">
+                  <Text>{ip}</Text>
+                  <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleIPAction("delete")} />
+                </Box>
+              ))}
+              <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={() => { setModalType("add-ip"); setIsModalOpen(true); }}>Add IP</Button>
             </VStack>
+          </TabPanel>
+
+          <TabPanel>
+            <Text>Audit logs will be displayed here...</Text>
           </TabPanel>
         </TabPanels>
       </Tabs>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{modalType === "add-ip" ? "Add IP Address" : "Confirm Action"}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {modalType === "add-ip" ? (
+              <FormControl>
+                <FormLabel>IP Address</FormLabel>
+                <Input value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} />
+              </FormControl>
+            ) : (
+              <Text>Are you sure you want to proceed?</Text>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" mr={3} onClick={() => setIsModalOpen(false)}>Cancel</Button>
+            <Button colorScheme="blue" onClick={() => handleIPAction("add")}>Confirm</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
 
-export default AdminPanel;
+export default Admin;
