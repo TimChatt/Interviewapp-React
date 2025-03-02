@@ -6,11 +6,13 @@ import AdminDashboard from "./AdminDashboard";
 const AdminPanel = () => {
   const { user } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
   useEffect(() => {
     fetchUsers();
+    fetchLogs();
   }, []);
 
   const fetchUsers = async () => {
@@ -27,6 +29,21 @@ const AdminPanel = () => {
       console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLogs = async () => {
+    try {
+      const response = await fetch("https://interviewappbe-production.up.railway.app/api/audit-logs", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      const data = await response.json();
+      setLogs(data);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
     }
   };
 
@@ -114,7 +131,24 @@ const AdminPanel = () => {
             <Text>Access Control: Role-Based Access, Permissions Management</Text>
           </TabPanel>
           <TabPanel>
-            <Text>Audit Logs: View system logs, track approvals, logins, changes</Text>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Action</Th>
+                  <Th>User</Th>
+                  <Th>Timestamp</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {logs.map((log, index) => (
+                  <Tr key={index}>
+                    <Td>{log.action}</Td>
+                    <Td>{log.username}</Td>
+                    <Td>{new Date(log.timestamp).toLocaleString()}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
           </TabPanel>
           <TabPanel>
             <Text>Settings: API Keys, Integrations, Theme Customization</Text>
