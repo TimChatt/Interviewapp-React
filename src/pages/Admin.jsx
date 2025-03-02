@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Badge, Select, Spinner, useToast } from "@chakra-ui/react";
+import { Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Badge, Select, Spinner, useToast, Input } from "@chakra-ui/react";
 import { AuthContext } from "../contexts/AuthContext";
 import AdminDashboard from "./AdminDashboard";
 
@@ -8,6 +8,9 @@ const AdminPanel = () => {
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterUser, setFilterUser] = useState("");
+  const [filterAction, setFilterAction] = useState("");
+  const [filterDate, setFilterDate] = useState("");
   const toast = useToast();
 
   useEffect(() => {
@@ -47,22 +50,11 @@ const AdminPanel = () => {
     }
   };
 
-  const handleRoleChange = async (username, newRole) => {
-    try {
-      await fetch(`https://interviewappbe-production.up.railway.app/api/users/${username}/role`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify({ role: newRole })
-      });
-      toast({ title: `Role updated to ${newRole}`, status: "success", duration: 3000, isClosable: true });
-      fetchUsers();
-    } catch (error) {
-      console.error("Error updating role:", error);
-    }
-  };
+  const filteredLogs = logs.filter(log => 
+    (filterUser ? log.username.includes(filterUser) : true) &&
+    (filterAction ? log.action.includes(filterAction) : true) &&
+    (filterDate ? log.timestamp.startsWith(filterDate) : true)
+  );
 
   if (loading) {
     return <Spinner size="xl" color="purple.500" />;
@@ -109,7 +101,7 @@ const AdminPanel = () => {
                       <Badge colorScheme={user.is_approved ? "green" : "yellow"}>{user.is_approved ? "Approved" : "Pending"}</Badge>
                     </Td>
                     <Td>
-                      <Select placeholder="Select Role" defaultValue={user.role} size="sm" onChange={(e) => handleRoleChange(user.username, e.target.value)}>
+                      <Select placeholder="Select Role" defaultValue={user.role} size="sm">
                         <option value="Admin">Admin</option>
                         <option value="Manager">Manager</option>
                         <option value="User">User</option>
@@ -117,9 +109,7 @@ const AdminPanel = () => {
                     </Td>
                     <Td>
                       {!user.is_approved && (
-                        <Button colorScheme="green" size="sm" onClick={() => handleRoleChange(user.username, 'Approved')}>
-                          Approve
-                        </Button>
+                        <Button colorScheme="green" size="sm">Approve</Button>
                       )}
                     </Td>
                   </Tr>
@@ -131,6 +121,11 @@ const AdminPanel = () => {
             <Text>Access Control: Role-Based Access, Permissions Management</Text>
           </TabPanel>
           <TabPanel>
+            <Box mb="4">
+              <Input placeholder="Filter by User" value={filterUser} onChange={(e) => setFilterUser(e.target.value)} mb={2} />
+              <Input placeholder="Filter by Action" value={filterAction} onChange={(e) => setFilterAction(e.target.value)} mb={2} />
+              <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+            </Box>
             <Table variant="simple">
               <Thead>
                 <Tr>
@@ -140,7 +135,7 @@ const AdminPanel = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {logs.map((log, index) => (
+                {filteredLogs.map((log, index) => (
                   <Tr key={index}>
                     <Td>{log.action}</Td>
                     <Td>{log.username}</Td>
@@ -149,9 +144,6 @@ const AdminPanel = () => {
                 ))}
               </Tbody>
             </Table>
-          </TabPanel>
-          <TabPanel>
-            <Text>Settings: API Keys, Integrations, Theme Customization</Text>
           </TabPanel>
           <TabPanel>
             <Text>Security: 2FA, Password Policy, IP Whitelisting</Text>
