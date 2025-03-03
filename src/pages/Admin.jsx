@@ -47,6 +47,8 @@ const Admin = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const toast = useToast();
 
+  const API_BASE_URL = "https://interviewappbe-production.up.railway.app";
+
   useEffect(() => {
     if (!user || user.role !== "admin") {
       navigate("/unauthorized"); // Redirect unauthorized users
