@@ -57,18 +57,40 @@ const Admin = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/users");
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
       const data = await response.json();
+      console.log("Fetched Users:", data); // Debugging
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
-
+  
   const fetchIPs = async () => {
     try {
-      const response = await fetch("/api/ip-whitelist");
+      const response = await fetch(`${API_BASE_URL}/api/ip-whitelist`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
       const data = await response.json();
+      console.log("Fetched IPs:", data); // Debugging
       setIps(data);
     } catch (error) {
       console.error("Error fetching IP whitelist:", error);
