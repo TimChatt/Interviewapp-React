@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import CandidateTable from "../components/CandidateTable";
 import { 
-  Box, Heading, Text, Select, Grid, GridItem, Flex, Spinner, Card, CardBody, Alert, AlertIcon 
+  Box, Heading, Text, Select, Grid, GridItem, Flex, Spinner, Card, CardBody, Alert, AlertIcon, Button
 } from "@chakra-ui/react";
 
 const BACKEND_URL = "https://interviewappbe-production.up.railway.app"; // ✅ Backend URL
@@ -26,16 +26,14 @@ const Candidate = () => {
             const data = await response.json();
             console.log("✅ Interview Stages Response:", data);
     
-            // ✅ Ensure we store it as an object
-            setInterviewStages(data);
+            setInterviewStages(data); // ✅ Store interview stages as object
     
         } catch (err) {
             console.error("❌ Error fetching interview stages:", err);
         }
     }, []);
 
-
-    // Fetch candidates from backend
+    /** ✅ Fetch Candidates from Backend */
     const fetchCandidates = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -59,8 +57,8 @@ const Candidate = () => {
                 candidate_id: candidate.candidate_id, 
                 name: candidate.name,
                 job_title: candidate.job_title || "Unknown", 
-                department: candidate.department || "Unknown",
-                interview_date: candidate.interview_date || "N/A",
+                department: candidate.department || candidate.job_department || "Unknown", // ✅ Use job department if missing
+                interview_date: candidate.interview_date ? new Date(candidate.interview_date).toLocaleDateString() : "N/A", // ✅ Format date
                 interview_stage: candidate.interview_stage || "N/A",
                 status: candidate.status,
             }));
@@ -68,15 +66,18 @@ const Candidate = () => {
             console.log("🔹 Transformed Candidates:", transformedCandidates);
     
             setCandidates(transformedCandidates);
-            setLoading(false);  // ✅ Ensure loading stops
         } catch (err) {
             console.error("❌ Error fetching candidates:", err);
             setError(err.message);
-            setLoading(false);  // ✅ Ensure loading stops even if there's an error
+        } finally {
+            setLoading(false);  // ✅ Ensure loading stops
         }
     }, []);
 
-
+    /** ✅ Fetch Data in Order */
+    useEffect(() => {
+        fetchInterviewStages(); // Fetch interview stages first
+    }, []);
 
     useEffect(() => {
         if (Object.keys(interviewStages).length > 0) {
@@ -133,6 +134,11 @@ const Candidate = () => {
                             <option value="Archived">Archived</option>
                         </Select>
                     </Flex>
+
+                    {/* Reload Button */}
+                    <Button colorScheme="blue" onClick={fetchCandidates} mb="6">
+                        Reload Candidates
+                    </Button>
 
                     {/* Candidate Table */}
                     <Box bg="white" p="6" borderRadius="lg" shadow="md">
