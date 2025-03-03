@@ -1,35 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box, Heading, Text, Button, Tag, Flex, Divider, Tooltip, Tabs, TabList, TabPanels, Tab, TabPanel, Progress, VStack, Card, CardBody, Badge
+  Box, Heading, Text, Button, Tag, Flex, Divider, Tabs, TabList, TabPanels, Tab, TabPanel, Progress, VStack, Card, CardBody, Badge, Spinner, Alert, AlertIcon
 } from "@chakra-ui/react";
-import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
-} from "recharts";
-import ashbyMockData from "../mockdata/ashbyMockData.json";
-import metaviewMockData from "../mockdata/metaviewMockData.json";
-import interviewerTrainingMock from "../mockdata/InterviewerTrainingMock.json";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from "recharts";
 
-// Helper function to get speaking ratio
-function getSpeakingRatio(transcriptEntries) {
-  let candidateWords = 0;
-  let interviewerWords = 0;
-  transcriptEntries.forEach((entry) => {
-    candidateWords += (entry.candidateAnswer || "").split(/\s+/).length;
-    interviewerWords += (entry.question || "").split(/\s+/).length;
-  });
-  return { candidateWords, interviewerWords };
-}
+const BACKEND_URL = "https://interviewappbe-production.up.railway.app"; // ✅ Backend URL
 
 const CandidateProfile = () => {
   const { candidateId } = useParams();
   const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [candidate, setCandidate] = useState(null);
+  const [scorecard, setScorecard] = useState([]);
+  const [transcript, setTranscript] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const candidate = ashbyMockData[parseInt(candidateId) - 1]; // Use index-based lookup
-  const transcriptData = metaviewMockData.find(meta => meta.candidateName === candidate?.candidateName);
-  const transcript = transcriptData?.transcript || [];
-  const interviewTraining = interviewerTrainingMock.find(job => job.jobTitle === candidate?.jobTitle)?.questions || [];
+  /** ✅ Fetch Candidate Profile */
+  const fetchCandidate = useCallback(async () => {
+    try {
+      console.log(`🔍 Fetching candidate profile for ID: ${candidateId}`);
+      const response = await fetch(`${BACKEND_URL}/candidate/${candidateId}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("✅ Candidate Profile:", data);
+      setCandidate(data);
+    } catch (err) {
+      console.error("❌ Error fetching candidate profile:", err);
+      setError(err.message);
+    }
+  }, [candidateId]);
+
+  /** ✅ Fetch Candidate Scorecard */
+  const fetchScorecard = useCallback(async () => {
+    try {
+      console.log(`🔍 Fetching scorecard for Candidate ID: ${candidateId}`);
+      const response = await fetch(`${BACKEND_URL}/candidate/${candidateId}/scorecard`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("✅ Scorecard Data:", data);
+      setScorecard(data);
+    } catch (err) {
+      console.error("❌ Error fetching scorecard:", err);
+    }
+  }, [candidateId]);
+
+  /** ✅ Fetch Interview Transcript */
+  const fetchTranscript = useCallback(async () => {
+    try {
+      console.log(`🔍 Fetching interview transcript for Candidate ID: ${candidateId}`);
+      const response = await fetch(`${BACKEND_URL}/candidate/${candidateId}/interview-transcript`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("✅ Transcript Data:", data);
+      setTranscript(data);
+    } catch (err) {
+      console.error("❌ Error fetching interview transcript:", err);
+    }
+  }, [candidateId]);
+
+  /** ✅ Fetch All Candidate Data on Load */
+  useEffect(() => {
+    fetchCandidate();
+    fetchScorecard();
+    fetchTranscript();
+    setLoading(false);
+  }, [fetchCandidate, fetchScorecard, fetchTranscript]);
+
+  if (loading) {
+    return <Spinner size="xl" color="purple.500" />;
+  }
+
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        {error}
+      </Alert>
+    );
+  }
 
   if (!candidate) {
     return (
@@ -42,15 +103,10 @@ const CandidateProfile = () => {
     );
   }
 
-  const { candidateWords, interviewerWords } = getSpeakingRatio(transcript);
-  const totalWords = candidateWords + interviewerWords || 1;
-  const candidateRatio = ((candidateWords / totalWords) * 100).toFixed(1);
-  const interviewerRatio = ((interviewerWords / totalWords) * 100).toFixed(1);
-
-  const radarData = candidate?.scores ? Object.entries(candidate.scores).map(([skill, score]) => ({
+  const radarData = scorecard.map(({ skill, score }) => ({
     skill,
     candidateScore: score
-  })) : [];
+  }));
 
   return (
     <Box maxW="1000px" mx="auto" py="6">
@@ -60,44 +116,34 @@ const CandidateProfile = () => {
 
       <Card mb="6" p="6" bg="white" shadow="md">
         <CardBody>
-          <Heading size="xl" mb="2">{candidate.candidateName}</Heading>
-          <Text fontSize="lg" color="gray.600"><strong>Job Title:</strong> {candidate.jobTitle}</Text>
-          <Text fontSize="lg" color="gray.600"><strong>Interview Date:</strong> {candidate.interviewDate}</Text>
+          <Heading size="xl" mb="2">{candidate.name}</Heading>
+          <Text fontSize="lg" color="gray.600"><strong>Job Title:</strong> {candidate.job_title}</Text>
+          <Text fontSize="lg" color="gray.600"><strong>Department:</strong> {candidate.department}</Text>
+          <Text fontSize="lg" color="gray.600"><strong>Interview Date:</strong> {candidate.interview_date}</Text>
           <Text fontSize="lg" color="gray.600">
             <strong>Status:</strong> 
             <Tag colorScheme={candidate.status === "Hired" ? "green" : "red"} ml="2">
               {candidate.status}
             </Tag>
           </Text>
-          <Text fontSize="lg" color="gray.600"><strong>Speaking Ratio:</strong> Candidate {candidateRatio}% / Interviewer {interviewerRatio}%</Text>
         </CardBody>
       </Card>
 
-      <Tabs variant="enclosed" index={selectedTab} onChange={setSelectedTab}>
+      <Tabs variant="enclosed">
         <TabList>
-          <Tab>AI Summary</Tab>
           <Tab>Scorecard</Tab>
           <Tab>Competency Radar</Tab>
           <Tab>Interview Transcript</Tab>
-          <Tab>Interview Training</Tab>
         </TabList>
 
         <TabPanels>
-          <TabPanel>
-            <Card p="6" bg="white" shadow="md">
-              <CardBody>
-                <Heading size="md" mb="4">AI-Generated Summary</Heading>
-                <Text fontSize="md" color="gray.600">{candidate?.aiAdvice?.general || "No AI summary available."}</Text>
-              </CardBody>
-            </Card>
-          </TabPanel>
-
+          {/* ✅ Scorecard */}
           <TabPanel>
             <Card p="6" bg="white" shadow="md">
               <CardBody>
                 <Heading size="md" mb="4">Scorecard</Heading>
-                {candidate?.scores ? (
-                  Object.entries(candidate.scores).map(([skill, score]) => (
+                {scorecard.length > 0 ? (
+                  scorecard.map(({ skill, score }) => (
                     <Box key={skill} mb="3">
                       <Text><strong>{skill}:</strong> {score}/5</Text>
                       <Progress value={(score / 5) * 100} size="sm" colorScheme="purple" mt="1" />
@@ -108,6 +154,7 @@ const CandidateProfile = () => {
             </Card>
           </TabPanel>
 
+          {/* ✅ Competency Radar Chart */}
           <TabPanel>
             <Card p="6" bg="white" shadow="md">
               <CardBody>
@@ -125,6 +172,7 @@ const CandidateProfile = () => {
             </Card>
           </TabPanel>
 
+          {/* ✅ Interview Transcript */}
           <TabPanel>
             <Card p="6" bg="white" shadow="md">
               <CardBody>
@@ -148,4 +196,3 @@ const CandidateProfile = () => {
 };
 
 export default CandidateProfile;
-
