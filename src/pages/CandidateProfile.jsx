@@ -12,7 +12,7 @@ const CandidateProfile = () => {
   const navigate = useNavigate();
   const [candidate, setCandidate] = useState(null);
   const [scorecard, setScorecard] = useState([]);
-  const [transcript, setTranscript] = useState([]);
+  const [interviewFeedback, setInterviewFeedback] = useState([]); // ✅ Replacing transcript with feedback
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -53,21 +53,21 @@ const CandidateProfile = () => {
     }
   }, [candidateId]);
 
-  /** ✅ Fetch Interview Transcript */
-  const fetchTranscript = useCallback(async () => {
+  /** ✅ Fetch Interview Feedback */
+  const fetchInterviewFeedback = useCallback(async () => {
     try {
-      console.log(`🔍 Fetching interview transcript for Candidate ID: ${candidateId}`);
-      const response = await fetch(`${BACKEND_URL}/candidate/${candidateId}/interview-transcript`);
+      console.log(`🔍 Fetching interview feedback for Candidate ID: ${candidateId}`);
+      const response = await fetch(`${BACKEND_URL}/candidate/${candidateId}/interview-feedback`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("✅ Transcript Data:", data);
-      setTranscript(data);
+      console.log("✅ Interview Feedback Data:", data);
+      setInterviewFeedback(data);
     } catch (err) {
-      console.error("❌ Error fetching interview transcript:", err);
+      console.error("❌ Error fetching interview feedback:", err);
     }
   }, [candidateId]);
 
@@ -75,9 +75,9 @@ const CandidateProfile = () => {
   useEffect(() => {
     fetchCandidate();
     fetchScorecard();
-    fetchTranscript();
+    fetchInterviewFeedback(); // ✅ Call feedback API instead of transcript
     setLoading(false);
-  }, [fetchCandidate, fetchScorecard, fetchTranscript]);
+  }, [fetchCandidate, fetchScorecard, fetchInterviewFeedback]);
 
   if (loading) {
     return <Spinner size="xl" color="purple.500" />;
@@ -133,7 +133,7 @@ const CandidateProfile = () => {
         <TabList>
           <Tab>Scorecard</Tab>
           <Tab>Competency Radar</Tab>
-          <Tab>Interview Transcript</Tab>
+          <Tab>Interview Feedback</Tab> {/* ✅ Updated Label */}
         </TabList>
 
         <TabPanels>
@@ -172,20 +172,22 @@ const CandidateProfile = () => {
             </Card>
           </TabPanel>
 
-          {/* ✅ Interview Transcript */}
+          {/* ✅ Interview Feedback */}
           <TabPanel>
             <Card p="6" bg="white" shadow="md">
               <CardBody>
-                <Heading size="md" mb="4">Interview Transcript</Heading>
-                {transcript.length > 0 ? (
-                  transcript.map((entry, idx) => (
+                <Heading size="md" mb="4">Interview Feedback</Heading>
+                {interviewFeedback.length > 0 ? (
+                  interviewFeedback.map((entry, idx) => (
                     <Box key={idx} mb="4">
-                      <Text><strong>Q:</strong> {entry.question}</Text>
-                      <Text><em>A: {entry.candidateAnswer}</em></Text>
+                      <Text><strong>Interviewer:</strong> {entry.interviewer}</Text>
+                      <Text><strong>Rating:</strong> {entry.rating}/5</Text>
+                      <Text><strong>Comments:</strong> {entry.comments}</Text>
+                      <Text fontSize="sm" color="gray.500">Submitted on {new Date(entry.submitted_at).toLocaleDateString()}</Text>
                       <Divider my="2" />
                     </Box>
                   ))
-                ) : <Text>No transcript available.</Text>}
+                ) : <Text>No feedback available.</Text>}
               </CardBody>
             </Card>
           </TabPanel>
