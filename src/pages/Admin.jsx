@@ -49,14 +49,25 @@ const Admin = () => {
 
   const API_BASE_URL = "https://interviewappbe-production.up.railway.app";
 
+  // Ensure user is an admin
   useEffect(() => {
-    if (!user || user.role !== "admin") {
-      navigate("/unauthorized"); // Redirect unauthorized users
+    if (!user) {
+      navigate("/unauthorized");
+      return;
     }
+
+    // Normalize role (remove any extra quotes)
+    const normalizedRole = user.role?.replace(/'/g, "").trim();
+    if (normalizedRole !== "admin") {
+      navigate("/unauthorized");
+      return;
+    }
+
     fetchUsers();
     fetchIPs();
   }, [user, navigate]);
 
+  // Fetch Users
   const fetchUsers = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
@@ -65,19 +76,21 @@ const Admin = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      console.log("Fetched Users:", data); // Debugging
+      console.log("Fetched Users:", data);
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
+      toast({ title: "Error fetching users", status: "error" });
     }
   };
-  
+
+  // Fetch IP Whitelist
   const fetchIPs = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/ip-whitelist`, {
@@ -86,23 +99,28 @@ const Admin = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      console.log("Fetched IPs:", data); // Debugging
+      console.log("Fetched IPs:", data);
       setIps(data);
     } catch (error) {
       console.error("Error fetching IP whitelist:", error);
+      toast({ title: "Error fetching IP whitelist", status: "error" });
     }
   };
 
+  // Handle user actions (approve/suspend)
   const handleUserAction = (username, action) => {
-    fetch("/api/users/update", {
+    fetch(`${API_BASE_URL}/api/users/update`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
       body: JSON.stringify({ username, action }),
     }).then(() => {
       fetchUsers();
@@ -110,10 +128,14 @@ const Admin = () => {
     });
   };
 
+  // Handle role change
   const handleRoleChange = (username) => {
-    fetch("/api/users/update", {
+    fetch(`${API_BASE_URL}/api/users/update`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
       body: JSON.stringify({ username, action: "update-role", role: selectedRole }),
     }).then(() => {
       fetchUsers();
@@ -122,10 +144,14 @@ const Admin = () => {
     });
   };
 
+  // Handle IP actions (add/delete)
   const handleIPAction = (action) => {
-    fetch(`/api/ip-whitelist`, {
+    fetch(`${API_BASE_URL}/api/ip-whitelist`, {
       method: action === "add" ? "POST" : "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
       body: JSON.stringify({ ip: ipAddress }),
     }).then(() => {
       fetchIPs();
@@ -144,7 +170,7 @@ const Admin = () => {
       <Tabs variant="soft-rounded" colorScheme="purple">
         <TabList>
           <Tab>User Management</Tab>
-          {user.role === "admin" && <Tab>Security</Tab>}
+          <Tab>Security</Tab>
           <Tab>Audit Logs</Tab>
         </TabList>
 
@@ -158,7 +184,7 @@ const Admin = () => {
                     <Th>Email</Th>
                     <Th>Status</Th>
                     <Th>Role</Th>
-                    {user.role === "admin" && <Th>Actions</Th>}
+                    <Th>Actions</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -167,34 +193,32 @@ const Admin = () => {
                       <Td>{userData.username}</Td>
                       <Td>{userData.email}</Td>
                       <Td>{userData.is_approved ? "Approved" : "Pending"}</Td>
-                      <Td>{userData.role}</Td>
-                      {user.role === "admin" && (
-                        <Td>
-                          {!userData.is_approved && (
-                            <IconButton
-                              icon={<FaCheck />}
-                              colorScheme="green"
-                              onClick={() => handleUserAction(userData.username, "approve")}
-                            />
-                          )}
+                      <Td>{userData.role?.replace(/'/g, "").trim()}</Td>
+                      <Td>
+                        {!userData.is_approved && (
                           <IconButton
-                            icon={<FaTimes />}
-                            colorScheme="red"
-                            ml={2}
-                            onClick={() => handleUserAction(userData.username, "suspend")}
+                            icon={<FaCheck />}
+                            colorScheme="green"
+                            onClick={() => handleUserAction(userData.username, "approve")}
                           />
-                          <IconButton
-                            icon={<FaUserShield />}
-                            colorScheme="blue"
-                            ml={2}
-                            onClick={() => {
-                              setModalType("update-role");
-                              setSelectedUser(userData.username);
-                              setIsModalOpen(true);
-                            }}
-                          />
-                        </Td>
-                      )}
+                        )}
+                        <IconButton
+                          icon={<FaTimes />}
+                          colorScheme="red"
+                          ml={2}
+                          onClick={() => handleUserAction(userData.username, "suspend")}
+                        />
+                        <IconButton
+                          icon={<FaUserShield />}
+                          colorScheme="blue"
+                          ml={2}
+                          onClick={() => {
+                            setModalType("update-role");
+                            setSelectedUser(userData.username);
+                            setIsModalOpen(true);
+                          }}
+                        />
+                      </Td>
                     </Tr>
                   ))}
                 </Tbody>
@@ -202,20 +226,18 @@ const Admin = () => {
             </TableContainer>
           </TabPanel>
 
-          {user.role === "admin" && (
-            <TabPanel>
-              <VStack align="stretch">
-                <Heading size="md">IP Whitelist</Heading>
-                {ips.map((ip) => (
-                  <Box key={ip} bg="gray.100" p="3" borderRadius="md" display="flex" justifyContent="space-between">
-                    <Text>{ip}</Text>
-                    <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleIPAction("delete")} />
-                  </Box>
-                ))}
-                <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={() => { setModalType("add-ip"); setIsModalOpen(true); }}>Add IP</Button>
-              </VStack>
-            </TabPanel>
-          )}
+          <TabPanel>
+            <VStack align="stretch">
+              <Heading size="md">IP Whitelist</Heading>
+              {ips.map((ip) => (
+                <Box key={ip} bg="gray.100" p="3" borderRadius="md" display="flex" justifyContent="space-between">
+                  <Text>{ip}</Text>
+                  <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleIPAction("delete")} />
+                </Box>
+              ))}
+              <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={() => { setModalType("add-ip"); setIsModalOpen(true); }}>Add IP</Button>
+            </VStack>
+          </TabPanel>
 
           <TabPanel>
             <Text>Audit logs will be displayed here...</Text>
