@@ -22,7 +22,7 @@ const CandidateTable = ({ candidates }) => {
   const [sortOrder, setSortOrder] = useState("asc");
   const navigate = useNavigate();
 
-  // 🔍 **Filter candidates based on name**
+  // 🔍 **Filter candidates by name**
   const filteredCandidates = candidates.filter((candidate) =>
     candidate.name?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -86,7 +86,7 @@ const CandidateTable = ({ candidates }) => {
           </Thead>
           <Tbody>
             {sortedCandidates.map((candidate) => (
-              <Tr key={candidate.id} _hover={{ bg: "gray.50" }}>
+              <Tr key={candidate.candidate_id} _hover={{ bg: "gray.50" }}>
                 <Td>{candidate.name || "Unknown"}</Td>
                 <Td>{candidate.job_title || "Unknown"}</Td>
                 <Td>{candidate.department || "Unknown"}</Td>
@@ -100,7 +100,8 @@ const CandidateTable = ({ candidates }) => {
                   <Button
                     colorScheme="blue"
                     size="sm"
-                    onClick={() => navigate(`/candidates/${candidate.id}`)} // ✅ Corrected navigation path
+                    onClick={() => navigate(`/candidates/${candidate.candidate_id}`)} // ✅ Ensured correct ID
+                    disabled={!candidate.candidate_id} // 🚨 Prevents navigating if ID is missing
                   >
                     View
                   </Button>
