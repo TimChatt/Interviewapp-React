@@ -12,10 +12,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
+      console.log("Retrieved user from localStorage:", JSON.parse(storedUser)); // 🔍 Debugging log
       setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, []);
+
 
   // Login function
   const login = async (username, password) => {
@@ -28,12 +30,19 @@ export const AuthProvider = ({ children }) => {
           body: JSON.stringify({ username, password }),
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Login failed");
       }
-
+  
       const data = await response.json();
+      console.log("Login API Response:", data); // 🔍 Debugging log
+  
+      if (!data.role) {
+        console.error("🚨 User role is missing from API response!");
+        return false;
+      }
+  
       // Save user data to localStorage
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
@@ -43,6 +52,7 @@ export const AuthProvider = ({ children }) => {
       return false;
     }
   };
+
 
   // Logout function
   const logout = () => {
