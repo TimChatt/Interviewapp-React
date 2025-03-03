@@ -49,16 +49,18 @@ const Admin = () => {
 
   const API_BASE_URL = "https://interviewappbe-production.up.railway.app";
 
-  // Ensure user is an admin
   useEffect(() => {
     if (!user) {
       navigate("/unauthorized");
       return;
     }
 
-    // Normalize role (remove any extra quotes)
+    console.log("User Object:", user);
+    console.log("User Role:", user?.role);
+    console.log("Is Admin:", user?.is_admin);
+
     const normalizedRole = user.role?.replace(/'/g, "").trim();
-    if (normalizedRole !== "admin") {
+    if (!(user.is_admin || normalizedRole === "admin")) {
       navigate("/unauthorized");
       return;
     }
@@ -67,7 +69,6 @@ const Admin = () => {
     fetchIPs();
   }, [user, navigate]);
 
-  // Fetch Users
   const fetchUsers = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
@@ -90,7 +91,6 @@ const Admin = () => {
     }
   };
 
-  // Fetch IP Whitelist
   const fetchIPs = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/ip-whitelist`, {
@@ -113,7 +113,6 @@ const Admin = () => {
     }
   };
 
-  // Handle user actions (approve/suspend)
   const handleUserAction = (username, action) => {
     fetch(`${API_BASE_URL}/api/users/update`, {
       method: "PUT",
@@ -128,7 +127,6 @@ const Admin = () => {
     });
   };
 
-  // Handle role change
   const handleRoleChange = (username) => {
     fetch(`${API_BASE_URL}/api/users/update`, {
       method: "PUT",
@@ -144,7 +142,6 @@ const Admin = () => {
     });
   };
 
-  // Handle IP actions (add/delete)
   const handleIPAction = (action) => {
     fetch(`${API_BASE_URL}/api/ip-whitelist`, {
       method: action === "add" ? "POST" : "DELETE",
@@ -166,14 +163,12 @@ const Admin = () => {
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         Admin Panel
       </Heading>
-
       <Tabs variant="soft-rounded" colorScheme="purple">
         <TabList>
           <Tab>User Management</Tab>
           <Tab>Security</Tab>
           <Tab>Audit Logs</Tab>
         </TabList>
-
         <TabPanels>
           <TabPanel>
             <TableContainer>
@@ -208,39 +203,12 @@ const Admin = () => {
                           ml={2}
                           onClick={() => handleUserAction(userData.username, "suspend")}
                         />
-                        <IconButton
-                          icon={<FaUserShield />}
-                          colorScheme="blue"
-                          ml={2}
-                          onClick={() => {
-                            setModalType("update-role");
-                            setSelectedUser(userData.username);
-                            setIsModalOpen(true);
-                          }}
-                        />
                       </Td>
                     </Tr>
                   ))}
                 </Tbody>
               </Table>
             </TableContainer>
-          </TabPanel>
-
-          <TabPanel>
-            <VStack align="stretch">
-              <Heading size="md">IP Whitelist</Heading>
-              {ips.map((ip) => (
-                <Box key={ip} bg="gray.100" p="3" borderRadius="md" display="flex" justifyContent="space-between">
-                  <Text>{ip}</Text>
-                  <IconButton icon={<FaTrash />} colorScheme="red" onClick={() => handleIPAction("delete")} />
-                </Box>
-              ))}
-              <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={() => { setModalType("add-ip"); setIsModalOpen(true); }}>Add IP</Button>
-            </VStack>
-          </TabPanel>
-
-          <TabPanel>
-            <Text>Audit logs will be displayed here...</Text>
           </TabPanel>
         </TabPanels>
       </Tabs>
