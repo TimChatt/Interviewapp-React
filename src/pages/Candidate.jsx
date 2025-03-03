@@ -54,15 +54,15 @@ const Candidate = () => {
     
             // Transform data to match table expectations
             const transformedCandidates = data.map((candidate) => ({
-                candidate_id: candidate.candidate_id, 
+                candidate_id: candidate.id || candidate.candidate_id, // ✅ Ensures we use the right key
                 name: candidate.name,
                 job_title: candidate.job_title || "Unknown", 
-                department: candidate.department || candidate.job_department || "Unknown", // ✅ Use job department if missing
-                interview_date: candidate.interview_date ? new Date(candidate.interview_date).toLocaleDateString() : "N/A", // ✅ Format date
+                department: candidate.department || candidate.job_department || "Unknown",
+                interview_date: candidate.interview_date ? new Date(candidate.interview_date).toLocaleDateString() : "N/A",
                 interview_stage: candidate.interview_stage || "N/A",
                 status: candidate.status,
             }));
-    
+            
             console.log("🔹 Transformed Candidates:", transformedCandidates);
     
             setCandidates(transformedCandidates);
