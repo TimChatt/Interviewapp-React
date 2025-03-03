@@ -42,7 +42,7 @@ const Candidate = () => {
         try {
             console.log("🔍 Fetching candidates...");
             const response = await fetch(`${BACKEND_URL}/candidates`);
-            
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -50,11 +50,15 @@ const Candidate = () => {
             const data = await response.json();
             console.log("✅ Full API Response:", data);
     
+            if (!Array.isArray(data) || data.length === 0) {
+                console.warn("⚠️ No candidates found!");
+            }
+    
             // Transform data to match table expectations
             const transformedCandidates = data.map((candidate) => ({
                 candidate_id: candidate.candidate_id, 
                 name: candidate.name,
-                job_title: candidate.job_title, // ✅ Pass job title
+                job_title: candidate.job_title || "Unknown", 
                 department: candidate.department || "Unknown",
                 interview_date: candidate.interview_date || "N/A",
                 interview_stage: candidate.interview_stage || "N/A",
@@ -62,14 +66,16 @@ const Candidate = () => {
             }));
     
             console.log("🔹 Transformed Candidates:", transformedCandidates);
+    
             setCandidates(transformedCandidates);
+            setLoading(false);  // ✅ Ensure loading stops
         } catch (err) {
             console.error("❌ Error fetching candidates:", err);
             setError(err.message);
-        } finally {
-            setLoading(false);
+            setLoading(false);  // ✅ Ensure loading stops even if there's an error
         }
     }, []);
+
 
 
     useEffect(() => {
