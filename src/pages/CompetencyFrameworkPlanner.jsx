@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box, Heading, Input, Button, VStack, HStack, Select, UnorderedList, ListItem,
-  Alert, AlertIcon, Card, CardBody, Spinner, Grid, GridItem, Text
+  Alert, AlertIcon
 } from "@chakra-ui/react";
 
 const CompetencyFramework = () => {
@@ -26,10 +26,11 @@ const CompetencyFramework = () => {
   const [departmentQuery, setDepartmentQuery] = useState("");
   const [showDeptDropdown, setShowDeptDropdown] = useState(false);
 
-  // Filter departments based on the typed query
-  const filteredDepartments = departments.filter(dep =>
-    dep.name.toLowerCase().includes(departmentQuery.toLowerCase())
-  );
+  // Filter departments safely
+  const filteredDepartments = departments.filter(dep => {
+    const depName = (dep.name || dep.department || "").toLowerCase();
+    return depName.includes(departmentQuery.toLowerCase());
+  });
 
   // Fetch departments and job titles
   useEffect(() => {
@@ -43,10 +44,11 @@ const CompetencyFramework = () => {
   
         // Fetch job titles for the first department
         if (depData.departments.length > 0) {
-          const firstDepartment = depData.departments[0].department;
+          // Using either dep.name or dep.department
+          const firstDepartmentName = depData.departments[0].name || depData.departments[0].department;
   
           const jobRes = await fetch(
-            `https://interviewappbe-production.up.railway.app/api/job-titles/by-department?department=${encodeURIComponent(firstDepartment)}`
+            `https://interviewappbe-production.up.railway.app/api/job-titles/by-department?department=${encodeURIComponent(firstDepartmentName)}`
           );
   
           if (!jobRes.ok) throw new Error("Failed to fetch job titles");
@@ -224,21 +226,24 @@ const CompetencyFramework = () => {
               overflowY="auto"
               zIndex={10}
             >
-              {filteredDepartments.map((dep) => (
-                <Box
-                  key={dep.id}
-                  p="2"
-                  cursor="pointer"
-                  _hover={{ bg: "gray.100" }}
-                  onClick={() => {
-                    setFramework((prev) => ({ ...prev, department: dep.id }));
-                    setDepartmentQuery(dep.name);
-                    setShowDeptDropdown(false);
-                  }}
-                >
-                  {dep.name}
-                </Box>
-              ))}
+              {filteredDepartments.map((dep) => {
+                const displayName = dep.name || dep.department || "";
+                return (
+                  <Box
+                    key={dep.id}
+                    p="2"
+                    cursor="pointer"
+                    _hover={{ bg: "gray.100" }}
+                    onClick={() => {
+                      setFramework((prev) => ({ ...prev, department: dep.id }));
+                      setDepartmentQuery(displayName);
+                      setShowDeptDropdown(false);
+                    }}
+                  >
+                    {displayName}
+                  </Box>
+                );
+              })}
             </Box>
           )}
         </Box>
@@ -275,7 +280,9 @@ const CompetencyFramework = () => {
             <Button colorScheme="blue" onClick={addCompetency}>Add</Button>
           </HStack>
           <UnorderedList mt="2">
-            {framework.competencies.map((competency, index) => <ListItem key={index}><strong>{competency.name}</strong></ListItem>)}
+            {framework.competencies.map((competency, index) => (
+              <ListItem key={index}><strong>{competency.name}</strong></ListItem>
+            ))}
           </UnorderedList>
         </Box>
       </VStack>
@@ -297,4 +304,3 @@ const CompetencyFramework = () => {
 };
 
 export default CompetencyFramework;
-
