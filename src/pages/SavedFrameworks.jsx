@@ -25,49 +25,66 @@ const SavedFrameworks = () => {
     fetchData();
   }, []);
 
-  /** ✅ Fetch Frameworks & Job Titles */
+  /** ✅ Fetch Frameworks & Job Title Counts concurrently */
   const fetchData = async () => {
     setLoading(true);
     try {
-      // ✅ Fetch all frameworks (departments)
+      // Fetch all frameworks (departments)
       const frameworksResponse = await fetch(
-        `https://interviewappbe-production.up.railway.app/api/search-frameworks`
+        "https://interviewappbe-production.up.railway.app/api/search-frameworks"
       );
-      if (!frameworksResponse.ok) throw new Error("Failed to fetch frameworks.");
+      if (!frameworksResponse.ok)
+        throw new Error("Failed to fetch frameworks.");
       const frameworksData = await frameworksResponse.json();
       const frameworksList = frameworksData.frameworks || [];
 
       console.log("✅ Frameworks:", frameworksList);
 
-      // ✅ Fetch job titles for each department separately
-      const departmentJobCounts = {};
-
-      for (const framework of frameworksList) {
+      // Create an array of promises to fetch job titles for each department concurrently
+      const jobTitlePromises = frameworksList.map((framework) => {
         const departmentName = framework.department;
-
-        if (!departmentName) continue;
-
-        const jobTitlesResponse = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${encodeURIComponent(departmentName)}`
-        );
-
-        if (!jobTitlesResponse.ok) {
-          console.error(`❌ Failed to fetch job titles for ${departmentName}`);
-          continue;
+        if (!departmentName) {
+          return Promise.resolve({ department: "", count: 0 });
         }
+        return fetch(
+          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${encodeURIComponent(
+            departmentName
+          )}`
+        )
+          .then((resp) => {
+            if (!resp.ok) {
+              console.error(`❌ Failed to fetch job titles for ${departmentName}`);
+              return { department: departmentName, count: 0 };
+            }
+            return resp.json();
+          })
+          .then((data) => ({
+            department: departmentName,
+            count: data.job_titles ? data.job_titles.length : 0,
+          }))
+          .catch((err) => {
+            console.error(`❌ Error fetching job titles for ${departmentName}:`, err);
+            return { department: departmentName, count: 0 };
+          });
+      });
 
-        const jobTitlesData = await jobTitlesResponse.json();
+      // Wait for all job title fetches to complete
+      const results = await Promise.all(jobTitlePromises);
 
-        // ✅ Store the number of job titles for each department
-        departmentJobCounts[departmentName] = jobTitlesData.job_titles?.length || 0;
-      }
+      // Create a map from department to job title count
+      const departmentJobCounts = {};
+      results.forEach((result) => {
+        if (result.department) {
+          departmentJobCounts[result.department] = result.count;
+        }
+      });
 
       console.log("✅ Job Title Counts:", departmentJobCounts);
 
-      // ✅ Attach job title counts to frameworks
+      // Attach job title counts to frameworks
       const frameworksWithCounts = frameworksList.map((framework) => ({
         department: framework.department,
-        jobTitleCount: departmentJobCounts[framework.department] || 0, // Default to 0 if missing
+        jobTitleCount: departmentJobCounts[framework.department] || 0,
       }));
 
       setFrameworks(frameworksWithCounts);
