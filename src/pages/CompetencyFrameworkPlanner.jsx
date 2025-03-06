@@ -26,22 +26,25 @@ const CompetencyFramework = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const depRes = await fetch("https://interviewappbe-production.up.railway.app/api/departments");
-        const jobRes = await fetch("https://interviewappbe-production.up.railway.app/api/job-titles");
-
+        // ✅ Use the correct API endpoints
+        const depRes = await fetch("https://interviewappbe-production.up.railway.app/api/get-departments");
+        const jobRes = await fetch("https://interviewappbe-production.up.railway.app/api/get-job-titles");
+  
         if (!depRes.ok || !jobRes.ok) throw new Error("Failed to fetch data");
-
+  
         const depData = await depRes.json();
         const jobData = await jobRes.json();
-
+  
         setDepartments(depData.departments);
-        setJobTitles(jobData.jobTitles);
+        setJobTitles(jobData.job_titles); // ✅ Corrected key from "jobTitles" to "job_titles"
       } catch (err) {
         setError("Failed to load departments or job titles.");
+        console.error("Fetch error:", err);
       }
     }
     fetchData();
   }, []);
+
 
   // Handle job title selection or manual input
   const handleJobTitleChange = (e) => {
