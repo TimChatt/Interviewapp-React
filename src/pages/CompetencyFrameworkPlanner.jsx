@@ -50,7 +50,8 @@ const CompetencyFramework = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutsideDept);
-    return () => document.removeEventListener("mousedown", handleClickOutsideDept);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutsideDept);
   }, []);
 
   // Close job title dropdown when clicking outside, and update jobTitle if needed
@@ -67,20 +68,21 @@ const CompetencyFramework = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutsideJobTitle);
-    return () => document.removeEventListener("mousedown", handleClickOutsideJobTitle);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutsideJobTitle);
   }, [jobTitleQuery, framework.jobTitle]);
 
   // Filter departments using a safe check for name
   const filteredDepartments = departments.filter((dep) => {
-    if (!dep || typeof dep !== "object") return false; // Ensure dep is an object
+    if (!dep || typeof dep !== "object") return false;
     const name = ((dep.name || dep.department) || "").toString().toLowerCase();
     return name.includes(departmentQuery.toLowerCase());
   });
 
-  // Filter job titles from the complete list (with safe-check)
+  // Filter job titles using the proper key "job_title"
   const filteredJobTitles = allJobTitles.filter((job) => {
     if (!job || typeof job !== "object") return false;
-    return ((job.title || "")).toString().toLowerCase().includes(jobTitleQuery.toLowerCase());
+    return ((job.job_title || "")).toString().toLowerCase().includes(jobTitleQuery.toLowerCase());
   });
 
   // Fetch all departments
@@ -315,12 +317,12 @@ const CompetencyFramework = () => {
                   color="black"
                   _hover={{ bg: "gray.100" }}
                   onClick={() => {
-                    setFramework((prev) => ({ ...prev, jobTitle: job.title }));
-                    setJobTitleQuery(job.title);
+                    setFramework((prev) => ({ ...prev, jobTitle: job.job_title }));
+                    setJobTitleQuery(job.job_title);
                     setShowJobTitleDropdown(false);
                   }}
                 >
-                  {job.title}
+                  {job.job_title}
                 </Box>
               ))}
             </Box>
