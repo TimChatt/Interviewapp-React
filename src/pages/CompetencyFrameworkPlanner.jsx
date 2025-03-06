@@ -73,14 +73,14 @@ const CompetencyFramework = () => {
   // Filter departments using a safe check for name
   const filteredDepartments = departments.filter((dep) => {
     if (!dep || typeof dep !== "object") return false; // Ensure dep is an object
-    const name = (dep.name || dep.department || "").toString().toLowerCase();
+    const name = ((dep.name || dep.department) || "").toString().toLowerCase();
     return name.includes(departmentQuery.toLowerCase());
   });
 
   // Filter job titles from the complete list (with safe-check)
   const filteredJobTitles = allJobTitles.filter((job) => {
     if (!job || typeof job !== "object") return false;
-    return job.title.toString().toLowerCase().includes(jobTitleQuery.toLowerCase());
+    return ((job.title || "")).toString().toLowerCase().includes(jobTitleQuery.toLowerCase());
   });
 
   // Fetch all departments
