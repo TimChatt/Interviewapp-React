@@ -10,7 +10,8 @@ import {
   UnorderedList,
   ListItem,
   Alert,
-  AlertIcon
+  AlertIcon,
+  Text
 } from "@chakra-ui/react";
 
 const CompetencyFramework = () => {
@@ -173,6 +174,7 @@ const CompetencyFramework = () => {
       }
       const data = await response.json();
       if (data.success) {
+        // Update each competency with its generated descriptions
         const updatedCompetencies = framework.competencies.map((competency, index) => ({
           ...competency,
           descriptions: data.competencyDescriptions[index]?.levels || {},
@@ -374,6 +376,26 @@ const CompetencyFramework = () => {
             ))}
           </UnorderedList>
         </Box>
+
+        {/* Display Competency Descriptions */}
+        {framework.competencies.length > 0 && (
+          <Box mt="6">
+            <Heading size="md" mb="2">
+              Competency Descriptions
+            </Heading>
+            {framework.competencies.map((competency, index) => (
+              <Box key={index} p="2" borderWidth="1px" borderColor="gray.200" borderRadius="md" mb="2">
+                <Text fontWeight="bold">{competency.name}</Text>
+                {competency.descriptions &&
+                  Object.entries(competency.descriptions).map(([level, desc]) => (
+                    <Text key={level} fontSize="sm" ml="4">
+                      {level}: {desc}
+                    </Text>
+                  ))}
+              </Box>
+            ))}
+          </Box>
+        )}
       </VStack>
 
       <VStack mt="6">
