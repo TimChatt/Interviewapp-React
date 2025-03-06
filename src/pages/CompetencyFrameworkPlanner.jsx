@@ -26,17 +26,25 @@ const CompetencyFramework = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        // ✅ Use the correct API endpoints
-        const depRes = await fetch("https://interviewappbe-production.up.railway.app/api/get-departments");
-        const jobRes = await fetch("https://interviewappbe-production.up.railway.app/api/get-job-titles");
-  
-        if (!depRes.ok || !jobRes.ok) throw new Error("Failed to fetch data");
+        const depRes = await fetch("https://interviewappbe-production.up.railway.app/api/departments/list");
+        if (!depRes.ok) throw new Error("Failed to fetch departments");
   
         const depData = await depRes.json();
-        const jobData = await jobRes.json();
-  
         setDepartments(depData.departments);
-        setJobTitles(jobData.job_titles); // ✅ Corrected key from "jobTitles" to "job_titles"
+  
+        // ✅ Fetch job titles for the first department
+        if (depData.departments.length > 0) {
+          const firstDepartment = depData.departments[0].department;
+  
+          const jobRes = await fetch(
+            `https://interviewappbe-production.up.railway.app/api/job-titles/by-department?department=${encodeURIComponent(firstDepartment)}`
+          );
+  
+          if (!jobRes.ok) throw new Error("Failed to fetch job titles");
+  
+          const jobData = await jobRes.json();
+          setJobTitles(jobData.job_titles);
+        }
       } catch (err) {
         setError("Failed to load departments or job titles.");
         console.error("Fetch error:", err);
@@ -44,7 +52,7 @@ const CompetencyFramework = () => {
     }
     fetchData();
   }, []);
-
+  
 
   // Handle job title selection or manual input
   const handleJobTitleChange = (e) => {
