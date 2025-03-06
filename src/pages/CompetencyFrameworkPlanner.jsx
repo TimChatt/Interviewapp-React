@@ -266,6 +266,7 @@ const CompetencyFramework = () => {
                     key={dep.id}
                     p="2"
                     cursor="pointer"
+                    color="black"
                     _hover={{ bg: "gray.100" }}
                     onClick={() => {
                       setFramework((prev) => ({ ...prev, department: dep.id }));
@@ -311,6 +312,7 @@ const CompetencyFramework = () => {
                   key={job.id}
                   p="2"
                   cursor="pointer"
+                  color="black"
                   _hover={{ bg: "gray.100" }}
                   onClick={() => {
                     setFramework((prev) => ({ ...prev, jobTitle: job.title }));
