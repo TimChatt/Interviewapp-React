@@ -11,13 +11,9 @@ import {
   CardBody,
   Text,
   VStack,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
   SimpleGrid
 } from "@chakra-ui/react";
+import JobTitleDetailsModal from "./JobTitleDetailsModal";
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
@@ -26,7 +22,7 @@ const DepartmentFrameworks = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Modal state for job details (if needed)
+  // Modal state for job details
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJobTitle, setSelectedJobTitle] = useState(null);
   const [selectedJobLevel, setSelectedJobLevel] = useState(null);
@@ -52,24 +48,15 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // Utility: Extract job level (e.g., "L1" from "Software Engineer - Computer Vision L1")
-  const extractJobLevel = (jobTitle) => {
-    const match = jobTitle.match(/L\d+/);
+  // Utility: Extract job level from job title string (e.g., "L1" from "Software Engineer - Computer Vision L1")
+  const extractJobLevel = (jobTitleStr) => {
+    const match = jobTitleStr.match(/L\d+/);
     return match ? match[0] : "L1";
   };
 
-  // Compute unique job levels
-  const uniqueLevels = Array.from(new Set(jobTitles.map((job) => extractJobLevel(job.job_title))));
-  uniqueLevels.sort((a, b) => parseInt(a.replace("L", ""), 10) - parseInt(b.replace("L", ""), 10));
-
-  // Filter job titles for a given level
-  const filterJobTitlesByLevel = (level) => {
-    return jobTitles.filter((job) => extractJobLevel(job.job_title) === level);
-  };
-
-  // Open modal for job details (if using a modal)
+  // Open the modal and pass job details
   const openModal = (job) => {
-    setSelectedJobTitle(job);
+    setSelectedJobTitle(job.job_title);
     setSelectedJobLevel(extractJobLevel(job.job_title));
     setIsModalOpen(true);
   };
@@ -80,7 +67,7 @@ const DepartmentFrameworks = () => {
   };
 
   return (
-    <Box maxW="1000px" mx="auto" py="6">
+    <Box maxW="1200px" mx="auto" py="6">
       <Heading size="xl" textAlign="center" color="purple.600" mb="6">
         {department} Frameworks
       </Heading>
@@ -105,58 +92,44 @@ const DepartmentFrameworks = () => {
       )}
 
       {!loading && !error && jobTitles.length > 0 && (
-        <Tabs variant="enclosed" colorScheme="purple">
-          <TabList>
-            {uniqueLevels.map((level) => (
-              <Tab key={level}>{level}</Tab>
-            ))}
-          </TabList>
-          <TabPanels>
-            {uniqueLevels.map((level) => (
-              <TabPanel key={level}>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                  {filterJobTitlesByLevel(level).map((job, index) => (
-                    <Card key={index} p={4} shadow="md" borderRadius="lg">
-                      <CardBody textAlign="center">
-                        <Heading size="md" mb="2">{job.job_title}</Heading>
-                        <Button
-                          colorScheme="blue"
-                          size="sm"
-                          mr="2"
-                          onClick={() => openModal(job)}
-                        >
-                          View Details
-                        </Button>
-                        <Button
-                          colorScheme="purple"
-                          size="sm"
-                          onClick={() => handleViewJobDescription(job)}
-                        >
-                          View Job Description
-                        </Button>
-                      </CardBody>
-                    </Card>
-                  ))}
-                </SimpleGrid>
-              </TabPanel>
-            ))}
-          </TabPanels>
-        </Tabs>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+          {jobTitles.map((job, index) => (
+            <Card key={index} p={4} shadow="md" borderRadius="lg">
+              <CardBody textAlign="center">
+                <Heading size="md" mb="2">{job.job_title}</Heading>
+                <Text mb="2">Level: {extractJobLevel(job.job_title)}</Text>
+                <Button
+                  colorScheme="blue"
+                  size="sm"
+                  mr="2"
+                  onClick={() => openModal(job)}
+                >
+                  View Details
+                </Button>
+                <Button
+                  colorScheme="purple"
+                  size="sm"
+                  onClick={() => handleViewJobDescription(job)}
+                >
+                  View Job Description
+                </Button>
+              </CardBody>
+            </Card>
+          ))}
+        </SimpleGrid>
       )}
 
-      {/* Optionally include your JobTitleDetailsModal here */}
-      {/* {isModalOpen && (
+      {isModalOpen && (
         <JobTitleDetailsModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           department={department}
-          jobTitle={selectedJobTitle?.job_title}
+          jobTitle={selectedJobTitle}
           jobLevel={selectedJobLevel}
         />
-      )} */}
+      )}
     </Box>
   );
 };
 
 export default DepartmentFrameworks;
-
