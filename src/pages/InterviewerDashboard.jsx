@@ -33,22 +33,32 @@ const InterviewerDashboard = () => {
   // Fetch all job titles & their competencies
   useEffect(() => {
     const fetchJobTitles = async () => {
+      setLoading(true);
       try {
         const response = await fetch(
           `https://interviewappbe-production.up.railway.app/api/get-interview-job-titles?department=Engineering`
         );
         if (!response.ok) throw new Error("Failed to fetch job titles.");
         const data = await response.json();
+        console.log("Fetched job titles data:", data);
+        
+        // Ensure data.job_titles is an array of objects with a job_title property
+        if (data.job_titles && Array.isArray(data.job_titles)) {
+          const titles = data.job_titles.map((job) => job.job_title);
+          setJobTitles(titles);
 
-        setJobTitles(data.job_titles.map((job) => job.job_title) || []);
-
-        // Store competencies mapped to job titles
-        const jobCompetencies = {};
-        data.job_titles.forEach((job) => {
-          jobCompetencies[job.job_title] = job.competencies || [];
-        });
-        setCompetenciesMap(jobCompetencies);
+          // Store competencies mapped to job titles
+          const jobCompetencies = {};
+          data.job_titles.forEach((job) => {
+            jobCompetencies[job.job_title] = job.competencies || [];
+          });
+          setCompetenciesMap(jobCompetencies);
+        } else {
+          console.error("job_titles is not in expected format:", data.job_titles);
+          setJobTitles([]);
+        }
       } catch (err) {
+        console.error("Error fetching job titles:", err);
         toast({
           title: "Error fetching job titles",
           description: err.message,
@@ -56,6 +66,8 @@ const InterviewerDashboard = () => {
           duration: 3000,
           isClosable: true,
         });
+      } finally {
+        setLoading(false);
       }
     };
     fetchJobTitles();
@@ -72,9 +84,7 @@ const InterviewerDashboard = () => {
         );
         if (!response.ok) throw new Error("Failed to fetch saved questions.");
         const data = await response.json();
-  
-        console.log("✅ Loaded Saved Questions:", data.questions);  // Debugging
-  
+        console.log("✅ Loaded Saved Questions:", data.questions);
         setSavedQuestions(data.questions || []);
       } catch (err) {
         toast({
@@ -103,16 +113,18 @@ const InterviewerDashboard = () => {
       return;
     }
   
-    // ✅ Convert competencies from object list to string list
-    const formattedCompetencies = (competenciesMap[selectedJobTitle] || []).map(comp => comp.name);
+    // Convert competencies from object list to string list
+    const formattedCompetencies = (competenciesMap[selectedJobTitle] || []).map(
+      (comp) => comp.name
+    );
   
     const requestBody = {
       job_title: selectedJobTitle,
       department: "Engineering",
-      competencies: formattedCompetencies, // ✅ Ensure it's a list of strings
+      competencies: formattedCompetencies,
     };
   
-    console.log("🔍 Sending request payload:", JSON.stringify(requestBody)); // ✅ Debugging
+    console.log("🔍 Sending request payload:", JSON.stringify(requestBody));
   
     setLoading(true);
     try {
@@ -145,8 +157,6 @@ const InterviewerDashboard = () => {
     }
   };
 
-
-
   // Set selected question when clicked
   const handleSaveQuestions = async () => {
     if (questions.length === 0) {
@@ -172,7 +182,7 @@ const InterviewerDashboard = () => {
               question: q.question,
               follow_up: q.follow_up || "",
               competency: q.competency || "General Skills",
-              competencies_covered: [q.competency || "General Skills"],  // ✅ Ensure this is included
+              competencies_covered: [q.competency || "General Skills"],
             })),
           }),
         }
@@ -188,8 +198,9 @@ const InterviewerDashboard = () => {
         isClosable: true,
       });
   
-      // Refresh saved questions
-      fetchSavedQuestions();
+      // Refresh saved questions by re-fetching
+      // For this, we can trigger re-fetch by updating selectedJobTitle
+      setSelectedJobTitle((prev) => prev);
     } catch (err) {
       toast({
         title: "Error Saving Questions",
@@ -200,7 +211,6 @@ const InterviewerDashboard = () => {
       });
     }
   };
-
 
   // Assess candidate's response
   const handleAssessAnswer = async () => {
@@ -214,7 +224,7 @@ const InterviewerDashboard = () => {
       });
       return;
     }
-
+  
     setLoading(true);
     try {
       const response = await fetch(
@@ -228,7 +238,7 @@ const InterviewerDashboard = () => {
           }),
         }
       );
-
+  
       if (!response.ok) throw new Error("Failed to assess answer.");
       const data = await response.json();
       setAnswerAnalysis(data);
@@ -259,11 +269,13 @@ const InterviewerDashboard = () => {
         mb="4"
       >
         {jobTitles.map((title, index) => (
-          <option key={index} value={title}>{title}</option>
+          <option key={index} value={title}>
+            {title}
+          </option>
         ))}
       </Select>
       
-      {/* ✅ Display Saved Interview Questions */}
+      {/* Display Saved Interview Questions */}
       {savedQuestions.length > 0 && (
         <Card bg="white" shadow="md" borderRadius="lg" p="4" mb="4">
           <CardBody>
@@ -277,7 +289,7 @@ const InterviewerDashboard = () => {
                   borderRadius="md"
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
-                  onClick={() => setSelectedQuestion(q)} // ✅ Set selected question when clicked
+                  onClick={() => setSelectedQuestion(q)}
                 >
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
@@ -291,11 +303,10 @@ const InterviewerDashboard = () => {
         </Card>
       )}
 
-      {/* ✅ Generate AI-Powered Questions */}
+      {/* Generate AI-Powered Questions */}
       <Card bg="white" shadow="md" borderRadius="lg" p="4">
         <CardBody>
           <Heading size="md" mb="4">Generate AI-Powered Questions</Heading>
-          
           <Button 
             colorScheme="blue" 
             onClick={handleGenerateQuestions} 
@@ -306,7 +317,7 @@ const InterviewerDashboard = () => {
         </CardBody>
       </Card>
       
-      {/* ✅ Display AI-Generated Interview Questions */}
+      {/* Display AI-Generated Interview Questions */}
       {questions.length > 0 && (
         <Card bg="white" shadow="md" borderRadius="lg" p="4">
           <CardBody>
@@ -320,7 +331,7 @@ const InterviewerDashboard = () => {
                   borderRadius="md"
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
-                  onClick={() => setSelectedQuestion(q)} // ✅ Set selected question when clicked
+                  onClick={() => setSelectedQuestion(q)}
                 >
                   <Text fontWeight="bold">{q.question}</Text>
                   <Text color="gray.600">Follow-Up: {q.follow_up}</Text>
@@ -330,21 +341,17 @@ const InterviewerDashboard = () => {
                 </Box>
               ))}
             </VStack>
-            {/* ✅ Save Questions Button */}
             <Button colorScheme="green" mt="4" onClick={handleSaveQuestions}>
               Save Questions 💾
-             </Button>
+            </Button>
           </CardBody>
         </Card>
       )}
 
-
-      {/* ✅ Assess Candidate Answers */}
+      {/* Assess Candidate Answers */}
       <Card bg="white" shadow="md" borderRadius="lg" p="4" mt="6">
         <CardBody>
           <Heading size="md" mb="4">Assess Candidate Answers</Heading>
-      
-          {/* ✅ Display Selected Question */}
           {selectedQuestion ? (
             <Box mt="4" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.50">
               <Text fontWeight="bold">Selected Question: {selectedQuestion.question}</Text>
@@ -356,21 +363,15 @@ const InterviewerDashboard = () => {
               Click a question to assess.
             </Alert>
           )}
-      
-          {/* ✅ Candidate Response Input */}
           <Textarea
             placeholder="Enter candidate's answer..."
             value={candidateResponse}
             onChange={(e) => setCandidateResponse(e.target.value)}
             mt="4"
           />
-      
-          {/* ✅ Assess Answer Button */}
           <Button colorScheme="teal" mt="4" onClick={handleAssessAnswer} isLoading={loading}>
             Assess Answer 📊
           </Button>
-      
-          {/* ✅ Display Answer Analysis */}
           {answerAnalysis && (
             <Box mt="4" p="4" border="1px solid #E2E8F0" borderRadius="md" bg="gray.50">
               <Text fontWeight="bold">Score: {answerAnalysis.score} / 4</Text>
