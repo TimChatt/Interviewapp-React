@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box, Heading, Grid, GridItem, Button, Spinner, Alert, AlertIcon, Card, CardBody, Text, VStack, Collapse, Icon, Flex
+  Box,
+  Heading,
+  Button,
+  Spinner,
+  Alert,
+  AlertIcon,
+  Card,
+  CardBody,
+  Text,
+  VStack,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  SimpleGrid
 } from "@chakra-ui/react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import JobTitleDetailsModal from "./JobTitleDetailsModal";
 
 const DepartmentFrameworks = () => {
   const { department } = useParams();
@@ -12,9 +25,8 @@ const DepartmentFrameworks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [expandedLevels, setExpandedLevels] = useState({});
 
-  // ✅ Modal State for Job Details
+  // Modal state for job details (if needed)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJobTitle, setSelectedJobTitle] = useState(null);
   const [selectedJobLevel, setSelectedJobLevel] = useState(null);
@@ -24,7 +36,7 @@ const DepartmentFrameworks = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${department}`
+          `https://interviewappbe-production.up.railway.app/api/get-job-titles?department=${encodeURIComponent(department)}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch job titles.");
@@ -40,55 +52,31 @@ const DepartmentFrameworks = () => {
     fetchDepartmentJobTitles();
   }, [department]);
 
-  // ✅ Extracts job category (e.g., "Machine Learning" from "Machine Learning L1")
-  const extractJobCategory = (jobTitle) => jobTitle.replace(/L\d+/, "").trim();
-
-  // ✅ Extracts the job level (e.g., "L1" from "Machine Learning L1")
+  // Utility: Extract job level (e.g., "L1" from "Software Engineer - Computer Vision L1")
   const extractJobLevel = (jobTitle) => {
     const match = jobTitle.match(/L\d+/);
     return match ? match[0] : "L1";
   };
 
-  // ✅ Open the modal and pass job details
-  const openModal = (jobTitle) => {
-    setSelectedJobTitle(jobTitle);
-    setSelectedJobLevel(extractJobLevel(jobTitle));
+  // Compute unique job levels
+  const uniqueLevels = Array.from(new Set(jobTitles.map((job) => extractJobLevel(job.job_title))));
+  uniqueLevels.sort((a, b) => parseInt(a.replace("L", ""), 10) - parseInt(b.replace("L", ""), 10));
+
+  // Filter job titles for a given level
+  const filterJobTitlesByLevel = (level) => {
+    return jobTitles.filter((job) => extractJobLevel(job.job_title) === level);
+  };
+
+  // Open modal for job details (if using a modal)
+  const openModal = (job) => {
+    setSelectedJobTitle(job);
+    setSelectedJobLevel(extractJobLevel(job.job_title));
     setIsModalOpen(true);
   };
 
-  // ✅ Navigate to Job Description Builder
-  const handleViewJobDescription = (jobTitle) => {
-    navigate(`/job-description/${department}/${jobTitle}`);
-  };
-
-  // ✅ Groups job titles by category and level
-  const groupedTitles = jobTitles.reduce((acc, job) => {
-    const category = extractJobCategory(job.job_title);
-    const level = extractJobLevel(job.job_title);
-
-    if (!acc[category]) acc[category] = {};
-    if (!acc[category][level]) acc[category][level] = [];
-
-    acc[category][level].push(job);
-    return acc;
-  }, {});
-
-  // ✅ Sort Levels in Ascending Order (L1 → L2 → L3 → L4 → L5)
-  Object.keys(groupedTitles).forEach((category) => {
-    groupedTitles[category] = Object.fromEntries(
-      Object.entries(groupedTitles[category]).sort(([levelA], [levelB]) => {
-        const numA = parseInt(levelA.replace("L", ""), 10);
-        const numB = parseInt(levelB.replace("L", ""), 10);
-        return numA - numB; // 🔥 Ensures correct order
-      })
-    );
-  });
-
-  const toggleLevel = (category, level) => {
-    setExpandedLevels((prev) => ({
-      ...prev,
-      [`${category}-${level}`]: !prev[`${category}-${level}`],
-    }));
+  // Navigate to Job Description Builder
+  const handleViewJobDescription = (job) => {
+    navigate(`/job-description/${department}/${job.job_title}`);
   };
 
   return (
@@ -117,76 +105,58 @@ const DepartmentFrameworks = () => {
       )}
 
       {!loading && !error && jobTitles.length > 0 && (
-        Object.entries(groupedTitles).map(([category, levels], idx) => (
-          <Box key={idx} mb="8">
-            <Heading size="lg" color="purple.700" mb="4">{category}</Heading>
-            {Object.entries(levels).map(([level, jobs]) => {
-              const levelNumber = parseInt(level.replace("L", ""), 10) || 1;
-              return (
-                <Card key={level} mt="4" border="1px solid #ccc" borderRadius="lg" overflow="hidden">
-                  <CardBody p="3">
-                    <Flex
-                      alignItems="center"
-                      justifyContent="space-between"
-                      cursor="pointer"
-                      bg="purple.100"
-                      p="2"
-                      borderRadius="md"
-                      onClick={() => toggleLevel(category, level)}
-                    >
-                      <Box
-                        w={`${levelNumber * 10}%`} // 🔥 Adjusts width dynamically (L1 = 10%, L2 = 20%, etc.)
-                        minW="50px"
-                        bg="purple.300"
-                        color="white"
-                        p="2"
-                        textAlign="center"
-                        borderRadius="md"
-                        fontWeight="bold"
-                      >
-                        {level}
-                      </Box>
-                      <Icon as={expandedLevels[`${category}-${level}`] ? FaChevronUp : FaChevronDown} />
-                    </Flex>
-
-                    <Collapse in={expandedLevels[`${category}-${level}`]}>
-                      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mt="4">
-                        {jobs.map((job, index) => (
-                          <GridItem key={index}>
-                            <Card bg="white" shadow="md" borderRadius="lg">
-                              <CardBody textAlign="center">
-                                <Heading size="md" mb="2">{job.job_title}</Heading>
-                                <Button colorScheme="blue" size="sm" mr="2" onClick={() => openModal(job.job_title)}>
-                                  View Details
-                                </Button>
-                                <Button colorScheme="purple" size="sm" onClick={() => handleViewJobDescription(job.job_title)}>
-                                  View Job Description
-                                </Button>
-                              </CardBody>
-                            </Card>
-                          </GridItem>
-                        ))}
-                      </Grid>
-                    </Collapse>
-                  </CardBody>
-                </Card>
-              );
-            })}
-          </Box>
-        ))
+        <Tabs variant="enclosed" colorScheme="purple">
+          <TabList>
+            {uniqueLevels.map((level) => (
+              <Tab key={level}>{level}</Tab>
+            ))}
+          </TabList>
+          <TabPanels>
+            {uniqueLevels.map((level) => (
+              <TabPanel key={level}>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                  {filterJobTitlesByLevel(level).map((job, index) => (
+                    <Card key={index} p={4} shadow="md" borderRadius="lg">
+                      <CardBody textAlign="center">
+                        <Heading size="md" mb="2">{job.job_title}</Heading>
+                        <Button
+                          colorScheme="blue"
+                          size="sm"
+                          mr="2"
+                          onClick={() => openModal(job)}
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          colorScheme="purple"
+                          size="sm"
+                          onClick={() => handleViewJobDescription(job)}
+                        >
+                          View Job Description
+                        </Button>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </SimpleGrid>
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
       )}
 
-      {isModalOpen && (
+      {/* Optionally include your JobTitleDetailsModal here */}
+      {/* {isModalOpen && (
         <JobTitleDetailsModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           department={department}
-          jobTitle={selectedJobTitle}
+          jobTitle={selectedJobTitle?.job_title}
           jobLevel={selectedJobLevel}
         />
-      )}
+      )} */}
     </Box>
   );
 };
 
 export default DepartmentFrameworks;
+
