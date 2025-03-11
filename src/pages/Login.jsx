@@ -50,15 +50,12 @@ const Login = () => {
   };
 
   return (
-    <Box position="relative" width="100%" minH="100vh">
+    <Box position="relative" width="100%" minH="100vh" display="flex">
       {/* Left Side with Sony Branding */}
       <Box
         width="40%"
         bg="black"
-        position="absolute"
-        left="0"
-        top="0"
-        bottom="0"
+        position="relative"
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
@@ -85,7 +82,6 @@ const Login = () => {
       {/* Right Side - Login Form */}
       <Box
         width="60%"
-        marginLeft="40%"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -93,7 +89,6 @@ const Login = () => {
         p={8}
       >
         <Box
-          border="1px solid black"
           borderRadius="md"
           p={8}
           width={{ base: "90%", md: "400px" }}
