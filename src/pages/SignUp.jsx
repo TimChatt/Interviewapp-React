@@ -50,98 +50,83 @@ const SignUp = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" overflowX="hidden">
-      {/* Left Side with Sony Branding */}
-      <Box
-        width="40%"
-        height="100vh"
-        bg="black"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        color="white"
-        p={12}
-      >
+    <Flex width="100vw" minH="100vh" overflowX="hidden" alignItems="center" justifyContent="center" bgGradient="linear(to-r, black, gray.900)">
+      {/* Sony Logo Positioned in the Left Side */}
+      <Box position="absolute" top={8} left={8}>
         <img
           src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
           alt="Sony Logo"
           style={{
-            width: "180px",
-            marginBottom: "20px",
+            width: "150px",
             filter: "brightness(0) invert(1)",
           }}
         />
-        <Text fontSize="sm" opacity={0.8}>
-          Creativity that Inspires the World
-        </Text>
       </Box>
+      
+      {/* Sign Up Form Box */}
+      <Box
+        bg="white"
+        p={8}
+        borderRadius="lg"
+        boxShadow="2xl"
+        width={{ base: "90%", md: "400px" }}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        textAlign="center"
+      >
+        <Heading mb={4} size="lg" color="black">
+          Sign Up
+        </Heading>
 
-      {/* Right Side - Sign Up Form */}
-      <Flex flex="1" height="100vh" justifyContent="center" alignItems="center" bg="white">
-        <Box
-          borderRadius="md"
-          p={8}
-          width={{ base: "90%", md: "400px" }}
-          boxShadow="lg"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          textAlign="center"
-        >
-          <Heading mb={4} size="lg" color="black">
-            Sign Up
-          </Heading>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel>Username</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                bg="gray.100"
+              />
+            </FormControl>
 
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <VStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel>Username</FormLabel>
-                <Input
-                  type="text"
-                  placeholder="Enter username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  bg="gray.100"
-                />
-              </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                bg="gray.100"
+              />
+            </FormControl>
 
-              <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  bg="gray.100"
-                />
-              </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                bg="gray.100"
+              />
+            </FormControl>
 
-              <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  bg="gray.100"
-                />
-              </FormControl>
+            <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
+              Sign Up
+            </Button>
+          </VStack>
+        </form>
 
-              <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
-                Sign Up
-              </Button>
-            </VStack>
-          </form>
-
-          {message && (
-            <Alert status={isError ? "error" : "success"} mt={4}>
-              <AlertIcon />
-              {message}
-            </Alert>
-          )}
-        </Box>
-      </Flex>
+        {message && (
+          <Alert status={isError ? "error" : "success"} mt={4}>
+            <AlertIcon />
+            {message}
+          </Alert>
+        )}
+      </Box>
     </Flex>
   );
 };
