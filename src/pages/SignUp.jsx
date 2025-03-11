@@ -53,22 +53,33 @@ const SignUp = () => {
 
   return (
     <Flex width="100vw" minH="100vh">
+    
       {/* Left Panel - Sony Branding */}
-      <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
-        <Box textAlign="center">
-          {/* Sony Logo (Single Instance, Fixing Duplication) */}
-          <img
-            src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-            alt="Sony Logo"
-            style={{
-              width: "180px",
-              marginBottom: "20px",
-              filter: "brightness(0) invert(1)",
-            }}
-          />
-          <Text mt={2} fontSize="lg">Innovation that Moves the World</Text>
-        </Box>
-      </Box>
+<Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
+  <Box textAlign="center">
+    {/* Sony Logo */}
+    <img
+      src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+      alt="Sony Logo"
+      style={{
+        width: "180px",
+        marginBottom: "15px",
+        filter: "brightness(0) invert(1)",
+      }}
+    />
+    
+    {/* Updated Sleek Text */}
+    <Text
+      fontSize="lg"
+      fontStyle="italic"
+      fontWeight="light"
+      letterSpacing="wide"
+      color="gray.300"
+    >
+      "Innovation That Moves the World"
+    </Text>
+  </Box>
+</Box>
 
       {/* Right Panel - Sign Up Form */}
       <Flex width="50%" alignItems="center" justifyContent="center">
