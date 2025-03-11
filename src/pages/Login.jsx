@@ -53,14 +53,14 @@ const Login = () => {
     <Flex minH="100vh" width="100%">
       {/* Left Side with Sony Branding */}
       <Box
-        flex={1}
+        flex={1.2}
         bg="black"
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
         justifyContent="center"
         color="white"
-        p={12}
+        p={16}
       >
         {/* Sony Logo */}
         <img
@@ -79,7 +79,7 @@ const Login = () => {
 
       {/* Right Side - Login Form */}
       <Box
-        flex={1}
+        flex={1.8}
         display="flex"
         justifyContent="center"
         alignItems="center"
