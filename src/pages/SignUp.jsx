@@ -52,24 +52,22 @@ const SignUp = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center" bg="gray.900" position="relative">
-      {/* Sony Logo on the Left */}
-      <Box position="absolute" left={8} top="50%" transform="translateY(-50%)">
-        <img
-          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-          alt="Sony Logo"
-          style={{ width: "180px", filter: "brightness(0) invert(1)" }}
-        />
+    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center">
+      {/* Left Panel - Branding */}
+      <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
+        <Box textAlign="center">
+          <Heading size="2xl" fontWeight="bold">SONY</Heading>
+          <Text mt={2} fontSize="lg">Innovation that Moves the World</Text>
+        </Box>
       </Box>
-      
+
       {/* Sign-Up Form */}
       <Box
         bg="white"
         p={8}
         borderRadius="lg"
         boxShadow="0px 0px 10px rgba(0, 0, 0, 0.5)"
-        width={{ base: "90%", md: "400px" }}
-        border="2px solid black"
+        width="400px"
         textAlign="center"
       >
         <Heading mb={4} size="lg" color="black">
@@ -123,6 +121,14 @@ const SignUp = () => {
             {message}
           </Alert>
         )}
+
+        {/* Login Redirect */}
+        <Text mt={4}>
+          Already have an account?{" "}
+          <Text as="span" color="black" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
+            Login here
+          </Text>
+        </Text>
       </Box>
     </Flex>
   );
