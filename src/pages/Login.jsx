@@ -85,12 +85,16 @@ const Login = () => {
           p={8}
           width={{ base: "90%", md: "400px" }}
           boxShadow="lg"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          textAlign="center"
         >
-          <Heading textAlign="center" mb={4} size="lg" color="black">
+          <Heading mb={4} size="lg" color="black">
             Login
           </Heading>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <VStack spacing={4}>
               <FormControl>
                 <FormLabel>Email Address</FormLabel>
