@@ -52,15 +52,15 @@ const SignUp = () => {
   return (
     <Flex
       width="100vw"
-      minH="100vh"
+      height="100vh"
       overflowX="hidden"
+      flexDirection="column"
       alignItems="center"
       justifyContent="center"
       bgGradient="linear(to-r, black, gray.900)"
-      position="relative"
     >
-      {/* Sony Logo Above the Form */}
-      <Box position="absolute" top={8} left="50%" transform="translateX(-50%)">
+      {/* Sony Logo */}
+      <Box mb={4}>
         <img
           src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
           alt="Sony Logo"
@@ -68,7 +68,7 @@ const SignUp = () => {
         />
       </Box>
       
-      {/* Sign Up Form Box */}
+      {/* Sign Up Form */}
       <Box
         bg="white"
         p={8}
@@ -79,7 +79,6 @@ const SignUp = () => {
         flexDirection="column"
         alignItems="center"
         textAlign="center"
-        mt={20}
       >
         <Heading mb={4} size="lg" color="black">
           Sign Up
