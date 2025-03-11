@@ -11,6 +11,7 @@ import {
   Heading,
   Text,
   useToast,
+  Flex,
 } from "@chakra-ui/react";
 
 const Login = () => {
@@ -37,62 +38,91 @@ const Login = () => {
   };
 
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      bg="gray.50"
-    >
+    <Flex minH="100vh" width="100%">
+      {/* Left Side with Sony Branding */}
       <Box
-        bg="white"
+        flex={1}
+        bgGradient="linear(to-r, blue.900, blue.700)"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        color="white"
         p={8}
-        boxShadow="lg"
-        borderRadius="lg"
-        width={{ base: "90%", md: "400px" }}
       >
-        <Heading textAlign="center" mb={4} size="lg" color="blue.600">
-          Login
+        {/* Sony Logo */}
+        <img
+          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+          alt="Sony Logo"
+          style={{
+            width: "180px",
+            marginBottom: "20px",
+            filter: "brightness(0) invert(1)",
+          }}
+        />
+        <Heading size="xl" textAlign="center" fontWeight="bold">
+          Innovation that Moves the World
         </Heading>
-
-        <form onSubmit={handleSubmit}>
-          <VStack spacing={4}>
-            <FormControl>
-              <FormLabel>Username</FormLabel>
-              <Input
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </FormControl>
-
-            <FormControl>
-              <FormLabel>Password</FormLabel>
-              <Input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </FormControl>
-
-            <Button type="submit" colorScheme="blue" width="full">
-              Login
-            </Button>
-          </VStack>
-        </form>
-
-        <Text textAlign="center" mt={4}>
-          Don't have an account?{" "}
-          <Text as={Link} to="/signup" color="blue.500" fontWeight="bold">
-            Sign up
-          </Text>
-        </Text>
       </Box>
-    </Box>
+
+      {/* Right Side - Login Form */}
+      <Box
+        flex={1}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        p={8}
+      >
+        <Box
+          bg="white"
+          p={8}
+          boxShadow="lg"
+          borderRadius="lg"
+          width={{ base: "90%", md: "400px" }}
+        >
+          <Heading textAlign="center" mb={4} size="lg" color="blue.600">
+            Login
+          </Heading>
+          
+          <form onSubmit={handleSubmit}>
+            <VStack spacing={4}>
+              <FormControl>
+                <FormLabel>Username</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </FormControl>
+
+              <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
+                Login
+              </Button>
+            </VStack>
+          </form>
+
+          <Text textAlign="center" mt={4} color="black">
+            Don't have an account?{" "}
+            <Text as={Link} to="/signup" color="black" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
+              Sign up
+            </Text>
+          </Text>
+        </Box>
+      </Box>
+    </Flex>
   );
 };
 
