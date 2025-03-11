@@ -52,84 +52,96 @@ const SignUp = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center">
-      {/* Left Panel - Branding */}
+    <Flex width="100vw" minH="100vh">
+      {/* Left Panel - Sony Branding */}
       <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
         <Box textAlign="center">
+          {/* Sony Logo */}
+          <img
+            src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+            alt="Sony Logo"
+            style={{
+              width: "180px",
+              marginBottom: "20px",
+              filter: "brightness(0) invert(1)",
+            }}
+          />
           <Heading size="2xl" fontWeight="bold">SONY</Heading>
           <Text mt={2} fontSize="lg">Innovation that Moves the World</Text>
         </Box>
       </Box>
 
-      {/* Sign-Up Form */}
-      <Box
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="0px 0px 10px rgba(0, 0, 0, 0.5)"
-        width="400px"
-        textAlign="center"
-      >
-        <Heading mb={4} size="lg" color="black">
-          Sign Up
-        </Heading>
+      {/* Right Panel - Sign Up Form */}
+      <Flex width="50%" alignItems="center" justifyContent="center">
+        <Box
+          bg="white"
+          p={8}
+          borderRadius="lg"
+          boxShadow="lg"
+          width="400px"
+          textAlign="center"
+        >
+          <Heading mb={4} size="lg" color="black">
+            Sign Up
+          </Heading>
 
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <VStack spacing={4}>
-            <FormControl isRequired>
-              <FormLabel>Username</FormLabel>
-              <Input
-                type="text"
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                bg="gray.100"
-              />
-            </FormControl>
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <VStack spacing={4}>
+              <FormControl isRequired>
+                <FormLabel>Username</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Enter username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  bg="gray.100"
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Email</FormLabel>
-              <Input
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                bg="gray.100"
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  bg="gray.100"
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                bg="gray.100"
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  bg="gray.100"
+                />
+              </FormControl>
 
-            <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
-              Sign Up
-            </Button>
-          </VStack>
-        </form>
+              <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
+                Sign Up
+              </Button>
+            </VStack>
+          </form>
 
-        {message && (
-          <Alert status={isError ? "error" : "success"} mt={4}>
-            <AlertIcon />
-            {message}
-          </Alert>
-        )}
+          {message && (
+            <Alert status={isError ? "error" : "success"} mt={4}>
+              <AlertIcon />
+              {message}
+            </Alert>
+          )}
 
-        {/* Login Redirect */}
-        <Text mt={4}>
-          Already have an account?{" "}
-          <Text as="span" color="black" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
-            Login here
+          {/* Login Redirect */}
+          <Text mt={4}>
+            Already have an account?{" "}
+            <Text as="span" color="black" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
+              Login here
+            </Text>
           </Text>
-        </Text>
-      </Box>
+        </Box>
+      </Flex>
     </Flex>
   );
 };
