@@ -50,7 +50,20 @@ const SignUp = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" bgGradient="linear(to-r, black, gray.900)" justifyContent="center" alignItems="center" p={6}>
+    <Flex width="100vw" minH="100vh" overflowX="hidden" bgGradient="linear(to-r, black, gray.900)" justifyContent="center" alignItems="center" p={6}>
+      {/* Sony Logo Positioned in the Top Left */}
+      <Box position="absolute" top={6} left={6}>
+        <img
+          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+          alt="Sony Logo"
+          style={{
+            width: "120px",
+            filter: "brightness(0) invert(1)",
+          }}
+        />
+      </Box>
+      
+      {/* Sign Up Form Box */}
       <Box
         bg="white"
         p={8}
@@ -62,17 +75,6 @@ const SignUp = () => {
         alignItems="center"
         textAlign="center"
       >
-        {/* Sony Logo Centered Above Box */}
-        <img
-          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-          alt="Sony Logo"
-          style={{
-            width: "150px",
-            marginBottom: "20px",
-            filter: "brightness(0) invert(1)",
-          }}
-        />
-
         <Heading mb={4} size="lg" color="black">
           Sign Up
         </Heading>
@@ -130,4 +132,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
