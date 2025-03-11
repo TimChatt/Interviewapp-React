@@ -15,6 +15,21 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
+// Custom Paper component using Chakra UI Box
+const Paper = (props) => (
+  <Box
+    bg="rgba(255, 255, 255, 0.7)" // More opaque background for better readability
+    border="2px solid black" // Premium black outline
+    borderRadius="15px"
+    p="30px"
+    width="400px"
+    textAlign="center"
+    backdropFilter="blur(15px)" // Glass effect with better clarity
+    boxShadow="0px 0px 15px rgba(0, 0, 0, 0.3)"
+    {...props}
+  />
+);
+
 const SignUp = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -67,15 +82,8 @@ const SignUp = () => {
             }}
           />
 
-          {/* Updated Sleek Text - Closer to Sony logo */}
-          <Text
-            fontSize="lg"
-            fontStyle="italic"
-            fontWeight="light"
-            letterSpacing="wide"
-            color="gray.300"
-            mt={-2}
-          >
+          {/* Tagline */}
+          <Text fontSize="lg" fontStyle="italic" fontWeight="light" letterSpacing="wide" color="gray.300" mt={-2}>
             "Innovation That Moves the World"
           </Text>
         </Box>
@@ -83,73 +91,55 @@ const SignUp = () => {
 
       {/* Right Panel - Futuristic Sign-Up Form */}
       <Flex width="50%" alignItems="center" justifyContent="center">
-        <Box
-          bg="rgba(255, 255, 255, 0.1)" // Glass effect
-          border="2px solid black" // Premium black outline
-          borderRadius="15px"
-          padding="30px"
-          width="400px"
-          textAlign="center"
-          backdropFilter="blur(10px)" // Smooth futuristic blur
-          boxShadow="0px 0px 15px rgba(0, 0, 0, 0.4)" // Subtle depth
-        >
-          <Heading mb={4} size="lg" color="white">
+        <Paper>
+          <Heading mb={4} size="lg" color="black">
             Sign Up
           </Heading>
 
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <VStack spacing={4}>
               <FormControl isRequired>
-                <FormLabel color="white">Username</FormLabel>
+                <FormLabel color="black">Username</FormLabel>
                 <Input
                   type="text"
                   placeholder="Enter username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  bg="rgba(255, 255, 255, 0.2)"
-                  border="1px solid #ffffff33"
-                  color="white"
-                  _placeholder={{ color: "gray.300" }}
-                  _focus={{
-                    borderColor: "white",
-                    boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
-                  }}
+                  bg="white"
+                  border="1px solid black"
+                  color="black"
+                  _placeholder={{ color: "gray.600" }}
+                  _focus={{ borderColor: "black", boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)" }}
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel color="white">Email</FormLabel>
+                <FormLabel color="black">Email</FormLabel>
                 <Input
                   type="email"
                   placeholder="Enter email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  bg="rgba(255, 255, 255, 0.2)"
-                  border="1px solid #ffffff33"
-                  color="white"
-                  _placeholder={{ color: "gray.300" }}
-                  _focus={{
-                    borderColor: "white",
-                    boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
-                  }}
+                  bg="white"
+                  border="1px solid black"
+                  color="black"
+                  _placeholder={{ color: "gray.600" }}
+                  _focus={{ borderColor: "black", boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)" }}
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel color="white">Password</FormLabel>
+                <FormLabel color="black">Password</FormLabel>
                 <Input
                   type="password"
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  bg="rgba(255, 255, 255, 0.2)"
-                  border="1px solid #ffffff33"
-                  color="white"
-                  _placeholder={{ color: "gray.300" }}
-                  _focus={{
-                    borderColor: "white",
-                    boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
-                  }}
+                  bg="white"
+                  border="1px solid black"
+                  color="black"
+                  _placeholder={{ color: "gray.600" }}
+                  _focus={{ borderColor: "black", boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)" }}
                 />
               </FormControl>
 
@@ -157,10 +147,7 @@ const SignUp = () => {
                 type="submit"
                 bg="black"
                 color="white"
-                _hover={{
-                  bg: "gray.800",
-                  boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)",
-                }}
+                _hover={{ bg: "gray.800", boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)" }}
                 width="full"
               >
                 Sign Up
@@ -176,13 +163,13 @@ const SignUp = () => {
           )}
 
           {/* Login Redirect */}
-          <Text mt={4} color="white">
+          <Text mt={4} color="black">
             Already have an account?{" "}
-            <Text as="span" color="white" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
+            <Text as="span" color="black" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
               Login here
             </Text>
           </Text>
-        </Box>
+        </Paper>
       </Flex>
     </Flex>
   );
