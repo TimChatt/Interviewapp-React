@@ -56,7 +56,7 @@ const SignUp = () => {
       {/* Left Panel - Sony Branding */}
       <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
         <Box textAlign="center">
-          {/* Sony Logo */}
+          {/* Sony Logo (Single Instance, Fixing Duplication) */}
           <img
             src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
             alt="Sony Logo"
@@ -66,7 +66,6 @@ const SignUp = () => {
               filter: "brightness(0) invert(1)",
             }}
           />
-          <Heading size="2xl" fontWeight="bold">SONY</Heading>
           <Text mt={2} fontSize="lg">Innovation that Moves the World</Text>
         </Box>
       </Box>
