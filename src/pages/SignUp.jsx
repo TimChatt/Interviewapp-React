@@ -10,6 +10,8 @@ import {
   Alert,
   AlertIcon,
   VStack,
+  Text,
+  Flex,
 } from "@chakra-ui/react";
 
 const SignUp = () => {
@@ -35,7 +37,7 @@ const SignUp = () => {
       if (response.ok) {
         setMessage("✅ Registration successful. Await admin approval.");
         setIsError(false);
-        setTimeout(() => navigate("/login"), 2000); // Redirect to login after 2 seconds
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         setMessage(data.detail || "An error occurred.");
         setIsError(true);
@@ -48,13 +50,34 @@ const SignUp = () => {
   };
 
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="gray.50">
-      <Box bg="white" p={8} shadow="md" borderRadius="lg" width="400px">
-        <Heading size="lg" textAlign="center" mb={6}>
+    <Flex width="100vw" minH="100vh" bgGradient="linear(to-r, black, gray.900)" justifyContent="center" alignItems="center" p={6}>
+      <Box
+        bg="white"
+        p={8}
+        borderRadius="lg"
+        boxShadow="2xl"
+        width={{ base: "90%", md: "400px" }}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        textAlign="center"
+      >
+        {/* Sony Logo Centered Above Box */}
+        <img
+          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+          alt="Sony Logo"
+          style={{
+            width: "150px",
+            marginBottom: "20px",
+            filter: "brightness(0) invert(1)",
+          }}
+        />
+
+        <Heading mb={4} size="lg" color="black">
           Sign Up
         </Heading>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <VStack spacing={4}>
             <FormControl isRequired>
               <FormLabel>Username</FormLabel>
@@ -89,7 +112,7 @@ const SignUp = () => {
               />
             </FormControl>
 
-            <Button type="submit" colorScheme="blue" width="full">
+            <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
               Sign Up
             </Button>
           </VStack>
@@ -102,8 +125,9 @@ const SignUp = () => {
           </Alert>
         )}
       </Box>
-    </Box>
+    </Flex>
   );
 };
 
 export default SignUp;
+
