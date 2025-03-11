@@ -12,6 +12,7 @@ import {
   Text,
   useToast,
   Flex,
+  Checkbox,
 } from "@chakra-ui/react";
 
 const Login = () => {
@@ -20,16 +21,27 @@ const Login = () => {
   const toast = useToast();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await login(username, password);
-    if (success) {
-      navigate("/"); // Redirect to Home on success
-    } else {
+    try {
+      const success = await login(username, password);
+      if (success) {
+        navigate("/"); // Redirect to Home on success
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid username or password. Please try again.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Login Failed",
-        description: "Invalid username or password. Please try again.",
+        title: "Error",
+        description: "Something went wrong. Please try again later.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -42,7 +54,7 @@ const Login = () => {
       {/* Left Side with Sony Branding */}
       <Box
         flex={1}
-        bgGradient="linear(to-r, blue.900, blue.700)"
+        bg="black"
         display="flex"
         flexDirection="column"
         alignItems="center"
@@ -60,9 +72,6 @@ const Login = () => {
             filter: "brightness(0) invert(1)",
           }}
         />
-        <Heading size="xl" textAlign="center" fontWeight="bold">
-          Innovation that Moves the World
-        </Heading>
       </Box>
 
       {/* Right Side - Login Form */}
@@ -71,26 +80,27 @@ const Login = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
+        bg="white"
         p={8}
       >
         <Box
-          bg="white"
+          border="1px solid black"
+          borderRadius="md"
           p={8}
-          boxShadow="lg"
-          borderRadius="lg"
           width={{ base: "90%", md: "400px" }}
+          boxShadow="lg"
         >
-          <Heading textAlign="center" mb={4} size="lg" color="blue.600">
+          <Heading textAlign="center" mb={4} size="lg" color="black">
             Login
           </Heading>
           
           <form onSubmit={handleSubmit}>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Email Address</FormLabel>
                 <Input
                   type="text"
-                  placeholder="Enter your username"
+                  placeholder="example@email.com"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -108,8 +118,16 @@ const Login = () => {
                 />
               </FormControl>
 
+              <Checkbox
+                colorScheme="blackAlpha"
+                isChecked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              >
+                Remember me
+              </Checkbox>
+
               <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
-                Login
+                LOGIN
               </Button>
             </VStack>
           </form>
@@ -117,7 +135,7 @@ const Login = () => {
           <Text textAlign="center" mt={4} color="black">
             Don't have an account?{" "}
             <Text as={Link} to="/signup" color="black" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
-              Sign up
+              Register here
             </Text>
           </Text>
         </Box>
