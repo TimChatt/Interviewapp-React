@@ -53,14 +53,15 @@ const Login = () => {
     <Flex minH="100vh" width="100%">
       {/* Left Side with Sony Branding */}
       <Box
-        flex={1.2}
+        width="40%"
         bg="black"
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
         justifyContent="center"
         color="white"
-        p={16}
+        p={12}
+        pl={16}
       >
         {/* Sony Logo */}
         <img
@@ -72,14 +73,14 @@ const Login = () => {
             filter: "brightness(0) invert(1)",
           }}
         />
-        <Text fontSize="sm" opacity={0.8} ml={2}>
+        <Text fontSize="sm" opacity={0.8}>
           Innovation that Moves the World
         </Text>
       </Box>
 
       {/* Right Side - Login Form */}
       <Box
-        flex={1.8}
+        width="60%"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -148,3 +149,4 @@ const Login = () => {
 };
 
 export default Login;
+
