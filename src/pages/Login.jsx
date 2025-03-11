@@ -57,10 +57,10 @@ const Login = () => {
         bg="black"
         display="flex"
         flexDirection="column"
-        alignItems="center"
+        alignItems="flex-start"
         justifyContent="center"
         color="white"
-        p={8}
+        p={12}
       >
         {/* Sony Logo */}
         <img
@@ -72,6 +72,9 @@ const Login = () => {
             filter: "brightness(0) invert(1)",
           }}
         />
+        <Text fontSize="sm" opacity={0.8} ml={2}>
+          Innovation that Moves the World
+        </Text>
       </Box>
 
       {/* Right Side - Login Form */}
