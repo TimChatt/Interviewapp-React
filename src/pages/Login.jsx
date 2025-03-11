@@ -50,7 +50,7 @@ const Login = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh">
+    <Flex width="100%" minH="100vh" overflowX="hidden">
       {/* Left Side with Sony Branding */}
       <Box
         width="40%"
