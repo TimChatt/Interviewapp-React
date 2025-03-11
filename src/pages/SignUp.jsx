@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 import {
   Box,
   Heading,
@@ -15,12 +16,13 @@ import {
 } from "@chakra-ui/react";
 
 const SignUp = () => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,17 +52,9 @@ const SignUp = () => {
   };
 
   return (
-    <Flex
-      width="100vw"
-      height="100vh"
-      overflowX="hidden"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      bgGradient="linear(to-r, black, gray.900)"
-    >
-      {/* Sony Logo */}
-      <Box mb={4}>
+    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center" bg="gray.900" position="relative">
+      {/* Sony Logo on the Left */}
+      <Box position="absolute" left={8} top="50%" transform="translateY(-50%)">
         <img
           src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
           alt="Sony Logo"
@@ -68,16 +62,14 @@ const SignUp = () => {
         />
       </Box>
       
-      {/* Sign Up Form */}
+      {/* Sign-Up Form */}
       <Box
         bg="white"
         p={8}
         borderRadius="lg"
-        boxShadow="2xl"
+        boxShadow="0px 0px 10px rgba(0, 0, 0, 0.5)"
         width={{ base: "90%", md: "400px" }}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
+        border="2px solid black"
         textAlign="center"
       >
         <Heading mb={4} size="lg" color="black">
