@@ -50,12 +50,12 @@ const Login = () => {
   };
 
   return (
-    <Box position="relative" width="100%" minH="100vh" display="flex">
+    <Box width="100vw" minH="100vh" display="flex">
       {/* Left Side with Sony Branding */}
       <Box
-        width="40%"
+        width="40vw"
+        height="100vh"
         bg="black"
-        position="relative"
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
@@ -81,7 +81,8 @@ const Login = () => {
 
       {/* Right Side - Login Form */}
       <Box
-        width="60%"
+        width="60vw"
+        height="100vh"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -97,7 +98,7 @@ const Login = () => {
           <Heading textAlign="center" mb={4} size="lg" color="black">
             Login
           </Heading>
-          
+
           <form onSubmit={handleSubmit}>
             <VStack spacing={4}>
               <FormControl>
@@ -130,7 +131,13 @@ const Login = () => {
                 Remember me
               </Checkbox>
 
-              <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
+              <Button
+                type="submit"
+                bg="black"
+                color="white"
+                _hover={{ bg: "gray.800" }}
+                width="full"
+              >
                 LOGIN
               </Button>
             </VStack>
@@ -138,7 +145,13 @@ const Login = () => {
 
           <Text textAlign="center" mt={4} color="black">
             Don't have an account?{" "}
-            <Text as={Link} to="/signup" color="black" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
+            <Text
+              as={Link}
+              to="/signup"
+              color="black"
+              fontWeight="bold"
+              _hover={{ textDecoration: "underline" }}
+            >
               Register here
             </Text>
           </Text>
