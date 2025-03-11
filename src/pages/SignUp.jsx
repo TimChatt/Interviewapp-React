@@ -13,7 +13,6 @@ import {
   VStack,
   Text,
   Flex,
-  Paper,
 } from "@chakra-ui/react";
 import Paper from "@mui/material/Paper";
 
