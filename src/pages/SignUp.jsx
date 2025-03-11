@@ -10,7 +10,6 @@ import {
   Alert,
   AlertIcon,
   VStack,
-  Text,
   Flex,
 } from "@chakra-ui/react";
 
@@ -50,19 +49,27 @@ const SignUp = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" overflowX="hidden" alignItems="center" justifyContent="center" bgGradient="linear(to-r, black, gray.900)">
-      {/* Sony Logo Positioned in the Left Side */}
-      <Box position="absolute" top={8} left={8}>
+    <Flex
+      width="100vw"
+      minH="100vh"
+      overflowX="hidden"
+      alignItems="center"
+      justifyContent="center"
+      bgGradient="linear(to-r, black 40%, gray.900 100%)"
+      position="relative"
+    >
+      {/* Sony Logo Positioned on the Left */}
+      <Box position="absolute" left="5%" top="50%" transform="translateY(-50%)">
         <img
           src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
           alt="Sony Logo"
           style={{
-            width: "150px",
+            width: "180px",
             filter: "brightness(0) invert(1)",
           }}
         />
       </Box>
-      
+
       {/* Sign Up Form Box */}
       <Box
         bg="white"
@@ -70,16 +77,13 @@ const SignUp = () => {
         borderRadius="lg"
         boxShadow="2xl"
         width={{ base: "90%", md: "400px" }}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
         textAlign="center"
       >
         <Heading mb={4} size="lg" color="black">
           Sign Up
         </Heading>
 
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <form onSubmit={handleSubmit}>
           <VStack spacing={4}>
             <FormControl isRequired>
               <FormLabel>Username</FormLabel>
@@ -132,3 +136,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
