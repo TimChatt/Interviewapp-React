@@ -50,11 +50,15 @@ const Login = () => {
   };
 
   return (
-    <Flex minH="100vh" width="100%">
+    <Box position="relative" width="100%" minH="100vh">
       {/* Left Side with Sony Branding */}
       <Box
         width="40%"
         bg="black"
+        position="absolute"
+        left="0"
+        top="0"
+        bottom="0"
         display="flex"
         flexDirection="column"
         alignItems="flex-start"
@@ -81,6 +85,7 @@ const Login = () => {
       {/* Right Side - Login Form */}
       <Box
         width="60%"
+        marginLeft="40%"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -144,9 +149,8 @@ const Login = () => {
           </Text>
         </Box>
       </Box>
-    </Flex>
+    </Box>
   );
 };
 
 export default Login;
-
