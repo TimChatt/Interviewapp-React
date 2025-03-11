@@ -15,6 +15,21 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 
+// Custom Paper Component (Matching Sign-Up Page)
+const Paper = (props) => (
+  <Box
+    bg="rgba(255, 255, 255, 0.7)" // Semi-transparent background
+    border="2px solid black"
+    borderRadius="15px"
+    p="30px"
+    width="400px"
+    textAlign="center"
+    backdropFilter="blur(15px)"
+    boxShadow="0px 0px 15px rgba(0, 0, 0, 0.3)"
+    {...props}
+  />
+);
+
 const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -50,93 +65,112 @@ const Login = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center" bg="black">
-      {/* Sony Logo Above */}
-      <Box position="absolute" top="5%" textAlign="center">
-        <img
-          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-          alt="Sony Logo"
-          style={{
-            width: "180px",
-            filter: "brightness(0) invert(1)",
-          }}
-        />
-      </Box>
+    <Flex width="100vw" minH="100vh">
+      {/* Left Panel - Sony Branding */}
+      <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
+        <Box textAlign="center">
+          {/* Sony Logo */}
+          <img
+            src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+            alt="Sony Logo"
+            style={{
+              width: "180px",
+              marginBottom: "10px",
+              filter: "brightness(0) invert(1)",
+            }}
+          />
 
-      {/* Login Form with Futuristic Outline */}
-      <Box
-        border="2px solid"
-        borderColor="blackAlpha.800"
-        borderRadius="lg"
-        p={8}
-        width={{ base: "90%", md: "400px" }}
-        boxShadow="0 0 10px rgba(255, 255, 255, 0.2)"
-        _hover={{
-          borderColor: "white",
-          boxShadow: "0 0 15px rgba(255, 255, 255, 0.5)",
-        }}
-        transition="0.3s ease-in-out"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        textAlign="center"
-        bg="gray.900"
-      >
-        <Heading mb={4} size="lg" color="white">
-          Login
-        </Heading>
-
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <VStack spacing={4}>
-            <FormControl>
-              <FormLabel color="white">Email Address</FormLabel>
-              <Input
-                type="text"
-                placeholder="example@email.com"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                bg="gray.800"
-                color="white"
-                _placeholder={{ color: "gray.400" }}
-              />
-            </FormControl>
-
-            <FormControl>
-              <FormLabel color="white">Password</FormLabel>
-              <Input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                bg="gray.800"
-                color="white"
-                _placeholder={{ color: "gray.400" }}
-              />
-            </FormControl>
-
-            <Checkbox colorScheme="whiteAlpha" isChecked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} color="white">
-              Remember me
-            </Checkbox>
-
-            <Button
-              type="submit"
-              bg="black"
-              color="white"
-              _hover={{ bg: "gray.800" }}
-              width="full"
-            >
-              LOGIN
-            </Button>
-          </VStack>
-        </form>
-
-        <Text textAlign="center" mt={4} color="white">
-          Don't have an account?{" "}
-          <Text as={Link} to="/signup" color="blue.400" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
-            Register here
+          {/* New Quote for Login Page */}
+          <Text
+            fontSize="lg"
+            fontStyle="italic"
+            fontWeight="light"
+            letterSpacing="wide"
+            color="gray.300"
+            mt={-2}
+          >
+            "Empowering Imagination, One Innovation at a Time"
           </Text>
-        </Text>
+        </Box>
       </Box>
+
+      {/* Right Panel - Login Form */}
+      <Flex width="50%" alignItems="center" justifyContent="center">
+        <Paper>
+          <Heading mb={4} size="lg" color="black">
+            Login
+          </Heading>
+
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <VStack spacing={4}>
+              <FormControl>
+                <FormLabel color="black">Email Address</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="example@email.com"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  bg="white"
+                  border="1px solid black"
+                  color="black"
+                  _placeholder={{ color: "gray.600" }}
+                  _focus={{
+                    borderColor: "black",
+                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
+                  }}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel color="black">Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  bg="white"
+                  border="1px solid black"
+                  color="black"
+                  _placeholder={{ color: "gray.600" }}
+                  _focus={{
+                    borderColor: "black",
+                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
+                  }}
+                />
+              </FormControl>
+
+              <Checkbox
+                colorScheme="blackAlpha"
+                isChecked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                color="black"
+              >
+                Remember me
+              </Checkbox>
+
+              <Button
+                type="submit"
+                bg="black"
+                color="white"
+                _hover={{
+                  bg: "gray.800",
+                  boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)",
+                }}
+                width="full"
+              >
+                LOGIN
+              </Button>
+            </VStack>
+          </form>
+
+          <Text textAlign="center" mt={4} color="black">
+            Don't have an account?{" "}
+            <Text as={Link} to="/signup" color="blue.500" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
+              Register here
+            </Text>
+          </Text>
+        </Paper>
+      </Flex>
     </Flex>
   );
 };
