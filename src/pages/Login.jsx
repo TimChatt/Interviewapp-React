@@ -65,112 +65,107 @@ const Login = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh">
-      {/* Left Panel - Sony Branding */}
-      <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
-        <Box textAlign="center">
-          {/* Sony Logo */}
-          <img
-            src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-            alt="Sony Logo"
-            style={{
-              width: "180px",
-              marginBottom: "10px",
-              filter: "brightness(0) invert(1)",
-            }}
-          />
-
-          {/* New Quote for Login Page */}
-          <Text
-            fontSize="lg"
-            fontStyle="italic"
-            fontWeight="light"
-            letterSpacing="wide"
-            color="gray.300"
-            mt={-2}
-          >
-            "Empowering Imagination, One Innovation at a Time"
-          </Text>
-        </Box>
+    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center" direction="column">
+      {/* Sony Logo Above the Login Box */}
+      <Box mb={4} textAlign="center">
+        <img
+          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+          alt="Sony Logo"
+          style={{
+            width: "180px",
+            filter: "brightness(0) invert(1)",
+          }}
+        />
       </Box>
 
-      {/* Right Panel - Login Form */}
-      <Flex width="50%" alignItems="center" justifyContent="center">
-        <Paper>
-          <Heading mb={4} size="lg" color="black">
-            Login
-          </Heading>
+      {/* Login Box Centered */}
+      <Paper>
+        <Heading mb={4} size="lg" color="black">
+          Login
+        </Heading>
 
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <VStack spacing={4}>
-              <FormControl>
-                <FormLabel color="black">Email Address</FormLabel>
-                <Input
-                  type="text"
-                  placeholder="example@email.com"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  bg="white"
-                  border="1px solid black"
-                  color="black"
-                  _placeholder={{ color: "gray.600" }}
-                  _focus={{
-                    borderColor: "black",
-                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
-                  }}
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel color="black">Password</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  bg="white"
-                  border="1px solid black"
-                  color="black"
-                  _placeholder={{ color: "gray.600" }}
-                  _focus={{
-                    borderColor: "black",
-                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
-                  }}
-                />
-              </FormControl>
-
-              <Checkbox
-                colorScheme="blackAlpha"
-                isChecked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <VStack spacing={4}>
+            <FormControl>
+              <FormLabel color="black">Email Address</FormLabel>
+              <Input
+                type="text"
+                placeholder="example@email.com"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                bg="white"
+                border="1px solid black"
                 color="black"
-              >
-                Remember me
-              </Checkbox>
-
-              <Button
-                type="submit"
-                bg="black"
-                color="white"
-                _hover={{
-                  bg: "gray.800",
-                  boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)",
+                _placeholder={{ color: "gray.600" }}
+                _focus={{
+                  borderColor: "black",
+                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
                 }}
-                width="full"
-              >
-                LOGIN
-              </Button>
-            </VStack>
-          </form>
+              />
+            </FormControl>
 
-          <Text textAlign="center" mt={4} color="black">
-            Don't have an account?{" "}
-            <Text as={Link} to="/signup" color="blue.500" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
-              Register here
-            </Text>
+            <FormControl>
+              <FormLabel color="black">Password</FormLabel>
+              <Input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                bg="white"
+                border="1px solid black"
+                color="black"
+                _placeholder={{ color: "gray.600" }}
+                _focus={{
+                  borderColor: "black",
+                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
+                }}
+              />
+            </FormControl>
+
+            <Checkbox
+              colorScheme="blackAlpha"
+              isChecked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              color="black"
+            >
+              Remember me
+            </Checkbox>
+
+            <Button
+              type="submit"
+              bg="black"
+              color="white"
+              _hover={{
+                bg: "gray.800",
+                boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)",
+              }}
+              width="full"
+            >
+              LOGIN
+            </Button>
+          </VStack>
+        </form>
+
+        <Text textAlign="center" mt={4} color="black">
+          Don't have an account?{" "}
+          <Text as={Link} to="/signup" color="blue.500" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
+            Register here
           </Text>
-        </Paper>
-      </Flex>
+        </Text>
+      </Paper>
+
+      {/* Quote Below the Login Box */}
+      <Text
+        fontSize="lg"
+        fontStyle="italic"
+        fontWeight="light"
+        letterSpacing="wide"
+        color="gray.600"
+        mt={6} // Adds space between login box and quote
+        textAlign="center"
+      >
+        "Pushing Boundaries, Creating Possibilities"
+      </Text>
     </Flex>
   );
 };
