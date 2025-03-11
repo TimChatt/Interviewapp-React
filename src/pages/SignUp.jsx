@@ -13,6 +13,7 @@ import {
   VStack,
   Text,
   Flex,
+  Paper,
 } from "@chakra-ui/react";
 
 const SignUp = () => {
@@ -53,84 +54,127 @@ const SignUp = () => {
 
   return (
     <Flex width="100vw" minH="100vh">
-    
       {/* Left Panel - Sony Branding */}
-<Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
-  <Box textAlign="center">
-    {/* Sony Logo */}
-    <img
-      src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-      alt="Sony Logo"
-      style={{
-        width: "180px",
-        marginBottom: "15px",
-        filter: "brightness(0) invert(1)",
-      }}
-    />
-    
-    {/* Updated Sleek Text */}
-    <Text
-      fontSize="lg"
-      fontStyle="italic"
-      fontWeight="light"
-      letterSpacing="wide"
-      color="gray.300"
-    >
-      "Innovation That Moves the World"
-    </Text>
-  </Box>
-</Box>
+      <Box
+        width="50%"
+        height="100vh"
+        bg="black"
+        color="white"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Box textAlign="center">
+          {/* Sony Logo */}
+          <img
+            src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+            alt="Sony Logo"
+            style={{
+              width: "180px",
+              marginBottom: "10px",
+              filter: "brightness(0) invert(1)",
+            }}
+          />
 
-      {/* Right Panel - Sign Up Form */}
+          {/* Updated Sleek Text - Now closer to Sony logo */}
+          <Text
+            fontSize="lg"
+            fontStyle="italic"
+            fontWeight="light"
+            letterSpacing="wide"
+            color="gray.300"
+            mt={-2} // Moves it closer to the logo
+          >
+            "Innovation That Moves the World"
+          </Text>
+        </Box>
+      </Box>
+
+      {/* Right Panel - Futuristic Sign-Up Form */}
       <Flex width="50%" alignItems="center" justifyContent="center">
-        <Box
-          bg="white"
-          p={8}
-          borderRadius="lg"
-          boxShadow="lg"
-          width="400px"
-          textAlign="center"
+        <Paper
+          elevation={10} // Gives it a soft shadow for a premium feel
+          style={{
+            padding: "30px",
+            width: "400px",
+            textAlign: "center",
+            background: "rgba(255, 255, 255, 0.1)", // Glass effect
+            border: "2px solid black", // Premium black outline
+            borderRadius: "15px",
+            backdropFilter: "blur(10px)", // Smooth futuristic blur
+            boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.4)", // Subtle depth
+          }}
         >
-          <Heading mb={4} size="lg" color="black">
+          <Heading mb={4} size="lg" color="white">
             Sign Up
           </Heading>
 
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <VStack spacing={4}>
               <FormControl isRequired>
-                <FormLabel>Username</FormLabel>
+                <FormLabel color="white">Username</FormLabel>
                 <Input
                   type="text"
                   placeholder="Enter username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  bg="gray.100"
+                  bg="rgba(255, 255, 255, 0.2)"
+                  border="1px solid #ffffff33"
+                  color="white"
+                  _placeholder={{ color: "gray.300" }}
+                  _focus={{
+                    borderColor: "white",
+                    boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
+                  }}
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
+                <FormLabel color="white">Email</FormLabel>
                 <Input
                   type="email"
                   placeholder="Enter email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  bg="gray.100"
+                  bg="rgba(255, 255, 255, 0.2)"
+                  border="1px solid #ffffff33"
+                  color="white"
+                  _placeholder={{ color: "gray.300" }}
+                  _focus={{
+                    borderColor: "white",
+                    boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
+                  }}
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
+                <FormLabel color="white">Password</FormLabel>
                 <Input
                   type="password"
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  bg="gray.100"
+                  bg="rgba(255, 255, 255, 0.2)"
+                  border="1px solid #ffffff33"
+                  color="white"
+                  _placeholder={{ color: "gray.300" }}
+                  _focus={{
+                    borderColor: "white",
+                    boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
+                  }}
                 />
               </FormControl>
 
-              <Button type="submit" bg="black" color="white" _hover={{ bg: "gray.800" }} width="full">
+              <Button
+                type="submit"
+                bg="black"
+                color="white"
+                _hover={{
+                  bg: "gray.800",
+                  boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)",
+                }}
+                width="full"
+              >
                 Sign Up
               </Button>
             </VStack>
@@ -144,13 +188,13 @@ const SignUp = () => {
           )}
 
           {/* Login Redirect */}
-          <Text mt={4}>
+          <Text mt={4} color="white">
             Already have an account?{" "}
-            <Text as="span" color="black" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
+            <Text as="span" color="white" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
               Login here
             </Text>
           </Text>
-        </Box>
+        </Paper>
       </Flex>
     </Flex>
   );
