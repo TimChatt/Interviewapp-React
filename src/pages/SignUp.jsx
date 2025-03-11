@@ -14,7 +14,6 @@ import {
   Text,
   Flex,
 } from "@chakra-ui/react";
-import Paper from "@mui/material/Paper";
 
 const SignUp = () => {
   const { login } = useContext(AuthContext);
@@ -55,15 +54,7 @@ const SignUp = () => {
   return (
     <Flex width="100vw" minH="100vh">
       {/* Left Panel - Sony Branding */}
-      <Box
-        width="50%"
-        height="100vh"
-        bg="black"
-        color="white"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
+      <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
         <Box textAlign="center">
           {/* Sony Logo */}
           <img
@@ -76,14 +67,14 @@ const SignUp = () => {
             }}
           />
 
-          {/* Updated Sleek Text - Now closer to Sony logo */}
+          {/* Updated Sleek Text - Closer to Sony logo */}
           <Text
             fontSize="lg"
             fontStyle="italic"
             fontWeight="light"
             letterSpacing="wide"
             color="gray.300"
-            mt={-2} // Moves it closer to the logo
+            mt={-2}
           >
             "Innovation That Moves the World"
           </Text>
@@ -92,18 +83,15 @@ const SignUp = () => {
 
       {/* Right Panel - Futuristic Sign-Up Form */}
       <Flex width="50%" alignItems="center" justifyContent="center">
-        <Paper
-          elevation={10} // Gives it a soft shadow for a premium feel
-          style={{
-            padding: "30px",
-            width: "400px",
-            textAlign: "center",
-            background: "rgba(255, 255, 255, 0.1)", // Glass effect
-            border: "2px solid black", // Premium black outline
-            borderRadius: "15px",
-            backdropFilter: "blur(10px)", // Smooth futuristic blur
-            boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.4)", // Subtle depth
-          }}
+        <Box
+          bg="rgba(255, 255, 255, 0.1)" // Glass effect
+          border="2px solid black" // Premium black outline
+          borderRadius="15px"
+          padding="30px"
+          width="400px"
+          textAlign="center"
+          backdropFilter="blur(10px)" // Smooth futuristic blur
+          boxShadow="0px 0px 15px rgba(0, 0, 0, 0.4)" // Subtle depth
         >
           <Heading mb={4} size="lg" color="white">
             Sign Up
@@ -194,7 +182,7 @@ const SignUp = () => {
               Login here
             </Text>
           </Text>
-        </Paper>
+        </Box>
       </Flex>
     </Flex>
   );
