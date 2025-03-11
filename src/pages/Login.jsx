@@ -28,7 +28,7 @@ const Login = () => {
     try {
       const success = await login(username, password);
       if (success) {
-        navigate("/"); // Redirect to Home on success
+        navigate("/");
       } else {
         toast({
           title: "Login Failed",
