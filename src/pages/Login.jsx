@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
@@ -50,19 +51,18 @@ const Login = () => {
   };
 
   return (
-    <Box width="100vw" minH="100vh" display="flex">
+    <Flex width="100vw" minH="100vh">
       {/* Left Side with Sony Branding */}
       <Box
-        width="40vw"
+        width="40%"
         height="100vh"
         bg="black"
         display="flex"
         flexDirection="column"
-        alignItems="flex-start"
+        alignItems="center"
         justifyContent="center"
         color="white"
         p={12}
-        pl={16}
       >
         {/* Sony Logo */}
         <img
@@ -80,15 +80,7 @@ const Login = () => {
       </Box>
 
       {/* Right Side - Login Form */}
-      <Box
-        width="60vw"
-        height="100vh"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        bg="white"
-        p={8}
-      >
+      <Flex flex="1" height="100vh" justifyContent="center" alignItems="center" bg="white">
         <Box
           borderRadius="md"
           p={8}
@@ -156,8 +148,8 @@ const Login = () => {
             </Text>
           </Text>
         </Box>
-      </Box>
-    </Box>
+      </Flex>
+    </Flex>
   );
 };
 
