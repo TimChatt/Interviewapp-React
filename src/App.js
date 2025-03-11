@@ -31,16 +31,17 @@ const AppContent = () => {
   const shouldHideSidebar = hideSidebarPaths.includes(location.pathname);
 
   return (
-    <Box display="flex" minH="100vh">
+    <Box display="flex" minH="100vh" overflowX="hidden"> {/* ✅ Added overflowX="hidden" */}
       {/* Sidebar (Hidden on Login/Signup) */}
       {!shouldHideSidebar && <Sidebar />}
 
       {/* Main Content */}
       <Container
-        maxW="container.xl"
+        maxW="100vw"  // ✅ Ensures it fits inside viewport
         flex="1"
         p={shouldHideSidebar ? "0" : "4"}
         bg="gray.50"
+        overflowX="hidden" // ✅ Ensures no unwanted scrolling
       >
         <Routes>
           {/* Public Routes */}
