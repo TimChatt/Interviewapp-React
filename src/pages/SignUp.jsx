@@ -15,6 +15,7 @@ import {
   Flex,
   Paper,
 } from "@chakra-ui/react";
+import Paper from "@mui/material/Paper";
 
 const SignUp = () => {
   const { login } = useContext(AuthContext);
