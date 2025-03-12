@@ -15,10 +15,10 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-// Consistent Black Box with White Text
+// Grey Box to Match Login Page
 const Paper = (props) => (
   <Box
-    bg="black"
+    bg="gray.900"
     border="2px solid rgba(255, 255, 255, 0.2)"
     borderRadius="15px"
     p="30px"
@@ -88,7 +88,7 @@ const SignUp = () => {
         </Box>
       </Box>
 
-      {/* Right Panel - Sign-Up Form */}
+      {/* Right Panel - Sign-Up Form with Grey Box */}
       <Flex width="50%" alignItems="center" justifyContent="center">
         <Paper>
           <Heading mb={4} size="lg" color="white">
