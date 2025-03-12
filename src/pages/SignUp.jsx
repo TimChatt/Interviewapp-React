@@ -15,19 +15,19 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-// Futuristic Box with Glassmorphism
+// Improved Paper Component for Visibility
 const Paper = (props) => (
   <Box
-    bg="rgba(255, 255, 255, 0.1)" // Glassmorphic look
-    border="2px solid rgba(255, 255, 255, 0.3)" // Soft outline
+    bg="rgba(0, 0, 0, 0.6)" // Darker background for better contrast
+    border="2px solid rgba(255, 255, 255, 0.4)"
     borderRadius="15px"
     p="30px"
     width="400px"
     textAlign="center"
-    backdropFilter="blur(15px)" // Smooth blur
-    boxShadow="0px 0px 15px rgba(255, 255, 255, 0.2)" // Glow effect
+    backdropFilter="blur(20px)" // Stronger blur
+    boxShadow="0px 0px 20px rgba(255, 255, 255, 0.2)" // More noticeable shadow
     transition="0.3s ease-in-out"
-    _hover={{ boxShadow: "0px 0px 20px rgba(255, 255, 255, 0.5)" }}
+    _hover={{ boxShadow: "0px 0px 25px rgba(255, 255, 255, 0.4)" }}
     {...props}
   />
 );
@@ -94,7 +94,7 @@ const SignUp = () => {
       {/* Right Panel - Futuristic Sign-Up Form */}
       <Flex width="50%" alignItems="center" justifyContent="center">
         <Paper>
-          <Heading mb={4} size="lg" color="white">
+          <Heading mb={4} size="lg" color="white" textShadow="0px 0px 8px rgba(255, 255, 255, 0.6)">
             Sign Up
           </Heading>
 
