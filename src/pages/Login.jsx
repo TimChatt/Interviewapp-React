@@ -15,17 +15,19 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 
-// Custom Paper Component (Matching Sign-Up Page)
+// Custom Paper Component for Futuristic Look
 const Paper = (props) => (
   <Box
-    bg="rgba(255, 255, 255, 0.7)" // Semi-transparent background
-    border="2px solid black"
+    bg="rgba(255, 255, 255, 0.1)" // Glass effect
+    border="2px solid rgba(255, 255, 255, 0.3)" // Subtle white border
     borderRadius="15px"
     p="30px"
     width="400px"
     textAlign="center"
-    backdropFilter="blur(15px)"
-    boxShadow="0px 0px 15px rgba(0, 0, 0, 0.3)"
+    backdropFilter="blur(15px)" // Smooth glass blur
+    boxShadow="0px 0px 15px rgba(255, 255, 255, 0.2)" // Glowing effect
+    transition="0.3s ease-in-out"
+    _hover={{ boxShadow: "0px 0px 20px rgba(255, 255, 255, 0.5)" }} // Glow on hover
     {...props}
   />
 );
@@ -65,68 +67,69 @@ const Login = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center" direction="column">
-      {/* Sony Logo Above the Login Box */}
-      <Box mb={4} textAlign="center">
+    <Flex width="100vw" minH="100vh" alignItems="center" justifyContent="center" direction="column" bg="black">
+      {/* Sony Logo - More Visible */}
+      <Box mb={6} textAlign="center">
         <img
           src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
           alt="Sony Logo"
           style={{
             width: "180px",
-            filter: "brightness(0) invert(1)",
+            filter: "brightness(1.8) invert(1)", // Increased brightness for better contrast
+            opacity: 1,
           }}
         />
       </Box>
 
-      {/* Login Box Centered */}
+      {/* Futuristic Login Box */}
       <Paper>
-        <Heading mb={4} size="lg" color="black">
+        <Heading mb={4} size="lg" color="white">
           Login
         </Heading>
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <VStack spacing={4}>
             <FormControl>
-              <FormLabel color="black">Email Address</FormLabel>
+              <FormLabel color="white">Email Address</FormLabel>
               <Input
                 type="text"
                 placeholder="example@email.com"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                bg="white"
-                border="1px solid black"
-                color="black"
-                _placeholder={{ color: "gray.600" }}
+                bg="rgba(255, 255, 255, 0.1)"
+                border="1px solid rgba(255, 255, 255, 0.3)"
+                color="white"
+                _placeholder={{ color: "gray.400" }}
                 _focus={{
-                  borderColor: "black",
-                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
+                  borderColor: "white",
+                  boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
                 }}
               />
             </FormControl>
 
             <FormControl>
-              <FormLabel color="black">Password</FormLabel>
+              <FormLabel color="white">Password</FormLabel>
               <Input
                 type="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                bg="white"
-                border="1px solid black"
-                color="black"
-                _placeholder={{ color: "gray.600" }}
+                bg="rgba(255, 255, 255, 0.1)"
+                border="1px solid rgba(255, 255, 255, 0.3)"
+                color="white"
+                _placeholder={{ color: "gray.400" }}
                 _focus={{
-                  borderColor: "black",
-                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.8)",
+                  borderColor: "white",
+                  boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
                 }}
               />
             </FormControl>
 
             <Checkbox
-              colorScheme="blackAlpha"
+              colorScheme="whiteAlpha"
               isChecked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              color="black"
+              color="white"
             >
               Remember me
             </Checkbox>
@@ -135,36 +138,39 @@ const Login = () => {
               type="submit"
               bg="black"
               color="white"
-              _hover={{
-                bg: "gray.800",
-                boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)",
-              }}
               width="full"
+              transition="0.3s ease-in-out"
+              _hover={{
+                bg: "white",
+                color: "black",
+                boxShadow: "0px 0px 15px rgba(255, 255, 255, 0.6)",
+              }}
             >
               LOGIN
             </Button>
           </VStack>
         </form>
 
-        <Text textAlign="center" mt={4} color="black">
+        <Text textAlign="center" mt={4} color="white">
           Don't have an account?{" "}
-          <Text as={Link} to="/signup" color="blue.500" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
+          <Text as={Link} to="/signup" color="blue.300" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
             Register here
           </Text>
         </Text>
       </Paper>
 
-      {/* Quote Below the Login Box */}
+      {/* Quote Below Login Box - Slight Glow Effect */}
       <Text
         fontSize="lg"
         fontStyle="italic"
         fontWeight="light"
         letterSpacing="wide"
-        color="gray.600"
-        mt={6} // Adds space between login box and quote
+        color="gray.400"
+        mt={5} // Space between login box and quote
         textAlign="center"
+        filter="brightness(1.2)" // Slight glow effect
       >
-        "Pushing Boundaries, Creating Possibilities"
+        "Shaping the Future, One Innovation at a Time"
       </Text>
     </Flex>
   );
