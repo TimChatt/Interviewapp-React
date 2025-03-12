@@ -15,7 +15,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-// Exact Match to Login Box
+// Consistent Black Box with White Text
 const Paper = (props) => (
   <Box
     bg="black"
@@ -24,10 +24,7 @@ const Paper = (props) => (
     p="30px"
     width="400px"
     textAlign="center"
-    backdropFilter="blur(10px)"
-    boxShadow="0px 0px 15px rgba(255, 255, 255, 0.3)"
-    transition="0.3s ease-in-out"
-    _hover={{ boxShadow: "0px 0px 25px rgba(255, 255, 255, 0.5)" }}
+    boxShadow="0px 0px 15px rgba(255, 255, 255, 0.2)"
     {...props}
   />
 );
@@ -69,122 +66,107 @@ const SignUp = () => {
   };
 
   return (
-    <Flex width="100vw" minH="100vh" direction="column" alignItems="center" justifyContent="center" bg="black">
-      {/* Sony Logo */}
-      <Box mb={6} textAlign="center">
-        <img
-          src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
-          alt="Sony Logo"
-          style={{
-            width: "180px",
-            filter: "brightness(1.8) invert(1)", // Make logo pop more
-          }}
-        />
+    <Flex width="100vw" minH="100vh">
+      {/* Left Panel - Sony Branding */}
+      <Box width="50%" height="100vh" bg="black" color="white" display="flex" alignItems="center" justifyContent="center">
+        <Box textAlign="center">
+          {/* Sony Logo */}
+          <img
+            src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
+            alt="Sony Logo"
+            style={{
+              width: "180px",
+              marginBottom: "10px",
+              filter: "brightness(1.5) invert(1)",
+            }}
+          />
+
+          {/* Tagline */}
+          <Text fontSize="lg" fontStyle="italic" fontWeight="light" color="gray.300">
+            "Innovation That Moves the World"
+          </Text>
+        </Box>
       </Box>
 
-      {/* Futuristic Sign-Up Box (Black Theme) */}
-      <Paper>
-        <Heading mb={4} size="lg" color="white" textShadow="0px 0px 8px rgba(255, 255, 255, 0.6)">
-          Sign Up
-        </Heading>
+      {/* Right Panel - Sign-Up Form */}
+      <Flex width="50%" alignItems="center" justifyContent="center">
+        <Paper>
+          <Heading mb={4} size="lg" color="white">
+            Sign Up
+          </Heading>
 
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <VStack spacing={4}>
-            <FormControl isRequired>
-              <FormLabel color="white">Username</FormLabel>
-              <Input
-                type="text"
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                bg="rgba(255, 255, 255, 0.1)"
-                border="1px solid rgba(255, 255, 255, 0.3)"
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <VStack spacing={4}>
+              <FormControl isRequired>
+                <FormLabel color="white">Username</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Enter username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  bg="gray.800"
+                  border="1px solid rgba(255, 255, 255, 0.3)"
+                  color="white"
+                  _placeholder={{ color: "gray.400" }}
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel color="white">Email</FormLabel>
+                <Input
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  bg="gray.800"
+                  border="1px solid rgba(255, 255, 255, 0.3)"
+                  color="white"
+                  _placeholder={{ color: "gray.400" }}
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel color="white">Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  bg="gray.800"
+                  border="1px solid rgba(255, 255, 255, 0.3)"
+                  color="white"
+                  _placeholder={{ color: "gray.400" }}
+                />
+              </FormControl>
+
+              <Button
+                type="submit"
+                bg="black"
                 color="white"
-                _placeholder={{ color: "gray.400" }}
-                _focus={{
-                  borderColor: "white",
-                  boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
-                }}
-              />
-            </FormControl>
+                _hover={{ bg: "gray.800", boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)" }}
+                width="full"
+              >
+                Sign Up
+              </Button>
+            </VStack>
+          </form>
 
-            <FormControl isRequired>
-              <FormLabel color="white">Email</FormLabel>
-              <Input
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                bg="rgba(255, 255, 255, 0.1)"
-                border="1px solid rgba(255, 255, 255, 0.3)"
-                color="white"
-                _placeholder={{ color: "gray.400" }}
-                _focus={{
-                  borderColor: "white",
-                  boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
-                }}
-              />
-            </FormControl>
+          {message && (
+            <Alert status={isError ? "error" : "success"} mt={4}>
+              <AlertIcon />
+              {message}
+            </Alert>
+          )}
 
-            <FormControl isRequired>
-              <FormLabel color="white">Password</FormLabel>
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                bg="rgba(255, 255, 255, 0.1)"
-                border="1px solid rgba(255, 255, 255, 0.3)"
-                color="white"
-                _placeholder={{ color: "gray.400" }}
-                _focus={{
-                  borderColor: "white",
-                  boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)",
-                }}
-              />
-            </FormControl>
-
-            <Button
-              type="submit"
-              bg="black"
-              color="white"
-              _hover={{ bg: "gray.800", boxShadow: "0px 0px 10px rgba(255, 255, 255, 0.6)" }}
-              width="full"
-            >
-              Sign Up
-            </Button>
-          </VStack>
-        </form>
-
-        {message && (
-          <Alert status={isError ? "error" : "success"} mt={4}>
-            <AlertIcon />
-            {message}
-          </Alert>
-        )}
-
-        {/* Login Redirect */}
-        <Text mt={4} color="white">
-          Already have an account?{" "}
-          <Text as="span" color="blue.300" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
-            Login here
+          {/* Login Redirect */}
+          <Text mt={4} color="white">
+            Already have an account?{" "}
+            <Text as="span" color="blue.300" fontWeight="bold" cursor="pointer" onClick={() => navigate("/login")}>
+              Login here
+            </Text>
           </Text>
-        </Text>
-      </Paper>
-
-      {/* Quote Below Sign-Up Box */}
-      <Text
-        fontSize="lg"
-        fontStyle="italic"
-        fontWeight="light"
-        letterSpacing="wide"
-        color="gray.400"
-        mt={5}
-        textAlign="center"
-        filter="brightness(1.2)"
-      >
-        "Shaping the Future, One Innovation at a Time"
-      </Text>
+        </Paper>
+      </Flex>
     </Flex>
   );
 };
