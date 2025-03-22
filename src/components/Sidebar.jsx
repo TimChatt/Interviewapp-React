@@ -1,4 +1,4 @@
-// Full refreshed SonySidebar with persistent footer, glowing quote, white-rimmed futuristic buttons
+// Full refreshed SonySidebar with consistent soft purple glow on all items
 
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -23,24 +23,21 @@ const SonySidebar = () => {
     navigate("/login");
   };
 
-  const activeBg = useColorModeValue("gray.200", "gray.700");
-  const hoverBg = useColorModeValue("#e5d9f2", "#5a4fcf");
-
   const navButtonStyles = (path) => ({
     justifyContent: "flex-start",
-    bg: location.pathname === path ? activeBg : "transparent",
+    bg: location.pathname === path ? "#e0d3f8" : "transparent",
+    color: location.pathname === path ? "white" : "white",
     _hover: {
-      bg: hoverBg,
+      bg: "#e0d3f8",
       color: "white",
       transform: "scale(1.05)",
-      boxShadow: "0 0 10px white",
+      boxShadow: "0 0 10px #c7b3f0, 0 0 15px #b69de5"
     },
     transition: "all 0.3s ease-in-out",
     border: "1px solid white",
-    color: "white",
     borderRadius: "lg",
     backdropFilter: "blur(4px)",
-    boxShadow: "0 0 4px white inset",
+    boxShadow: "0 0 4px white inset"
   });
 
   return (
@@ -97,6 +94,12 @@ const SonySidebar = () => {
           color="white"
           border="1px solid white"
           borderRadius="lg"
+          _hover={{
+            bg: "#e0d3f8",
+            color: "white",
+            transform: "scale(1.05)",
+            boxShadow: "0 0 10px #c7b3f0, 0 0 15px #b69de5"
+          }}
         >
           Competency Tools
           <Icon as={isCompetencyOpen ? FaChevronUp : FaChevronDown} />
@@ -117,6 +120,12 @@ const SonySidebar = () => {
           color="white"
           border="1px solid white"
           borderRadius="lg"
+          _hover={{
+            bg: "#e0d3f8",
+            color: "white",
+            transform: "scale(1.05)",
+            boxShadow: "0 0 10px #c7b3f0, 0 0 15px #b69de5"
+          }}
         >
           Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
         </Button>
