@@ -1,4 +1,4 @@
-// Full refreshed SonySidebar with consistent soft purple glow on all items
+/// Full refreshed SonySidebar with consistent soft purple glow on all items and shimmer quote effect
 
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -6,10 +6,16 @@ import { AuthContext } from "../contexts/AuthContext";
 import {
   VStack, HStack, Box, Button, Collapse, Icon, Image, Text, useColorModeValue
 } from "@chakra-ui/react";
+import { keyframes } from "@emotion/react";
 import {
   FaChevronDown, FaChevronUp, FaHome, FaUsers, FaTrophy, FaBasketballBall,
   FaClipboardList, FaTools, FaFutbol, FaTable, FaThList, FaEye
 } from "react-icons/fa";
+
+const shimmer = keyframes`
+  0% { background-position: -200%; }
+  100% { background-position: 200%; }
+`;
 
 const SonySidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -26,7 +32,7 @@ const SonySidebar = () => {
   const navButtonStyles = (path) => ({
     justifyContent: "flex-start",
     bg: location.pathname === path ? "#e0d3f8" : "transparent",
-    color: location.pathname === path ? "white" : "white",
+    color: "white",
     _hover: {
       bg: "#e0d3f8",
       color: "white",
@@ -165,10 +171,11 @@ const SonySidebar = () => {
       >
         <Text
           fontSize="sm"
-          color="white"
-          fontStyle="italic"
-          fontWeight="light"
-          textShadow="0 0 10px white, 0 0 20px #9a86fd"
+          fontWeight="medium"
+          bgGradient="linear(to-r, #ffffff, #9a86fd, #ffffff)"
+          bgClip="text"
+          animation={`${shimmer} 6s linear infinite`}
+          textShadow="0 0 6px #9a86fd, 0 0 12px #ffffff30"
         >
           Fill the world with emotion, through the power of creativity and technology.
         </Text>
