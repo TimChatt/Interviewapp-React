@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiUsers, FiBarChart, FiSettings } from "react-icons/fi"; // Import icons
-import { MdLightbulb } from "react-icons/md"; // Use Material Design Lightbulb
+import { FiUsers, FiBarChart, FiSettings } from "react-icons/fi";
+import { MdLightbulb } from "react-icons/md";
 import {
   Box, Heading, Text, Grid, GridItem, Card, CardBody, Stat, StatLabel, StatNumber, VStack, Icon
 } from "@chakra-ui/react";
@@ -9,8 +9,6 @@ import ashbyMockData from "../mockdata/ashbyMockData.json";
 
 function Home() {
   const navigate = useNavigate();
-
-  // Basic stats from Ashby data
   const [total, setTotal] = useState(0);
   const [hired, setHired] = useState(0);
   const [archived, setArchived] = useState(0);
@@ -27,22 +25,20 @@ function Home() {
 
   return (
     <Box maxW="1000px" mx="auto" py="6">
-      <Heading size="xl" textAlign="center" color="purple.600" mb="4">
+      <Heading size="xl" textAlign="center" color="brand.purple" mb="4">
         Welcome to the Interview Analysis App
       </Heading>
-      <Text fontSize="lg" textAlign="center" color="gray.600" mb="6">
+      <Text fontSize="lg" textAlign="center" color="brand.black" mb="6">
         This platform combines data from Ashby and Metaview to help you track, review, and improve
         your interviewing process. Explore candidate management, insights, and personalized recommendations.
       </Text>
 
-      {/* Quick Stats */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6} mb="8">
         <StatCard title="Total Candidates" value={total} />
         <StatCard title="Hired" value={hired} />
         <StatCard title="Archived" value={archived} />
       </Grid>
 
-      {/* Navigation Cards with Icons */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
         <NavCard
           title="Candidates"
@@ -59,7 +55,7 @@ function Home() {
         <NavCard
           title="Recommendations"
           description="Get actionable suggestions to improve the hiring process."
-          icon={MdLightbulb} // Replaced with Material Design version
+          icon={MdLightbulb}
           onClick={() => navigate("/recommendations")}
         />
         <NavCard
@@ -73,37 +69,42 @@ function Home() {
   );
 }
 
-// Reusable Stat Card Component
 const StatCard = ({ title, value }) => {
   return (
-    <Card bg="white" shadow="md" borderRadius="lg">
+    <Card
+      bg="white"
+      border="1px solid white"
+      borderRadius="lg"
+      boxShadow="0 0 10px rgba(255, 255, 255, 0.1)"
+      _hover={{ transform: "scale(1.02)", boxShadow: "0 0 15px rgba(255, 255, 255, 0.3)" }}
+    >
       <CardBody>
         <Stat textAlign="center">
           <StatLabel fontSize="lg" color="gray.600">{title}</StatLabel>
-          <StatNumber fontSize="3xl" color="purple.600">{value}</StatNumber>
+          <StatNumber fontSize="3xl" color="brand.purple">{value}</StatNumber>
         </Stat>
       </CardBody>
     </Card>
   );
 };
 
-// Reusable Navigation Card Component with Icons
 const NavCard = ({ title, description, icon, onClick }) => {
   return (
     <GridItem>
       <Card
         bg="white"
-        shadow="md"
+        border="1px solid white"
         borderRadius="lg"
+        boxShadow="0 0 10px rgba(255, 255, 255, 0.1)"
+        _hover={{ transform: "translateY(-3px)", boxShadow: "0 0 15px rgba(255, 255, 255, 0.3)" }}
         cursor="pointer"
         transition="transform 0.2s ease, box-shadow 0.2s ease"
-        _hover={{ transform: "translateY(-3px)", boxShadow: "lg" }}
         onClick={onClick}
       >
         <CardBody textAlign="center">
           <VStack spacing={3}>
-            <Icon as={icon} boxSize={8} color="purple.500" /> {/* Added icon */}
-            <Heading size="md" color="purple.700">{title}</Heading>
+            <Icon as={icon} boxSize={8} color="brand.purple" />
+            <Heading size="md" color="brand.purple">{title}</Heading>
             <Text color="gray.600">{description}</Text>
           </VStack>
         </CardBody>
