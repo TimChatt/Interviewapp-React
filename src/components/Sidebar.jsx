@@ -1,4 +1,4 @@
-/// Full refreshed SonySidebar with consistent soft purple glow on all items and shimmer quote effect
+/ Full refreshed SonySidebar with consistent soft purple glow on all items and shimmer quote effect with timed animation
 
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -13,8 +13,8 @@ import {
 } from "react-icons/fa";
 
 const shimmer = keyframes`
-  0% { background-position: -200%; }
-  100% { background-position: 200%; }
+  0% { background-position: -300%; }
+  100% { background-position: 300%; }
 `;
 
 const SonySidebar = () => {
@@ -174,10 +174,10 @@ const SonySidebar = () => {
           fontWeight="medium"
           bgGradient="linear(to-r, #ffffff, #9a86fd, #ffffff)"
           bgClip="text"
-          animation={`${shimmer} 6s linear infinite`}
+          animation={`${shimmer} 15s linear infinite`}
           textShadow="0 0 6px #9a86fd, 0 0 12px #ffffff30"
         >
-          Fill the world with emotion, through the power of creativity and technology.
+          &laquo; Fill the world with emotion, through the power of creativity and technology.
         </Text>
       </Box>
     </Box>
