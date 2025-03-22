@@ -1,10 +1,9 @@
-/ Full refreshed SonySidebar with consistent soft purple glow on all items and shimmer quote effect with timed animation
-
+// SonySidebar.jsx
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import {
-  VStack, HStack, Box, Button, Collapse, Icon, Image, Text, useColorModeValue
+  VStack, HStack, Box, Button, Collapse, Icon, Image, Text
 } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
 import {
@@ -12,6 +11,7 @@ import {
   FaClipboardList, FaTools, FaFutbol, FaTable, FaThList, FaEye
 } from "react-icons/fa";
 
+// Animation keyframes for shimmer
 const shimmer = keyframes`
   0% { background-position: -300%; }
   100% { background-position: 300%; }
@@ -100,12 +100,7 @@ const SonySidebar = () => {
           color="white"
           border="1px solid white"
           borderRadius="lg"
-          _hover={{
-            bg: "#e0d3f8",
-            color: "white",
-            transform: "scale(1.05)",
-            boxShadow: "0 0 10px #c7b3f0, 0 0 15px #b69de5"
-          }}
+          _hover={navButtonStyles()._hover}
         >
           Competency Tools
           <Icon as={isCompetencyOpen ? FaChevronUp : FaChevronDown} />
@@ -126,12 +121,7 @@ const SonySidebar = () => {
           color="white"
           border="1px solid white"
           borderRadius="lg"
-          _hover={{
-            bg: "#e0d3f8",
-            color: "white",
-            transform: "scale(1.05)",
-            boxShadow: "0 0 10px #c7b3f0, 0 0 15px #b69de5"
-          }}
+          _hover={navButtonStyles()._hover}
         >
           Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
         </Button>
@@ -174,10 +164,13 @@ const SonySidebar = () => {
           fontWeight="medium"
           bgGradient="linear(to-r, #ffffff, #9a86fd, #ffffff)"
           bgClip="text"
-          animation={`${shimmer} 15s linear infinite`}
-          textShadow="0 0 6px #9a86fd, 0 0 12px #ffffff30"
+          sx={{
+            animation: `${shimmer} 15s linear infinite`,
+            textShadow: "0 0 6px #9a86fd, 0 0 12px #ffffff30",
+            backgroundSize: "400% auto"
+          }}
         >
-          &laquo; Fill the world with emotion, through the power of creativity and technology.
+          « Fill the world with emotion, through the power of creativity and technology.
         </Text>
       </Box>
     </Box>
