@@ -55,10 +55,6 @@ const Admin = () => {
       return;
     }
 
-    console.log("User Object:", user);
-    console.log("User Role:", user?.role);
-    console.log("Is Admin:", user?.is_admin);
-
     const normalizedRole = user.role?.replace(/'/g, "").trim();
     if (!(user.is_admin || normalizedRole === "admin")) {
       navigate("/unauthorized");
@@ -83,7 +79,6 @@ const Admin = () => {
       }
 
       const data = await response.json();
-      console.log("Fetched Users:", data);
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -105,7 +100,6 @@ const Admin = () => {
       }
 
       const data = await response.json();
-      console.log("Fetched IPs:", data);
       setIps(data);
     } catch (error) {
       console.error("Error fetching IP whitelist:", error);
@@ -160,14 +154,14 @@ const Admin = () => {
 
   return (
     <Box maxW="1200px" mx="auto" py="6">
-      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
+      <Heading size="xl" textAlign="center" color="brand.purple" mb="6">
         Admin Panel
       </Heading>
       <Tabs variant="soft-rounded" colorScheme="purple">
         <TabList>
-          <Tab>User Management</Tab>
-          <Tab>Security</Tab>
-          <Tab>Audit Logs</Tab>
+          <Tab _selected={{ bg: "brand.purple", color: "white" }}>User Management</Tab>
+          <Tab _selected={{ bg: "brand.purple", color: "white" }}>Security</Tab>
+          <Tab _selected={{ bg: "brand.purple", color: "white" }}>Audit Logs</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -175,16 +169,16 @@ const Admin = () => {
               <Table variant="simple">
                 <Thead>
                   <Tr>
-                    <Th>Username</Th>
-                    <Th>Email</Th>
-                    <Th>Status</Th>
-                    <Th>Role</Th>
-                    <Th>Actions</Th>
+                    <Th color="brand.black">Username</Th>
+                    <Th color="brand.black">Email</Th>
+                    <Th color="brand.black">Status</Th>
+                    <Th color="brand.black">Role</Th>
+                    <Th color="brand.black">Actions</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {users.map((userData) => (
-                    <Tr key={userData.username}>
+                    <Tr key={userData.username} _hover={{ bg: "gray.50" }}>
                       <Td>{userData.username}</Td>
                       <Td>{userData.email}</Td>
                       <Td>{userData.is_approved ? "Approved" : "Pending"}</Td>
