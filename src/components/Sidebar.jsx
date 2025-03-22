@@ -170,7 +170,7 @@ const SonySidebar = () => {
             backgroundSize: "400% auto"
           }}
         >
-          « Fill the world with emotion, through the power of creativity and technology.
+          "Fill the world with emotion, through the power of creativity and technology"
         </Text>
       </Box>
     </Box>
