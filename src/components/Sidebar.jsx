@@ -1,3 +1,5 @@
+// Full refreshed SonySidebar with persistent footer, glowing quote, white-rimmed futuristic buttons
+
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
@@ -22,8 +24,24 @@ const SonySidebar = () => {
   };
 
   const activeBg = useColorModeValue("gray.200", "gray.700");
-  const inactiveBg = "transparent";
   const hoverBg = useColorModeValue("#e5d9f2", "#5a4fcf");
+
+  const navButtonStyles = (path) => ({
+    justifyContent: "flex-start",
+    bg: location.pathname === path ? activeBg : "transparent",
+    _hover: {
+      bg: hoverBg,
+      color: "white",
+      transform: "scale(1.05)",
+      boxShadow: "0 0 10px white",
+    },
+    transition: "all 0.3s ease-in-out",
+    border: "1px solid white",
+    color: "white",
+    borderRadius: "lg",
+    backdropFilter: "blur(4px)",
+    boxShadow: "0 0 4px white inset",
+  });
 
   return (
     <Box
@@ -31,15 +49,19 @@ const SonySidebar = () => {
       w="300px"
       h="100vh"
       bg="black"
-      boxShadow="xl"
-      p="4"
+      boxShadow="2xl"
       display="flex"
       flexDirection="column"
-      justifyContent="space-between"
+      justifyContent="flex-start"
       borderRight="2px solid rgba(255, 255, 255, 0.1)"
+      position="fixed"
+      top="0"
+      left="0"
+      zIndex="1000"
+      overflow="hidden"
+      position="relative"
     >
-      {/* Top: Sony Logo */}
-      <Box mb="6" display="flex" justifyContent="center">
+      <Box mb="6" display="flex" justifyContent="center" pt="4">
         <Image
           src="https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png"
           alt="Sony Logo"
@@ -49,79 +71,52 @@ const SonySidebar = () => {
         />
       </Box>
 
-      {/* Middle: Navigation */}
-      <VStack align="stretch" spacing="3" flex="1">
-        {[
-          { to: "/", label: "Home", icon: FaHome },
+      <VStack align="stretch" spacing="3" flex="1" px="4">
+        {[{ to: "/", label: "Home", icon: FaHome },
           { to: "/candidates", label: "Candidates", icon: FaUsers },
           { to: "/insights", label: "Insights", icon: FaBasketballBall },
           { to: "/recommendations", label: "Recommendations", icon: FaTrophy },
-          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye },
-        ].map((item) => (
+          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye }].map((item) => (
           <Button
             as={Link}
             to={item.to}
-            variant="ghost"
-            justifyContent="flex-start"
-            bg={location.pathname === item.to ? activeBg : inactiveBg}
-            _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
-            transition="all 0.2s ease-in-out"
-            key={item.to}
             leftIcon={<Icon as={item.icon} color="white" />}
-            color="white"
+            key={item.to}
+            variant="ghost"
+            {...navButtonStyles(item.to)}
           >
             {item.label}
           </Button>
         ))}
 
-        {/* Competency Tools */}
         <Button
           variant="ghost"
           justifyContent="space-between"
           onClick={() => setIsCompetencyOpen((prev) => !prev)}
-          _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
           leftIcon={<Icon as={FaTools} color="white" />}
           color="white"
+          border="1px solid white"
+          borderRadius="lg"
         >
           Competency Tools
           <Icon as={isCompetencyOpen ? FaChevronUp : FaChevronDown} />
         </Button>
         <Collapse in={isCompetencyOpen}>
           <VStack align="stretch" pl="4">
-            <Button as={Link} to="/competency-framework-planner" variant="ghost" justifyContent="flex-start"
-              bg={location.pathname === "/competency-framework-planner" ? activeBg : inactiveBg}
-              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
-              leftIcon={<Icon as={FaClipboardList} />} color="white">
-              Competency Generator
-            </Button>
-            <Button as={Link} to="/frameworks" variant="ghost" justifyContent="flex-start"
-              bg={location.pathname === "/frameworks" ? activeBg : inactiveBg}
-              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
-              leftIcon={<Icon as={FaFutbol} />} color="white">
-              Department View
-            </Button>
-            <Button as={Link} to="/competency-dashboard" variant="ghost" justifyContent="flex-start"
-              bg={location.pathname === "/competency-dashboard" ? activeBg : inactiveBg}
-              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
-              leftIcon={<Icon as={FaTable} />} color="white">
-              Competency Dashboard
-            </Button>
-            <Button as={Link} to="/framework-overview/:department" variant="ghost" justifyContent="flex-start"
-              bg={location.pathname.startsWith("/framework-overview") ? activeBg : inactiveBg}
-              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
-              leftIcon={<Icon as={FaThList} />} color="white">
-              Framework Overview
-            </Button>
+            <Button as={Link} to="/competency-framework-planner" {...navButtonStyles("/competency-framework-planner")} leftIcon={<Icon as={FaClipboardList} />}>Competency Generator</Button>
+            <Button as={Link} to="/frameworks" {...navButtonStyles("/frameworks")} leftIcon={<Icon as={FaFutbol} />}>Department View</Button>
+            <Button as={Link} to="/competency-dashboard" {...navButtonStyles("/competency-dashboard")} leftIcon={<Icon as={FaTable} />}>Competency Dashboard</Button>
+            <Button as={Link} to="/framework-overview/:department" {...navButtonStyles("/framework-overview")} leftIcon={<Icon as={FaThList} />}>Framework Overview</Button>
           </VStack>
         </Collapse>
 
-        {/* Admin Section */}
         <Button
           variant="ghost"
           justifyContent="space-between"
           onClick={() => setIsAdminOpen((prev) => !prev)}
-          _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
           color="white"
+          border="1px solid white"
+          borderRadius="lg"
         >
           Admin <Icon as={isAdminOpen ? FaChevronUp : FaChevronDown} />
         </Button>
@@ -130,22 +125,18 @@ const SonySidebar = () => {
             <Button
               as={Link}
               to="/admin"
-              variant="ghost"
-              justifyContent="flex-start"
-              bg={location.pathname === "/admin" ? activeBg : inactiveBg}
-              _hover={{ bg: hoverBg, color: "white", transform: "scale(1.05)" }}
-              color="white"
+              {...navButtonStyles("/admin")}
             >
               Admin Panel
             </Button>
           </VStack>
         </Collapse>
 
-        {/* Logout */}
         <Button
           onClick={handleLogout}
           colorScheme="red"
           width="full"
+          mt="4"
           _hover={{ bg: "red.500", transform: "scale(1.05)" }}
           transition="all 0.2s ease-in-out"
         >
@@ -153,10 +144,24 @@ const SonySidebar = () => {
         </Button>
       </VStack>
 
-      {/* Bottom Black Banner with Quote */}
-      <Box py="4" textAlign="center" bg="black">
-        <Text fontSize="sm" color="white" opacity="0.8" fontStyle="italic">
-          Make.Believe
+      <Box
+        position="absolute"
+        bottom="0"
+        width="100%"
+        py="4"
+        textAlign="center"
+        bg="black"
+        px="4"
+        borderTop="1px solid white"
+      >
+        <Text
+          fontSize="sm"
+          color="white"
+          fontStyle="italic"
+          fontWeight="light"
+          textShadow="0 0 10px white, 0 0 20px #9a86fd"
+        >
+          Fill the world with emotion, through the power of creativity and technology.
         </Text>
       </Box>
     </Box>
