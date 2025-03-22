@@ -1,132 +1,213 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
-import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { 
-  Box, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Button, Spinner, Flex, VStack, useToast, 
-  AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, Badge
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  IconButton,
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Input,
+  FormControl,
+  FormLabel,
+  Select,
 } from "@chakra-ui/react";
+import { AuthContext } from "../contexts/AuthContext";
+import { FaCheck, FaTimes, FaPlus, FaTrash, FaUserShield } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const AdminDashboard = () => {
-  const [pendingUsers, setPendingUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Admin = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [ips, setIps] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [ipAddress, setIpAddress] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const toast = useToast();
 
-  // Modal state
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const cancelRef = useRef();
+  const API_BASE_URL = "https://interviewappbe-production.up.railway.app";
 
   useEffect(() => {
     if (!user) {
-      setLoading(false);
+      navigate("/unauthorized");
       return;
     }
-    fetchPendingUsers();
-  }, [user]);
 
-  const fetchPendingUsers = async () => {
+    const normalizedRole = user.role?.replace(/'/g, "").trim();
+    if (!(user.is_admin || normalizedRole === "admin")) {
+      navigate("/unauthorized");
+      return;
+    }
+
+    fetchUsers();
+    fetchIPs();
+  }, [user, navigate]);
+
+  const fetchUsers = async () => {
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/users/pending", {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
       });
+
       if (!response.ok) {
-        throw new Error("Failed to fetch pending users");
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       const data = await response.json();
-      setPendingUsers(data);
+      setUsers(data);
     } catch (error) {
-      console.error("Error fetching pending users:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching users:", error);
+      toast({ title: "Error fetching users", status: "error" });
     }
   };
 
-  const handleApprove = async (username) => {
+  const fetchIPs = async () => {
     try {
-      const response = await fetch(`https://interviewappbe-production.up.railway.app/api/users/${username}/approve`, {
-        method: "PUT",
+      const response = await fetch(`${API_BASE_URL}/api/ip-whitelist`, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
       });
+
       if (!response.ok) {
-        throw new Error("Failed to approve user");
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      toast({ title: "User Approved", status: "success", duration: 3000, isClosable: true });
-      setPendingUsers(pendingUsers.filter(user => user.username !== username));
-      setIsOpen(false);
+
+      const data = await response.json();
+      setIps(data);
     } catch (error) {
-      console.error("Error approving user:", error);
-      toast({ title: "Approval Failed", description: error.message, status: "error", duration: 3000, isClosable: true });
+      console.error("Error fetching IP whitelist:", error);
+      toast({ title: "Error fetching IP whitelist", status: "error" });
     }
   };
 
-  if (loading) {
-    return (
-      <Flex height="100vh" justify="center" align="center">
-        <Spinner size="xl" color="purple.500" />
-      </Flex>
-    );
-  }
+  const handleUserAction = (username, action) => {
+    fetch(`${API_BASE_URL}/api/users/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
+      body: JSON.stringify({ username, action }),
+    }).then(() => {
+      fetchUsers();
+      toast({ title: `User ${action}d successfully`, status: "success" });
+    });
+  };
 
-  if (!user) {
-    return (
-      <Flex height="100vh" justify="center" align="center">
-        <Text fontSize="lg" color="gray.600">Please log in as an admin to access this page.</Text>
-      </Flex>
-    );
-  }
+  const handleRoleChange = (username) => {
+    fetch(`${API_BASE_URL}/api/users/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
+      body: JSON.stringify({ username, action: "update-role", role: selectedRole }),
+    }).then(() => {
+      fetchUsers();
+      toast({ title: `User role updated successfully`, status: "success" });
+      setIsModalOpen(false);
+    });
+  };
+
+  const handleIPAction = (action) => {
+    fetch(`${API_BASE_URL}/api/ip-whitelist`, {
+      method: action === "add" ? "POST" : "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
+      body: JSON.stringify({ ip: ipAddress }),
+    }).then(() => {
+      fetchIPs();
+      toast({ title: `IP ${action}ed successfully`, status: "success" });
+      setIsModalOpen(false);
+      setIpAddress("");
+    });
+  };
 
   return (
-    <Box maxW="1000px" mx="auto" py="6">
-      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        Admin Dashboard - Pending User Approvals
+    <Box maxW="1200px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="brand.purple" mb="6">
+        Admin Panel
       </Heading>
-
-      <Box bg="white" p="6" borderRadius="lg" shadow="md">
-        {pendingUsers.length === 0 ? (
-          <Text fontSize="lg" color="gray.600" textAlign="center">No pending users.</Text>
-        ) : (
-          <Table variant="simple">
-            <Thead bg="gray.100">
-              <Tr>
-                <Th>Username</Th>
-                <Th>Email</Th>
-                <Th>Status</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {pendingUsers.map((pendingUser) => (
-                <Tr key={pendingUser.username}>
-                  <Td>{pendingUser.username}</Td>
-                  <Td>{pendingUser.email}</Td>
-                  <Td>
-                    <Badge colorScheme="yellow">Pending</Badge>
-                  </Td>
-                  <Td>
-                    <Button colorScheme="green" size="sm" onClick={() => handleApprove(pendingUser.username)}>
-                      Approve
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        )}
-      </Box>
-
-      <VStack mt="6">
-        <Button colorScheme="purple" onClick={() => navigate("/admin")}>Back to Admin Home</Button>
-      </VStack>
+      <Tabs variant="soft-rounded" colorScheme="purple">
+        <TabList>
+          <Tab _selected={{ bg: "brand.purple", color: "white" }}>User Management</Tab>
+          <Tab _selected={{ bg: "brand.purple", color: "white" }}>Security</Tab>
+          <Tab _selected={{ bg: "brand.purple", color: "white" }}>Audit Logs</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <TableContainer>
+              <Table variant="simple">
+                <Thead>
+                  <Tr>
+                    <Th color="brand.black">Username</Th>
+                    <Th color="brand.black">Email</Th>
+                    <Th color="brand.black">Status</Th>
+                    <Th color="brand.black">Role</Th>
+                    <Th color="brand.black">Actions</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {users.map((userData) => (
+                    <Tr key={userData.username} _hover={{ bg: "gray.50" }}>
+                      <Td>{userData.username}</Td>
+                      <Td>{userData.email}</Td>
+                      <Td>{userData.is_approved ? "Approved" : "Pending"}</Td>
+                      <Td>{userData.role?.replace(/'/g, "").trim()}</Td>
+                      <Td>
+                        {!userData.is_approved && (
+                          <IconButton
+                            icon={<FaCheck />}
+                            colorScheme="green"
+                            onClick={() => handleUserAction(userData.username, "approve")}
+                          />
+                        )}
+                        <IconButton
+                          icon={<FaTimes />}
+                          colorScheme="red"
+                          ml={2}
+                          onClick={() => handleUserAction(userData.username, "suspend")}
+                        />
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };
 
-export default AdminDashboard;
+export default Admin;
