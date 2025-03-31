@@ -221,7 +221,6 @@ const PolicyDashboard = () => {
         )}
       </Box>
 
-       // PolicyDashboard.jsx (chat overlay section only)
       <Box position="fixed" bottom="20px" right="20px" zIndex="2000">
         <IconButton
           icon={chatOpen ? <FaTimes /> : <FaCommentDots />}
