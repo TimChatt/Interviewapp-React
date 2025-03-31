@@ -76,10 +76,11 @@ function Insights() {
   });
 
   return (
-    <Box maxW="1000px" mx="auto" py="6">
-      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        📊 Insights Dashboard
-      </Heading>
+ 
+ <Box maxW="1000px" mx="auto" py="6">
+  <Heading size="xl" textAlign="center" color="gray.900" mb="6">
+    📊 Insights Dashboard
+  </Heading>
 
       {/* Date Filters */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mb="6">
