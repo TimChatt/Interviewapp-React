@@ -206,14 +206,13 @@ const HRPolicyDesign = () => {
     URL.revokeObjectURL(url);
   };
 
-  return (
+return (
   <Box maxW="900px" mx="auto" py="6">
     <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
       HR Policy Design
     </Heading>
   </Box>
 );
-
       {/* Business Selector */}
       <Select
         placeholder="Select a Sony Sports Business"
