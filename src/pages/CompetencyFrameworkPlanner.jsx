@@ -232,11 +232,9 @@ const CompetencyFramework = () => {
   };
 
   return (
-    <Box maxW="1000px" mx="auto" py="6">
-      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        Competency Framework Generator
-      </Heading>
-
+<Box maxW="1000px" mx="auto" py="6">
+  <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
+    
       <VStack spacing="4" align="stretch">
         {/* Department Autocomplete */}
         <Box ref={departmentContainerRef} position="relative">
