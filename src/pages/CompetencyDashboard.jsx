@@ -26,25 +26,25 @@ const CompetencyDashboard = () => {
   const [expandedRows, setExpandedRows] = useState({});
 
   useEffect(() => {
+    const fetchRecentChanges = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-trends-over-time");
+        if (!response.ok) throw new Error(`❌ Failed to fetch competency trends (${response.status})`);
+
+        const data = await response.json();
+        setTrends(data.trends || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchRecentChanges();
   }, []);
-
-  const fetchRecentChanges = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-trends-over-time");
-      if (!response.ok) throw new Error(`❌ Failed to fetch competency trends (${response.status})`);
-
-      const data = await response.json();
-      setTrends(data.trends || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchCompetencyHistory = async (competency) => {
     setLoading(true);
@@ -88,9 +88,12 @@ const CompetencyDashboard = () => {
         </Alert>
       )}
 
-      {loading && <Spinner size="xl" color="purple.500" />}
+      {loading && (
+        <Box display="flex" justifyContent="center" mt="6">
+          <Spinner size="xl" color="purple.500" />
+        </Box>
+      )}
 
-      {/* ✅ Search Input */}
       <Input
         placeholder="Search competency..."
         value={searchTerm}
@@ -98,7 +101,6 @@ const CompetencyDashboard = () => {
         mb="4"
       />
 
-      {/* ✅ Competency Selector */}
       <Select
         placeholder="Select a competency"
         onChange={(e) => {
@@ -115,7 +117,6 @@ const CompetencyDashboard = () => {
         ))}
       </Select>
 
-      {/* ✅ Competency History Table */}
       <Table variant="simple" mt="6">
         <Thead>
           <Tr>
@@ -134,7 +135,12 @@ const CompetencyDashboard = () => {
                   onClick={() => toggleRowExpansion(index)}
                   style={{ cursor: "pointer", background: expandedRows[index] ? "#f9f9f9" : "white" }}
                 >
-                  <Td>{change.competency_name}</Td>
+                  <Td>
+                    {change.competency_name}
+                    <Box as="span" ml="2" color="gray.400">
+                      {expandedRows[index] ? "▲" : "▼"}
+                    </Box>
+                  </Td>
                   <Td>{change.job_title}</Td>
                   <Td
                     style={{
