@@ -205,7 +205,7 @@ const HRPolicyDesign = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
- 
+  
   return (
   <Box maxW="900px" mx="auto" py="6">
     <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
@@ -224,6 +224,11 @@ const HRPolicyDesign = () => {
       <option value="Beyond Sports">Beyond Sports</option>
       <option value="Sony Sports">Sony Sports</option>
     </Select>
+
+    {/* ... keep ALL your remaining JSX here ... */}
+
+  </Box> // close the Box only at the very end of your JSX
+)
 
     {/* Policy Type Input */}
     <Card bg="white" shadow="md" borderRadius="lg" p="4" mb="4">
