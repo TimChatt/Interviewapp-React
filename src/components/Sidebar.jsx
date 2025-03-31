@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import {
   VStack,
-  HStack,
   Box,
   Button,
   Collapse,
@@ -38,6 +37,7 @@ const shimmer = keyframes`
 const SonySidebar = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isCompetencyOpen, setIsCompetencyOpen] = useState(false);
+  const [isPolicyOpen, setIsPolicyOpen] = useState(false); // New state for Policy Tools dropdown
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
@@ -112,16 +112,42 @@ const SonySidebar = () => {
           </Button>
         ))}
 
-        {/* New Policy Design Button */}
+        {/* New Policy Tools Dropdown */}
         <Button
-          as={Link}
-          to="/hr-policy-design"
+          variant="ghost"
+          justifyContent="space-between"
+          onClick={() => setIsPolicyOpen((prev) => !prev)}
           leftIcon={<Icon as={FaFileAlt} color="white" />}
-          {...navButtonStyles("/hr-policy-design")}
+          color="white"
+          border="1px solid white"
+          borderRadius="lg"
+          _hover={navButtonStyles()._hover}
         >
-          Policy Design
+          Policy Tools
+          <Icon as={isPolicyOpen ? FaChevronUp : FaChevronDown} />
         </Button>
+        <Collapse in={isPolicyOpen}>
+          <VStack align="stretch" pl="4">
+            <Button
+              as={Link}
+              to="/hr-policy-design"
+              {...navButtonStyles("/hr-policy-design")}
+              leftIcon={<Icon as={FaFileAlt} />}
+            >
+              Policy Design
+            </Button>
+            <Button
+              as={Link}
+              to="/policy-dashboard"
+              {...navButtonStyles("/policy-dashboard")}
+              leftIcon={<Icon as={FaClipboardList} />}
+            >
+              Policy Dashboard
+            </Button>
+          </VStack>
+        </Collapse>
 
+        {/* Competency Tools Dropdown */}
         <Button
           variant="ghost"
           justifyContent="space-between"
@@ -172,6 +198,7 @@ const SonySidebar = () => {
           </VStack>
         </Collapse>
 
+        {/* Admin Dropdown */}
         <Button
           variant="ghost"
           justifyContent="space-between"
