@@ -76,11 +76,10 @@ function Insights() {
   });
 
   return (
- 
- <Box maxW="1000px" mx="auto" py="6">
-  <Heading size="xl" textAlign="center" color="gray.900" mb="6">
-    📊 Insights Dashboard
-  </Heading>
+    <Box maxW="1000px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
+        📊 Insights Dashboard
+      </Heading>
 
       {/* Date Filters */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mb="6">
@@ -157,26 +156,28 @@ function Insights() {
   );
 }
 
-// Reusable Stat Card Component
+// ✅ Updated StatCard with black number
 const StatCard = ({ title, value }) => {
   return (
     <Card bg="white" shadow="md" borderRadius="lg">
       <CardBody>
         <Stat textAlign="center">
           <StatLabel fontSize="lg" color="gray.600">{title}</StatLabel>
-          <StatNumber fontSize="3xl" color="purple.600">{value}</StatNumber>
+          <StatNumber fontSize="3xl" color="gray.900">{value}</StatNumber>
         </Stat>
       </CardBody>
     </Card>
   );
 };
 
-// Reusable Chart Section Component
+// ✅ Updated ChartSection with black subheading
 const ChartSection = ({ title, children }) => {
   return (
     <Card bg="white" shadow="md" borderRadius="lg" mb="8">
       <CardBody>
-        <Heading size="md" textAlign="center" color="purple.700" mb="4">{title}</Heading>
+        <Heading size="md" textAlign="center" color="gray.900" fontWeight="semibold" mb="4">
+          {title}
+        </Heading>
         {children}
       </CardBody>
     </Card>
