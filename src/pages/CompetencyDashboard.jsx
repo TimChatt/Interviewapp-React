@@ -29,84 +29,66 @@ const CompetencyDashboard = () => {
     fetchRecentChanges();
   }, []);
 
-  /** ✅ Fetch Competency Trends */
   const fetchRecentChanges = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      console.log("🔍 Fetching competency trends...");
-
       const response = await fetch("https://interviewappbe-production.up.railway.app/api/get-trends-over-time");
       if (!response.ok) throw new Error(`❌ Failed to fetch competency trends (${response.status})`);
 
       const data = await response.json();
-      console.log("✅ Trends Data:", data);
-
       setTrends(data.trends || []);
     } catch (err) {
-      console.error("❌ Error fetching trends:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  /** ✅ Fetch Competency History */
   const fetchCompetencyHistory = async (competency) => {
     setLoading(true);
     setError(null);
     setCompetencyHistory([]);
 
     if (!competency) {
-      console.warn("⚠️ No competency selected.");
       setLoading(false);
       return;
     }
 
     try {
-      console.log(`🔍 Fetching history for competency: ${competency}`);
-
       const response = await fetch(
         `https://interviewappbe-production.up.railway.app/api/get-competency-history/${competency}`
       );
-
       if (!response.ok) throw new Error(`❌ Failed to fetch competency history (${response.status})`);
 
       const data = await response.json();
-      console.log("✅ Competency History Data:", data);
-
       setCompetencyHistory(data.history || []);
     } catch (err) {
-      console.error("❌ Error fetching competency history:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  /** ✅ Toggle Row Expansion */
   const toggleRowExpansion = (index) => {
     setExpandedRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   return (
+    <Box maxW="1200px" mx="auto" py="6">
+      <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
+        Competency Evolution Dashboard
+      </Heading>
 
-  <Box maxW="1200px" mx="auto" py="6">
-    <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
-      Competency Evolution Dashboard
-    </Heading>
+      {error && (
+        <Alert status="error" mt="4">
+          <AlertIcon />
+          {error}
+        </Alert>
+      )}
 
-    {error && (
-      <Alert status="error" mt="4">
-        <AlertIcon />
-        {error}
-      </Alert>
-    )}
-
-    {loading && <Spinner size="xl" color="purple.500" />}
-  </Box>
-);
+      {loading && <Spinner size="xl" color="purple.500" />}
 
       {/* ✅ Search Input */}
       <Input
@@ -168,7 +150,6 @@ const CompetencyDashboard = () => {
                   </Td>
                   <Td>{new Date(change.date_changed).toLocaleDateString()}</Td>
                 </Tr>
-                {/* ✅ Expandable Details Row */}
                 {expandedRows[index] && (
                   <Tr>
                     <Td colSpan={4}>
