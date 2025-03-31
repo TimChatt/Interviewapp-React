@@ -22,6 +22,7 @@ import JobTitleDetails from "./pages/JobTitleDetails";
 import InterviewerDashboard from "./pages/InterviewerDashboard"; 
 import DepartmentFrameworkPage from "./pages/DepartmentFrameworkPage";
 import AISourcing from "./pages/AISourcing.jsx";
+import HRPolicyDesign from "./pages/HRPolicyDesign"; 
 import PrivateRoute from "./components/PrivateRoute"; // Private Routes
 
 // Handles Sidebar Visibility Based on Route
@@ -67,6 +68,7 @@ const AppContent = () => {
             <Route path="/edit-framework/:id" element={<EditFramework />} />
             <Route path="/interviewer/:jobTitle" element={<InterviewerDashboard />} /> 
             <Route path="/ai-sourcing" element={<AISourcing />} />
+            <Route path="/hr-policy-design" element={<HRPolicyDesign />} />
           </Route>
         </Routes>
       </Container>
