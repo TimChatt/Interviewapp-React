@@ -27,11 +27,11 @@ const HRPolicyDesign = () => {
   const [legalConsiderations, setLegalConsiderations] = useState("");
   const [additionalContext, setAdditionalContext] = useState("");
   const [generatedPolicy, setGeneratedPolicy] = useState("");
+  const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Handler to generate HR Policy document
+  // Generate initial policy draft
   const handleGeneratePolicy = async () => {
-    // Basic validation
     if (!business || !policyType) {
       toast({
         title: "Missing Information",
@@ -42,7 +42,6 @@ const HRPolicyDesign = () => {
       });
       return;
     }
-
     const requestBody = {
       business,
       policyType,
@@ -73,6 +72,55 @@ const HRPolicyDesign = () => {
     } catch (error) {
       toast({
         title: "Error Generating Policy",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Refine draft with user feedback
+  const handleRefinePolicy = async () => {
+    if (!generatedPolicy) {
+      toast({
+        title: "No draft available",
+        description: "Generate a policy draft first.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    // Send the current draft and user feedback to refine endpoint
+    const requestBody = {
+      currentDraft: generatedPolicy,
+      feedback: feedback,
+    };
+
+    setLoading(true);
+    try {
+      const response = await fetch("https://interviewappbe-production.up.railway.app/api/refine-policy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+      });
+      if (!response.ok) throw new Error("Failed to refine policy document.");
+      const data = await response.json();
+      setGeneratedPolicy(data.refinedPolicy);
+      toast({
+        title: "Policy Refined",
+        description: "The HR policy document has been updated based on your feedback.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      setFeedback(""); // Clear feedback after refinement
+    } catch (error) {
+      toast({
+        title: "Error Refining Policy",
         description: error.message,
         status: "error",
         duration: 3000,
@@ -190,30 +238,41 @@ const HRPolicyDesign = () => {
         Generate Policy Document 🤖
       </Button>
 
-      {/* Display Generated Policy */}
+      {/* Display Generated Policy and Feedback */}
       {generatedPolicy && (
-        <Card bg="white" shadow="md" borderRadius="lg" p="4">
+        <Card bg="white" shadow="md" borderRadius="lg" p="4" mb="4">
           <CardBody>
             <Heading size="md" mb="4">
               Generated HR Policy Document
             </Heading>
             <Text whiteSpace="pre-wrap">{generatedPolicy}</Text>
+            <Box mt="4">
+              <Heading size="sm" mb="2">
+                Feedback / Refinement Comments
+              </Heading>
+              <Textarea
+                placeholder="Enter any feedback or changes you'd like to see in the policy..."
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+              />
+              <Button
+                colorScheme="purple"
+                mt="2"
+                onClick={handleRefinePolicy}
+                isLoading={loading}
+              >
+                Resubmit for Refinement
+              </Button>
+            </Box>
           </CardBody>
         </Card>
       )}
 
-      {/* Loading Spinner */}
       {loading && (
         <Box textAlign="center" mt="4">
           <Spinner size="xl" />
         </Box>
       )}
-
-      {/* Alert for missing fields or errors can be shown as needed */}
-      {/* <Alert status="info" mt="4">
-        <AlertIcon />
-        Additional messages here.
-      </Alert> */}
     </Box>
   );
 };
