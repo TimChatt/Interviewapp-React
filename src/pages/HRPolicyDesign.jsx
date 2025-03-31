@@ -1,18 +1,18 @@
 import React, { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   Box,
   Heading,
   Button,
-  Text,
-  VStack,
   Spinner,
-  Alert,
-  AlertIcon,
   Card,
   CardBody,
   Select,
   Textarea,
   useToast,
+  VStack,
+  Text,
 } from "@chakra-ui/react";
 
 const HRPolicyDesign = () => {
@@ -29,6 +29,14 @@ const HRPolicyDesign = () => {
   const [generatedPolicy, setGeneratedPolicy] = useState("");
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
+  const [versionHistory, setVersionHistory] = useState([]);
+  const [isPreview, setIsPreview] = useState(false);
+
+  // Helper to add a version to the history
+  const addVersion = (policyText) => {
+    const timestamp = new Date().toISOString();
+    setVersionHistory((prev) => [...prev, { timestamp, policyText }]);
+  };
 
   // Generate initial policy draft
   const handleGeneratePolicy = async () => {
@@ -54,14 +62,19 @@ const HRPolicyDesign = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/generate-policy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody)
-      });
-      if (!response.ok) throw new Error("Failed to generate policy document.");
+      const response = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/generate-policy",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        }
+      );
+      if (!response.ok)
+        throw new Error("Failed to generate policy document.");
       const data = await response.json();
       setGeneratedPolicy(data.policyDocument);
+      addVersion(data.policyDocument); // Save the initial draft to version history
       toast({
         title: "Policy Generated",
         description: "The HR policy document has been successfully generated.",
@@ -82,42 +95,47 @@ const HRPolicyDesign = () => {
     }
   };
 
-  // Refine draft with user feedback
+  // Refine the policy draft based on feedback
   const handleRefinePolicy = async () => {
     if (!generatedPolicy) {
       toast({
-        title: "No draft available",
-        description: "Generate a policy draft first.",
+        title: "No Draft Available",
+        description: "Please generate a policy draft first.",
         status: "warning",
         duration: 3000,
         isClosable: true,
       });
       return;
     }
-    // Send the current draft and user feedback to refine endpoint
     const requestBody = {
       currentDraft: generatedPolicy,
-      feedback: feedback,
+      feedback,
     };
 
     setLoading(true);
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/refine-policy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody)
-      });
-      if (!response.ok) throw new Error("Failed to refine policy document.");
+      const response = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/refine-policy",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        }
+      );
+      if (!response.ok)
+        throw new Error("Failed to refine policy document.");
       const data = await response.json();
       setGeneratedPolicy(data.refinedPolicy);
+      addVersion(data.refinedPolicy); // Save refined version
       toast({
         title: "Policy Refined",
-        description: "The HR policy document has been updated based on your feedback.",
+        description:
+          "The HR policy document has been updated based on your feedback.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      setFeedback(""); // Clear feedback after refinement
+      setFeedback(""); // Clear feedback field after refining
     } catch (error) {
       toast({
         title: "Error Refining Policy",
@@ -129,6 +147,19 @@ const HRPolicyDesign = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Download the current policy as a text file
+  const handleDownload = () => {
+    const blob = new Blob([generatedPolicy], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "HR_Policy.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -238,14 +269,20 @@ const HRPolicyDesign = () => {
         Generate Policy Document 🤖
       </Button>
 
-      {/* Display Generated Policy and Feedback */}
+      {/* Display Generated Policy with Editor/Preview */}
       {generatedPolicy && (
         <Card bg="white" shadow="md" borderRadius="lg" p="4" mb="4">
           <CardBody>
             <Heading size="md" mb="4">
               Generated HR Policy Document
             </Heading>
-            <Text whiteSpace="pre-wrap">{generatedPolicy}</Text>
+            {isPreview ? (
+              <Box border="1px solid #E2E8F0" p="4" borderRadius="md" minH="200px">
+                <Text whiteSpace="pre-wrap">{generatedPolicy}</Text>
+              </Box>
+            ) : (
+              <ReactQuill theme="snow" value={generatedPolicy} onChange={setGeneratedPolicy} />
+            )}
             <Box mt="4">
               <Heading size="sm" mb="2">
                 Feedback / Refinement Comments
@@ -264,6 +301,40 @@ const HRPolicyDesign = () => {
                 Resubmit for Refinement
               </Button>
             </Box>
+            <Box mt="4" display="flex" justifyContent="space-between">
+              <Button colorScheme="teal" onClick={() => setIsPreview(!isPreview)}>
+                {isPreview ? "Edit Mode" : "Preview Mode"}
+              </Button>
+              <Button colorScheme="green" onClick={handleDownload}>
+                Download Policy
+              </Button>
+            </Box>
+          </CardBody>
+        </Card>
+      )}
+
+      {/* Version History */}
+      {versionHistory.length > 0 && (
+        <Card bg="white" shadow="md" borderRadius="lg" p="4">
+          <CardBody>
+            <Heading size="md" mb="4">Version History</Heading>
+            <VStack align="stretch">
+              {versionHistory.map((version, index) => (
+                <Box
+                  key={index}
+                  p="2"
+                  border="1px solid #E2E8F0"
+                  borderRadius="md"
+                >
+                  <Text fontSize="sm" color="gray.600">
+                    Version from {new Date(version.timestamp).toLocaleString()}
+                  </Text>
+                  <Text fontSize="sm" whiteSpace="pre-wrap">
+                    {version.policyText}
+                  </Text>
+                </Box>
+              ))}
+            </VStack>
           </CardBody>
         </Card>
       )}
