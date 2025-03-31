@@ -96,7 +96,8 @@ const Candidate = () => {
     const archivedCount = candidates.filter((c) => c.status === "Archived").length;
 
     return (
-       <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
+  
+      <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
   Candidate Management
 </Heading>
             {/* Loading & Error Handling */}
