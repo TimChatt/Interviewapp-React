@@ -3,12 +3,30 @@ import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import {
-  VStack, HStack, Box, Button, Collapse, Icon, Image, Text
+  VStack,
+  HStack,
+  Box,
+  Button,
+  Collapse,
+  Icon,
+  Image,
+  Text
 } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
 import {
-  FaChevronDown, FaChevronUp, FaHome, FaUsers, FaTrophy, FaBasketballBall,
-  FaClipboardList, FaTools, FaFutbol, FaTable, FaThList, FaEye
+  FaChevronDown,
+  FaChevronUp,
+  FaHome,
+  FaUsers,
+  FaTrophy,
+  FaBasketballBall,
+  FaClipboardList,
+  FaTools,
+  FaFutbol,
+  FaTable,
+  FaThList,
+  FaEye,
+  FaFileAlt  // Imported icon for Policy Design
 } from "react-icons/fa";
 
 // Animation keyframes for shimmer
@@ -75,11 +93,13 @@ const SonySidebar = () => {
       </Box>
 
       <VStack align="stretch" spacing="3" flex="1" px="4">
-        {[{ to: "/", label: "Home", icon: FaHome },
+        {[
+          { to: "/", label: "Home", icon: FaHome },
           { to: "/candidates", label: "Candidates", icon: FaUsers },
           { to: "/insights", label: "Insights", icon: FaBasketballBall },
           { to: "/recommendations", label: "Recommendations", icon: FaTrophy },
-          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye }].map((item) => (
+          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye }
+        ].map((item) => (
           <Button
             as={Link}
             to={item.to}
@@ -91,6 +111,16 @@ const SonySidebar = () => {
             {item.label}
           </Button>
         ))}
+
+        {/* New Policy Design Button */}
+        <Button
+          as={Link}
+          to="/hr-policy-design"
+          leftIcon={<Icon as={FaFileAlt} color="white" />}
+          {...navButtonStyles("/hr-policy-design")}
+        >
+          Policy Design
+        </Button>
 
         <Button
           variant="ghost"
@@ -107,10 +137,38 @@ const SonySidebar = () => {
         </Button>
         <Collapse in={isCompetencyOpen}>
           <VStack align="stretch" pl="4">
-            <Button as={Link} to="/competency-framework-planner" {...navButtonStyles("/competency-framework-planner")} leftIcon={<Icon as={FaClipboardList} />}>Competency Generator</Button>
-            <Button as={Link} to="/frameworks" {...navButtonStyles("/frameworks")} leftIcon={<Icon as={FaFutbol} />}>Department View</Button>
-            <Button as={Link} to="/competency-dashboard" {...navButtonStyles("/competency-dashboard")} leftIcon={<Icon as={FaTable} />}>Competency Dashboard</Button>
-            <Button as={Link} to="/framework-overview/:department" {...navButtonStyles("/framework-overview")} leftIcon={<Icon as={FaThList} />}>Framework Overview</Button>
+            <Button
+              as={Link}
+              to="/competency-framework-planner"
+              {...navButtonStyles("/competency-framework-planner")}
+              leftIcon={<Icon as={FaClipboardList} />}
+            >
+              Competency Generator
+            </Button>
+            <Button
+              as={Link}
+              to="/frameworks"
+              {...navButtonStyles("/frameworks")}
+              leftIcon={<Icon as={FaFutbol} />}
+            >
+              Department View
+            </Button>
+            <Button
+              as={Link}
+              to="/competency-dashboard"
+              {...navButtonStyles("/competency-dashboard")}
+              leftIcon={<Icon as={FaTable} />}
+            >
+              Competency Dashboard
+            </Button>
+            <Button
+              as={Link}
+              to="/framework-overview/:department"
+              {...navButtonStyles("/framework-overview")}
+              leftIcon={<Icon as={FaThList} />}
+            >
+              Framework Overview
+            </Button>
           </VStack>
         </Collapse>
 
@@ -127,11 +185,7 @@ const SonySidebar = () => {
         </Button>
         <Collapse in={isAdminOpen}>
           <VStack align="stretch" pl="4">
-            <Button
-              as={Link}
-              to="/admin"
-              {...navButtonStyles("/admin")}
-            >
+            <Button as={Link} to="/admin" {...navButtonStyles("/admin")}>
               Admin Panel
             </Button>
           </VStack>
