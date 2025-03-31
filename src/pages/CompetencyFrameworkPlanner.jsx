@@ -232,8 +232,11 @@ const CompetencyFramework = () => {
   };
 
   return (
+
 <Box maxW="1000px" mx="auto" py="6">
   <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
+    Competency Framework
+  </Heading>
     
       <VStack spacing="4" align="stretch">
         {/* Department Autocomplete */}
