@@ -101,10 +101,11 @@ const DepartmentFrameworkPage = () => {
   };
 
   return (
-    <Box maxW="1200px" mx="auto" py="6">
-      <Heading size="xl" textAlign="center" color="purple.600" mb="6">
-        Competency Framework
-      </Heading>
+
+<Box maxW="1200px" mx="auto" py="6">
+  <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
+    Competency Framework
+  </Heading>
 
       {/* ✅ Department Dropdown (Stores ID, Displays Name) */}
       <Select
