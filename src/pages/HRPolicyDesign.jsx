@@ -55,10 +55,10 @@ const HRPolicyDesign = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/generate-policy", {
+      const response = await fetch("https://interviewappbe-production.up.railway.app/api/generate-policy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(requestBody)
       });
       if (!response.ok) throw new Error("Failed to generate policy document.");
       const data = await response.json();
