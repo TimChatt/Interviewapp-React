@@ -205,7 +205,8 @@ const HRPolicyDesign = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-return (
+ 
+  return (
   <Box maxW="900px" mx="auto" py="6">
     <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
       HR Policy Design
