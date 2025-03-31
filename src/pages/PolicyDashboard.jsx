@@ -1,3 +1,4 @@
+// PolicyDashboard.jsx
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -13,8 +14,12 @@ import {
   CardBody,
   List,
   ListItem,
-  Divider
+  Divider,
+  IconButton,
+  HStack,
+  Collapse
 } from "@chakra-ui/react";
+import { FaCommentDots, FaTimes } from "react-icons/fa";
 
 const PolicyDashboard = () => {
   const toast = useToast();
@@ -24,6 +29,10 @@ const PolicyDashboard = () => {
   const [chatQuery, setChatQuery] = useState("");
   const [chatResponse, setChatResponse] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+
+  // Chat overlay states
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]); // {sender: 'user'|'bot', text: string}
 
   // Fetch policies from backend
   const fetchPolicies = async () => {
@@ -95,7 +104,7 @@ const PolicyDashboard = () => {
     }
   };
 
-  // Handle chatbot query
+  // Chatbot query handler
   const handleChatQuery = async () => {
     if (!chatQuery) {
       toast({
@@ -107,6 +116,10 @@ const PolicyDashboard = () => {
       });
       return;
     }
+    // Append user message to conversation
+    const userMessage = { sender: "user", text: chatQuery };
+    setChatMessages((prev) => [...prev, userMessage]);
+    setChatQuery("");
     setChatLoading(true);
     try {
       const response = await fetch(
@@ -119,7 +132,8 @@ const PolicyDashboard = () => {
       );
       if (!response.ok) throw new Error("Failed to query policies");
       const data = await response.json();
-      setChatResponse(data.answer);
+      const botMessage = { sender: "bot", text: data.answer };
+      setChatMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       toast({
         title: "Error in query",
@@ -133,8 +147,13 @@ const PolicyDashboard = () => {
     }
   };
 
+  // Toggle chat overlay
+  const toggleChat = () => {
+    setChatOpen(!chatOpen);
+  };
+
   return (
-    <Box maxW="900px" mx="auto" py="6">
+    <Box maxW="900px" mx="auto" py="6" position="relative">
       <Heading size="xl" textAlign="center" mb="6">
         Policy Dashboard
       </Heading>
@@ -182,9 +201,9 @@ const PolicyDashboard = () => {
 
       {/* Chatbot Section */}
       <Box mb="8">
-        <Heading size="md" mb="4">Policy Chatbot</Heading>
+        <Heading size="md" mb="4">Ask a Question about Policies</Heading>
         <Textarea
-          placeholder="Ask a question about the policies..."
+          placeholder="Enter your question here..."
           value={chatQuery}
           onChange={(e) => setChatQuery(e.target.value)}
           mb="2"
@@ -195,12 +214,67 @@ const PolicyDashboard = () => {
         {chatResponse && (
           <Card mt="4">
             <CardBody>
-              <Heading size="sm" mb="2">Chatbot Response:</Heading>
+              <Heading size="sm" mb="2">Response:</Heading>
               <Text whiteSpace="pre-wrap">{chatResponse}</Text>
             </CardBody>
           </Card>
         )}
       </Box>
+
+      {/* Chat Overlay - Only for Policy Dashboard */}
+      <Box position="fixed" bottom="20px" right="20px" zIndex="2000">
+        <IconButton
+          icon={chatOpen ? <FaTimes /> : <FaCommentDots />}
+          colorScheme="purple"
+          onClick={toggleChat}
+          aria-label="Toggle Chat"
+        />
+      </Box>
+      <Collapse in={chatOpen} animateOpacity>
+        <Box
+          position="fixed"
+          bottom="70px"
+          right="20px"
+          width="300px"
+          height="400px"
+          bg="white"
+          boxShadow="lg"
+          borderRadius="md"
+          p="4"
+          zIndex="2000"
+          display="flex"
+          flexDirection="column"
+        >
+          <Box flex="1" overflowY="auto" mb="2">
+            <VStack align="stretch" spacing="3">
+              {chatMessages.map((msg, index) => (
+                <Box
+                  key={index}
+                  alignSelf={msg.sender === "user" ? "flex-end" : "flex-start"}
+                  bg={msg.sender === "user" ? "purple.100" : "gray.100"}
+                  borderRadius="md"
+                  p="2"
+                >
+                  <Text fontSize="sm">{msg.text}</Text>
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+          <HStack>
+            <Input
+              placeholder="Ask a question..."
+              value={chatQuery}
+              onChange={(e) => setChatQuery(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") handleChatQuery();
+              }}
+            />
+            <Button colorScheme="purple" onClick={handleChatQuery} isLoading={chatLoading}>
+              Send
+            </Button>
+          </HStack>
+        </Box>
+      </Collapse>
     </Box>
   );
 };
