@@ -95,13 +95,13 @@ const CompetencyDashboard = () => {
   <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
     Competency Evolution Dashboard
   </Heading>
-      {error && (
-        <Alert status="error" mt="4">
-          <AlertIcon />
-          {error}
-        </Alert>
-      )}
-
+  {error && (
+    <Alert status="error" mt="4">
+      <AlertIcon />
+      {error}
+    </Alert>
+  )}
+</Box>
       {loading && <Spinner size="xl" color="purple.500" />}
 
       {/* ✅ Search Input */}
