@@ -221,7 +221,7 @@ const PolicyDashboard = () => {
         )}
       </Box>
 
-      {/* Chat Overlay - Only for Policy Dashboard */}
+       // PolicyDashboard.jsx (chat overlay section only)
       <Box position="fixed" bottom="20px" right="20px" zIndex="2000">
         <IconButton
           icon={chatOpen ? <FaTimes /> : <FaCommentDots />}
@@ -235,23 +235,30 @@ const PolicyDashboard = () => {
           position="fixed"
           bottom="70px"
           right="20px"
-          width="300px"
-          height="400px"
-          bg="white"
-          boxShadow="lg"
+          width="320px"
+          height="420px"
+          bg="gray.50"         // light gray background for contrast
+          border="1px solid"
+          borderColor="gray.300" // subtle border color
           borderRadius="md"
           p="4"
           zIndex="2000"
           display="flex"
           flexDirection="column"
+          boxShadow="md"        // added shadow for depth
         >
+          <Box mb="2" borderBottom="1px solid" borderColor="gray.300" pb="1">
+            <Text fontSize="md" fontWeight="bold" color="gray.700">
+              Policy Chat
+            </Text>
+          </Box>
           <Box flex="1" overflowY="auto" mb="2">
             <VStack align="stretch" spacing="3">
               {chatMessages.map((msg, index) => (
                 <Box
                   key={index}
                   alignSelf={msg.sender === "user" ? "flex-end" : "flex-start"}
-                  bg={msg.sender === "user" ? "purple.100" : "gray.100"}
+                  bg={msg.sender === "user" ? "purple.100" : "gray.200"}
                   borderRadius="md"
                   p="2"
                 >
@@ -260,7 +267,7 @@ const PolicyDashboard = () => {
               ))}
             </VStack>
           </Box>
-          <HStack>
+          <HStack spacing="2">
             <Input
               placeholder="Ask a question..."
               value={chatQuery}
@@ -268,6 +275,7 @@ const PolicyDashboard = () => {
               onKeyPress={(e) => {
                 if (e.key === "Enter") handleChatQuery();
               }}
+              bg="white"
             />
             <Button colorScheme="purple" onClick={handleChatQuery} isLoading={chatLoading}>
               Send
