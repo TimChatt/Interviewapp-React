@@ -32,10 +32,52 @@ const HRPolicyDesign = () => {
   const [versionHistory, setVersionHistory] = useState([]);
   const [isPreview, setIsPreview] = useState(false);
 
-  // Helper to add a version to the history
+  // Helper to add a version to the local history
   const addVersion = (policyText) => {
     const timestamp = new Date().toISOString();
     setVersionHistory((prev) => [...prev, { timestamp, policyText }]);
+  };
+
+  // Helper to persist the version to the backend
+  const saveVersionToBackend = async (policyDraft) => {
+    const payload = {
+      business,
+      policy_type: policyType,
+      target_audience: targetAudience,
+      effective_date: effectiveDate,
+      review_cycle: reviewCycle,
+      legal_considerations: legalConsiderations,
+      additional_context: additionalContext,
+      draft_content: policyDraft,
+    };
+
+    try {
+      const response = await fetch(
+        "https://interviewappbe-production.up.railway.app/api/save-policy-version",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to save version to backend.");
+      const data = await response.json();
+      toast({
+        title: "Version Saved",
+        description: `Version ID: ${data.version_id}`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (err) {
+      toast({
+        title: "Error Saving Version",
+        description: err.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   // Generate initial policy draft
@@ -74,7 +116,8 @@ const HRPolicyDesign = () => {
         throw new Error("Failed to generate policy document.");
       const data = await response.json();
       setGeneratedPolicy(data.policyDocument);
-      addVersion(data.policyDocument); // Save the initial draft to version history
+      addVersion(data.policyDocument); // Save locally
+      await saveVersionToBackend(data.policyDocument); // Persist to backend
       toast({
         title: "Policy Generated",
         description: "The HR policy document has been successfully generated.",
@@ -126,7 +169,8 @@ const HRPolicyDesign = () => {
         throw new Error("Failed to refine policy document.");
       const data = await response.json();
       setGeneratedPolicy(data.refinedPolicy);
-      addVersion(data.refinedPolicy); // Save refined version
+      addVersion(data.refinedPolicy); // Save locally
+      await saveVersionToBackend(data.refinedPolicy); // Persist to backend
       toast({
         title: "Policy Refined",
         description:
