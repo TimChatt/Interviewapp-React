@@ -1,4 +1,3 @@
-// SonySidebar.jsx
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
@@ -25,7 +24,8 @@ import {
   FaTable,
   FaThList,
   FaEye,
-  FaFileAlt  // Imported icon for Policy Design
+  FaFileAlt,
+  FaSearch   // Added icon for X-Ray Sourcing
 } from "react-icons/fa";
 
 // Animation keyframes for shimmer
@@ -98,7 +98,8 @@ const SonySidebar = () => {
           { to: "/candidates", label: "Candidates", icon: FaUsers },
           { to: "/insights", label: "Insights", icon: FaBasketballBall },
           { to: "/recommendations", label: "Recommendations", icon: FaTrophy },
-          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye }
+          { to: "/interviewer/Software Engineer", label: "Interviewers", icon: FaEye },
+          { to: "/ai-sourcing", label: "X‑Ray Sourcing", icon: FaSearch } // New navigation item
         ].map((item) => (
           <Button
             as={Link}
