@@ -358,22 +358,25 @@ const CompetencyFramework = () => {
         </Alert>
       )}
 
-      {/* Elevator Pitches */}
-      {framework.positions.every((p) => p.description) && (
+      {/* Generated Descriptions */}
+      {framework.positions.some((p) => p.description) && (
         <VStack align="stretch" spacing="4" mt="6">
-          <Heading size="md">Elevator Pitches</Heading>
-          {framework.positions.map((p, i) => (
-            <Box
-              key={i}
-              p="3"
-              borderWidth="1px"
-              borderRadius="md"
-              shadow="sm"
-            >
-              <Text fontWeight="bold">{p.title}</Text>
-              <Text mt="2">{p.description}</Text>
-            </Box>
-          ))}
+          <Heading size="md">Generated Descriptions</Heading>
+          {framework.positions.map((p, i) =>
+            p.description ? (
+              <Box
+                key={i}
+                p="3"
+                bg="gray.50"
+                borderWidth="1px"
+                borderRadius="md"
+                shadow="sm"
+              >
+                <Text fontWeight="bold">{p.title}</Text>
+                <Text mt="2">{p.description}</Text>
+              </Box>
+            ) : null
+          )}
         </VStack>
       )}
     </Box>
