@@ -1,424 +1,365 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Box,
   Heading,
   Input,
   Button,
   VStack,
-  HStack,
-  UnorderedList,
-  ListItem,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Select,
+  IconButton,
   Alert,
   AlertIcon,
-  Text
+  Text,
+  HStack,
 } from "@chakra-ui/react";
+import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
+
+const COMPETENCIES = [
+  "Problem Solving",
+  "Creative/Operational Thinking",
+  "Initiative",
+  "Communication",
+  "Influence",
+  "Autonomy",
+  "Commercial Awareness",
+  "Collaboration & Team Work",
+];
+const LEVELS = ["Follow", "Assist", "Apply", "Ensure", "Influence"];
+
+// helper: "Problem Solving" → "problemSolving"
+const camelCaseKey = (s) =>
+  s
+    .replace(/&/g, "")
+    .split(/\s+/)
+    .map((w, i) =>
+      i === 0 ? w[0].toLowerCase() + w.slice(1) : w[0].toUpperCase() + w.slice(1)
+    )
+    .join("");
+
+const emptyPosition = () => {
+  const base = { title: "", description: "" };
+  COMPETENCIES.forEach((c) => {
+    base[camelCaseKey(c)] = "";
+  });
+  return base;
+};
 
 const CompetencyFramework = () => {
   const [framework, setFramework] = useState({
-    department: "", // will store the department id
-    jobTitle: "", // will store the job title string
-    jobLevels: [],
-    competencies: [],
+    department: "",
+    positions: [emptyPosition()],
   });
   const [departments, setDepartments] = useState([]);
-  const [allJobTitles, setAllJobTitles] = useState([]);
-  const [jobLevelInput, setJobLevelInput] = useState("");
-  const [competencyInput, setCompetencyInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const navigate = useNavigate();
-
-  // Department autocomplete state and ref
-  const [departmentQuery, setDepartmentQuery] = useState("");
+  const [deptQuery, setDeptQuery] = useState("");
   const [showDeptDropdown, setShowDeptDropdown] = useState(false);
-  const departmentContainerRef = useRef(null);
+  const deptRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  // Job Title autocomplete state and ref
-  const [jobTitleQuery, setJobTitleQuery] = useState("");
-  const [showJobTitleDropdown, setShowJobTitleDropdown] = useState(false);
-  const jobTitleContainerRef = useRef(null);
-
-  // Close department dropdown when clicking outside
+  // fetch departments
   useEffect(() => {
-    const handleClickOutsideDept = (e) => {
-      if (
-        departmentContainerRef.current &&
-        !departmentContainerRef.current.contains(e.target)
-      ) {
+    fetch("/api/departments/list")
+      .then((r) => r.json())
+      .then((data) => setDepartments(data.departments))
+      .catch(() => setError("Failed to load departments."));
+  }, []);
+
+  // close dropdown on outside click
+  useEffect(() => {
+    const onClick = (e) => {
+      if (deptRef.current && !deptRef.current.contains(e.target)) {
         setShowDeptDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutsideDept);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutsideDept);
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // Close job title dropdown when clicking outside, and update jobTitle if needed
-  useEffect(() => {
-    const handleClickOutsideJobTitle = (e) => {
-      if (
-        jobTitleContainerRef.current &&
-        !jobTitleContainerRef.current.contains(e.target)
-      ) {
-        setShowJobTitleDropdown(false);
-        if (jobTitleQuery.trim() && framework.jobTitle !== jobTitleQuery.trim()) {
-          setFramework((prev) => ({ ...prev, jobTitle: jobTitleQuery.trim() }));
-        }
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutsideJobTitle);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutsideJobTitle);
-  }, [jobTitleQuery, framework.jobTitle]);
-
-  // Filter departments using a safe check for name
-  const filteredDepartments = departments.filter((dep) => {
-    if (!dep || typeof dep !== "object") return false;
-    const name = ((dep.name || dep.department) || "").toString().toLowerCase();
-    return name.includes(departmentQuery.toLowerCase());
-  });
-
-  // Filter job titles using the proper key "job_title"
-  const filteredJobTitles = allJobTitles.filter((job) => {
-    if (!job || typeof job !== "object") return false;
-    return ((job.job_title || "")).toString().toLowerCase().includes(jobTitleQuery.toLowerCase());
-  });
-
-  // Fetch all departments
-  useEffect(() => {
-    async function fetchDepartments() {
-      try {
-        const res = await fetch("https://interviewappbe-production.up.railway.app/api/departments/list");
-        if (!res.ok) throw new Error("Failed to fetch departments");
-        const data = await res.json();
-        setDepartments(data.departments);
-      } catch (err) {
-        setError("Failed to load departments.");
-        console.error(err);
-      }
-    }
-    fetchDepartments();
-  }, []);
-
-  // Fetch all job titles (ignoring department) for the autocomplete
-  useEffect(() => {
-    async function fetchAllJobTitles() {
-      try {
-        const res = await fetch("https://interviewappbe-production.up.railway.app/api/job-titles/all");
-        if (!res.ok) throw new Error("Failed to fetch job titles");
-        const data = await res.json();
-        setAllJobTitles(data.job_titles);
-      } catch (err) {
-        setError("Failed to load job titles.");
-        console.error(err);
-      }
-    }
-    fetchAllJobTitles();
-  }, []);
-
-  // Add individual job levels
-  const addJobLevel = () => {
-    if (jobLevelInput.trim()) {
-      setFramework((prev) => ({
-        ...prev,
-        jobLevels: [...prev.jobLevels, jobLevelInput.trim()],
-      }));
-      setJobLevelInput("");
-    }
+  const updatePosition = (idx, key, value) => {
+    setFramework((f) => {
+      const ps = [...f.positions];
+      ps[idx] = { ...ps[idx], [key]: value };
+      return { ...f, positions: ps };
+    });
   };
 
-  // Add individual competencies
-  const addCompetency = () => {
-    if (competencyInput.trim()) {
-      setFramework((prev) => ({
-        ...prev,
-        competencies: [
-          ...prev.competencies,
-          { name: competencyInput.trim(), descriptions: {} },
-        ],
-      }));
-      setCompetencyInput("");
-    }
-  };
+  const addPosition = () =>
+    setFramework((f) => ({
+      ...f,
+      positions: [...f.positions, emptyPosition()],
+    }));
+  const removePosition = (idx) =>
+    setFramework((f) => ({
+      ...f,
+      positions: f.positions.filter((_, i) => i !== idx),
+    }));
 
-  // Generate competency descriptions
-  const autoGenerateDescriptions = async () => {
-    setError(null);
-    if (
-      !framework.department ||
-      !framework.jobTitle ||
-      !framework.jobLevels.length ||
-      !framework.competencies.length
-    ) {
-      setError("Please fill in all fields and add at least one job level and competency.");
+  const generateDescriptions = async () => {
+    setError("");
+    if (!framework.department) {
+      setError("Please select a department.");
       return;
     }
-    setLoading(true);
-    try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/generate-competencies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          department: framework.department,
-          jobTitle: framework.jobTitle,
-          jobLevels: framework.jobLevels,
-          competencies: framework.competencies.map((c) => c.name),
-        }),
-      });
-      if (!response.ok) {
-        setError(`Error: ${response.status} - ${response.statusText}`);
-        setLoading(false);
+    for (let p of framework.positions) {
+      if (!p.title || COMPETENCIES.some((c) => !p[camelCaseKey(c)])) {
+        setError("Please fill every Title and select all Levels.");
         return;
       }
-      const data = await response.json();
-      if (data.success) {
-        // Update each competency with its generated descriptions
-        const updatedCompetencies = framework.competencies.map((competency, index) => ({
-          ...competency,
-          descriptions: data.competencyDescriptions[index]?.levels || {},
-        }));
-        setFramework((prev) => ({
-          ...prev,
-          competencies: updatedCompetencies,
-        }));
-        setError(null);
-      } else {
-        setError("Failed to generate competency descriptions.");
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/generate-competencies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(framework),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error("API error");
       }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      // data.competencyDescriptions: [{ title, description }, …]
+      setFramework((f) => ({
+        ...f,
+        positions: f.positions.map((p) => {
+          const found = data.competencyDescriptions.find((d) => d.title === p.title);
+          return found ? { ...p, description: found.description } : p;
+        }),
+      }));
+      setSuccess("Descriptions generated!");
+    } catch {
+      setError("Failed to generate descriptions.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Save competency framework
-  const saveCompetencies = async () => {
+  const saveFramework = async () => {
+    setError(""); setSuccess("");
     setLoading(true);
-    setError(null);
-    setSuccess(null);
-    const jobTitlesPayload = framework.jobLevels.map((jobLevel) => ({
-      job_title: `${framework.jobTitle} ${jobLevel}`,
-      job_levels: [jobLevel],
-      competencies: framework.competencies.map((competency) => ({
-        name: competency.name,
-        descriptions: competency.descriptions,
-      })),
-    }));
-    const requestBody = { department: framework.department, jobTitles: jobTitlesPayload };
     try {
-      const response = await fetch("https://interviewappbe-production.up.railway.app/api/save-competencies", {
+      // build SaveCompetencyRequest payload:
+      const jobTitles = framework.positions.map((p) => ({
+        job_title: p.title,
+        job_levels: COMPETENCIES.map((c) => p[camelCaseKey(c)]),
+        competencies: COMPETENCIES.map((c) => ({
+          name: c,
+          descriptions: {}, // you can fill from key or generated if needed
+        })),
+      }));
+      const res = await fetch("/api/save-competencies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({ department: framework.department, jobTitles }),
       });
-      if (!response.ok) {
-        setError(`Error: ${response.status} - ${response.statusText}`);
-        return;
-      }
-      const data = await response.json();
-      if (data.success) {
-        setSuccess("Competency framework saved successfully!");
-      } else {
-        setError("Failed to save competency framework.");
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      const d = await res.json();
+      if (!d.success) throw new Error();
+      setSuccess("Framework saved!");
+    } catch {
+      setError("Failed to save framework.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadCSV = () => {
+    const header = [
+      "Position",
+      ...COMPETENCIES,
+      "Description",
+    ];
+    const rows = framework.positions.map((p) => [
+      `"${p.title}"`,
+      ...COMPETENCIES.map((c) => `"${p[camelCaseKey(c)]}"`),
+      `"${p.description}"`,
+    ]);
+    const csv =
+      [header.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "competency_results.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
+    <Box maxW="1200px" mx="auto" p="6">
+      <Heading mb="4">Competency Framework</Heading>
 
-<Box maxW="1000px" mx="auto" py="6">
-  <Heading size="xl" textAlign="center" color="gray.900" fontWeight="bold" mb="6">
-    Competency Framework
-  </Heading>
-    
-      <VStack spacing="4" align="stretch">
-        {/* Department Autocomplete */}
-        <Box ref={departmentContainerRef} position="relative">
-          <Input
-            placeholder="Select Department"
-            value={departmentQuery}
-            onChange={(e) => {
-              setDepartmentQuery(e.target.value);
-              setShowDeptDropdown(true);
-            }}
-            onFocus={() => setShowDeptDropdown(true)}
-            color="black"
-          />
-          {showDeptDropdown && filteredDepartments.length > 0 && (
-            <Box
-              position="absolute"
-              top="100%"
-              left="0"
-              right="0"
-              bg="white"
-              border="1px solid #ccc"
-              borderRadius="md"
-              maxH="200px"
-              overflowY="auto"
-              zIndex={10}
-            >
-              {filteredDepartments.map((dep) => {
-                const displayName = dep.name || dep.department || "";
-                return (
-                  <Box
-                    key={dep.id}
-                    p="2"
-                    cursor="pointer"
-                    color="black"
-                    _hover={{ bg: "gray.100" }}
-                    onClick={() => {
-                      setFramework((prev) => ({ ...prev, department: dep.id }));
-                      setDepartmentQuery(displayName);
-                      setShowDeptDropdown(false);
-                    }}
-                  >
-                    {displayName}
-                  </Box>
-                );
-              })}
-            </Box>
-          )}
-        </Box>
-
-        {/* Job Title Autocomplete */}
-        <Box ref={jobTitleContainerRef} position="relative">
-          <Input
-            placeholder="Select or Add Job Title"
-            value={jobTitleQuery}
-            onChange={(e) => {
-              setJobTitleQuery(e.target.value);
-              setShowJobTitleDropdown(true);
-            }}
-            onFocus={() => setShowJobTitleDropdown(true)}
-            color="black"
-          />
-          {showJobTitleDropdown && filteredJobTitles.length > 0 && (
-            <Box
-              position="absolute"
-              top="100%"
-              left="0"
-              right="0"
-              bg="white"
-              border="1px solid #ccc"
-              borderRadius="md"
-              maxH="200px"
-              overflowY="auto"
-              zIndex={10}
-            >
-              {filteredJobTitles.map((job) => (
+      {/* Department Autocomplete */}
+      <Box ref={deptRef} mb="6" position="relative">
+        <Input
+          placeholder="Select Department"
+          value={deptQuery}
+          onFocus={() => setShowDeptDropdown(true)}
+          onChange={(e) => {
+            setDeptQuery(e.target.value);
+            setShowDeptDropdown(true);
+          }}
+        />
+        {showDeptDropdown && (
+          <Box
+            position="absolute" bg="white" w="full" border="1px solid"
+            borderColor="gray.200" maxH="200px" overflowY="auto"
+          >
+            {departments
+              .filter((d) =>
+                (d.department || "")
+                  .toLowerCase()
+                  .includes(deptQuery.toLowerCase())
+              )
+              .map((d) => (
                 <Box
-                  key={job.id}
+                  key={d.id}
                   p="2"
                   cursor="pointer"
-                  color="black"
                   _hover={{ bg: "gray.100" }}
                   onClick={() => {
-                    setFramework((prev) => ({ ...prev, jobTitle: job.job_title }));
-                    setJobTitleQuery(job.job_title);
-                    setShowJobTitleDropdown(false);
+                    setFramework((f) => ({ ...f, department: d.id }));
+                    setDeptQuery(d.department);
+                    setShowDeptDropdown(false);
                   }}
                 >
-                  {job.job_title}
+                  {d.department}
                 </Box>
               ))}
-            </Box>
-          )}
-        </Box>
-
-        {/* Job Levels */}
-        <Box>
-          <Heading size="md" mb="2">
-            Job Levels
-          </Heading>
-          <HStack>
-            <Input
-              placeholder="Add a job level"
-              value={jobLevelInput}
-              onChange={(e) => setJobLevelInput(e.target.value)}
-            />
-            <Button colorScheme="blue" onClick={addJobLevel}>
-              Add
-            </Button>
-          </HStack>
-          <UnorderedList mt="2">
-            {framework.jobLevels.map((level, index) => (
-              <ListItem key={index}>{level}</ListItem>
-            ))}
-          </UnorderedList>
-        </Box>
-
-        {/* Competencies */}
-        <Box>
-          <Heading size="md" mb="2">
-            Competencies
-          </Heading>
-          <HStack>
-            <Input
-              placeholder="Add a competency"
-              value={competencyInput}
-              onChange={(e) => setCompetencyInput(e.target.value)}
-            />
-            <Button colorScheme="blue" onClick={addCompetency}>
-              Add
-            </Button>
-          </HStack>
-          <UnorderedList mt="2">
-            {framework.competencies.map((competency, index) => (
-              <ListItem key={index}>
-                <strong>{competency.name}</strong>
-              </ListItem>
-            ))}
-          </UnorderedList>
-        </Box>
-
-        {/* Display Competency Descriptions */}
-        {framework.competencies.length > 0 && (
-          <Box mt="6">
-            <Heading size="md" mb="2">
-              Competency Descriptions
-            </Heading>
-            {framework.competencies.map((competency, index) => (
-              <Box key={index} p="2" borderWidth="1px" borderColor="gray.200" borderRadius="md" mb="2">
-                <Text fontWeight="bold">{competency.name}</Text>
-                {competency.descriptions &&
-                  Object.entries(competency.descriptions).map(([level, desc]) => (
-                    <Text key={level} fontSize="sm" ml="4">
-                      {level}: {desc}
-                    </Text>
-                  ))}
-              </Box>
-            ))}
           </Box>
         )}
-      </VStack>
+      </Box>
 
-      <VStack mt="6">
-        <Button colorScheme="purple" onClick={autoGenerateDescriptions} isLoading={loading}>
+      {/* Positions × Competencies Grid */}
+      <Table size="sm" variant="simple" mb="4">
+        <Thead>
+          <Tr>
+            <Th>Position</Th>
+            {COMPETENCIES.map((c) => (
+              <Th key={c} fontSize="sm">
+                {c}
+              </Th>
+            ))}
+            <Th />
+          </Tr>
+        </Thead>
+        <Tbody>
+          {framework.positions.map((pos, i) => (
+            <Tr key={i}>
+              <Td p="1">
+                <Input
+                  size="sm"
+                  placeholder="Title"
+                  value={pos.title}
+                  onChange={(e) =>
+                    updatePosition(i, "title", e.target.value)
+                  }
+                />
+              </Td>
+              {COMPETENCIES.map((c) => {
+                const key = camelCaseKey(c);
+                return (
+                  <Td key={c} p="1">
+                    <Select
+                      size="sm"
+                      placeholder="Level"
+                      value={pos[key]}
+                      onChange={(e) =>
+                        updatePosition(i, key, e.target.value)
+                      }
+                    >
+                      {LEVELS.map((l) => (
+                        <option key={l} value={l}>
+                          {l}
+                        </option>
+                      ))}
+                    </Select>
+                  </Td>
+                );
+              })}
+              <Td p="1">
+                <IconButton
+                  size="sm"
+                  icon={<DeleteIcon />}
+                  aria-label="Remove"
+                  onClick={() => removePosition(i)}
+                />
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+
+      <HStack mb="6">
+        <Button
+          leftIcon={<AddIcon />}
+          onClick={addPosition}
+          size="sm"
+        >
+          Add Position
+        </Button>
+      </HStack>
+
+      {/* Actions */}
+      <VStack spacing="3" align="start" mb="6">
+        <Button
+          colorScheme="purple"
+          onClick={generateDescriptions}
+          isLoading={loading}
+        >
           Generate Descriptions
         </Button>
-        <Button colorScheme="green" onClick={saveCompetencies} isLoading={loading}>
+        <Button
+          colorScheme="green"
+          onClick={saveFramework}
+          isLoading={loading}
+        >
           Save Framework
+        </Button>
+        <Button
+          leftIcon={<DownloadIcon />}
+          variant="outline"
+          onClick={downloadCSV}
+        >
+          Download CSV
         </Button>
       </VStack>
 
       {error && (
-        <Alert status="error" mt="4">
+        <Alert status="error" mb="3">
           <AlertIcon />
           {error}
         </Alert>
       )}
       {success && (
-        <Alert status="success" mt="4">
+        <Alert status="success" mb="3">
           <AlertIcon />
           {success}
         </Alert>
+      )}
+
+      {/* Elevator Pitches */}
+      {framework.positions.every((p) => p.description) && (
+        <VStack align="stretch" spacing="4" mt="6">
+          <Heading size="md">Elevator Pitches</Heading>
+          {framework.positions.map((p, i) => (
+            <Box
+              key={i}
+              p="3"
+              borderWidth="1px"
+              borderRadius="md"
+              shadow="sm"
+            >
+              <Text fontWeight="bold">{p.title}</Text>
+              <Text mt="2">{p.description}</Text>
+            </Box>
+          ))}
+        </VStack>
       )}
     </Box>
   );
