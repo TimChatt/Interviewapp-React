@@ -20,8 +20,9 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
-  || "https://interviewappbe-production.up.railway.app";
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://interviewappbe-production.up.railway.app";
 
 const COMPETENCIES = [
   "Problem Solving",
@@ -35,7 +36,7 @@ const COMPETENCIES = [
 ];
 const LEVELS = ["Follow", "Assist", "Apply", "Ensure", "Influence"];
 
-// ─── FIXED camelCaseKey ───────────────────────────────────────────────
+// Strip punctuation then camelCase key
 const camelCaseKey = (s) => {
   const clean = s.replace(/[^a-zA-Z0-9 ]/g, "");
   return clean
@@ -47,7 +48,6 @@ const camelCaseKey = (s) => {
     )
     .join("");
 };
-// ─────────────────────────────────────────────────────────────────────
 
 const emptyPosition = () => {
   const base = { title: "", description: "" };
@@ -70,7 +70,7 @@ const CompetencyFramework = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // fetch departments
+  // Fetch departments
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/departments/list`)
       .then((r) => r.json())
@@ -78,7 +78,7 @@ const CompetencyFramework = () => {
       .catch(() => setError("Failed to load departments."));
   }, []);
 
-  // close dropdown on outside click
+  // Close dept dropdown on outside click
   useEffect(() => {
     const onClick = (e) => {
       if (deptRef.current && !deptRef.current.contains(e.target)) {
@@ -102,6 +102,7 @@ const CompetencyFramework = () => {
       ...f,
       positions: [...f.positions, emptyPosition()],
     }));
+
   const removePosition = (idx) =>
     setFramework((f) => ({
       ...f,
@@ -128,16 +129,18 @@ const CompetencyFramework = () => {
         body: JSON.stringify(framework),
       });
       const data = await res.json();
-      if (!data.success) {
-        throw new Error("API error");
-      }
+      if (!data.success) throw new Error("API error");
+
+      // Assign by index
       setFramework((f) => ({
         ...f,
-        positions: f.positions.map((p) => {
-          const found = data.competencyDescriptions.find((d) => d.title === p.title);
-          return found ? { ...p, description: found.description } : p;
-        }),
+        positions: f.positions.map((p, idx) => ({
+          ...p,
+          description:
+            data.competencyDescriptions[idx]?.description || p.description,
+        })),
       }));
+
       setSuccess("Descriptions generated!");
     } catch {
       setError("Failed to generate descriptions.");
@@ -220,7 +223,9 @@ const CompetencyFramework = () => {
           >
             {departments
               .filter((d) =>
-                (d.department || "").toLowerCase().includes(deptQuery.toLowerCase())
+                (d.department || "")
+                  .toLowerCase()
+                  .includes(deptQuery.toLowerCase())
               )
               .map((d) => (
                 <Box
@@ -246,12 +251,7 @@ const CompetencyFramework = () => {
         <Table size="sm" variant="striped" colorScheme="gray" minW="800px">
           <Thead>
             <Tr>
-              <Th
-                position="sticky"
-                top={0}
-                bg="gray.50"
-                zIndex={2}
-              >
+              <Th position="sticky" top={0} bg="gray.50" zIndex={2}>
                 Position
               </Th>
               {COMPETENCIES.map((c) => (
@@ -278,7 +278,9 @@ const CompetencyFramework = () => {
                     size="xs"
                     placeholder="Title"
                     value={pos.title}
-                    onChange={(e) => updatePosition(i, "title", e.target.value)}
+                    onChange={(e) =>
+                      updatePosition(i, "title", e.target.value)
+                    }
                   />
                 </Td>
                 {COMPETENCIES.map((c) => {
@@ -289,7 +291,9 @@ const CompetencyFramework = () => {
                         size="xs"
                         placeholder="Level"
                         value={pos[key]}
-                        onChange={(e) => updatePosition(i, key, e.target.value)}
+                        onChange={(e) =>
+                          updatePosition(i, key, e.target.value)
+                        }
                       >
                         {LEVELS.map((l) => (
                           <option key={l} value={l}>
