@@ -20,9 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  "https://interviewappbe-production.up.railway.app";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
+  || "https://interviewappbe-production.up.railway.app";
 
 const COMPETENCIES = [
   "Problem Solving",
@@ -36,15 +35,19 @@ const COMPETENCIES = [
 ];
 const LEVELS = ["Follow", "Assist", "Apply", "Ensure", "Influence"];
 
-// helper: "Problem Solving" → "problemSolving"
-const camelCaseKey = (s) =>
-  s
-    .replace(/&/g, "")
+// ─── FIXED camelCaseKey ───────────────────────────────────────────────
+const camelCaseKey = (s) => {
+  const clean = s.replace(/[^a-zA-Z0-9 ]/g, "");
+  return clean
     .split(/\s+/)
     .map((w, i) =>
-      i === 0 ? w[0].toLowerCase() + w.slice(1) : w[0].toUpperCase() + w.slice(1)
+      i === 0
+        ? w[0]?.toLowerCase() + w.slice(1)
+        : w[0]?.toUpperCase() + w.slice(1)
     )
     .join("");
+};
+// ─────────────────────────────────────────────────────────────────────
 
 const emptyPosition = () => {
   const base = { title: "", description: "" };
