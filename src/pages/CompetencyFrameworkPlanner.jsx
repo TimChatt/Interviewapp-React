@@ -20,6 +20,10 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
 
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://interviewappbe-production.up.railway.app";
+
 const COMPETENCIES = [
   "Problem Solving",
   "Creative/Operational Thinking",
@@ -65,7 +69,7 @@ const CompetencyFramework = () => {
 
   // fetch departments
   useEffect(() => {
-    fetch("/api/departments/list")
+    fetch(`${API_BASE_URL}/api/departments/list`)
       .then((r) => r.json())
       .then((data) => setDepartments(data.departments))
       .catch(() => setError("Failed to load departments."));
@@ -115,7 +119,7 @@ const CompetencyFramework = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/generate-competencies", {
+      const res = await fetch(`${API_BASE_URL}/api/generate-competencies`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(framework),
@@ -124,7 +128,6 @@ const CompetencyFramework = () => {
       if (!data.success) {
         throw new Error("API error");
       }
-      // data.competencyDescriptions: [{ title, description }, …]
       setFramework((f) => ({
         ...f,
         positions: f.positions.map((p) => {
@@ -141,19 +144,19 @@ const CompetencyFramework = () => {
   };
 
   const saveFramework = async () => {
-    setError(""); setSuccess("");
+    setError("");
+    setSuccess("");
     setLoading(true);
     try {
-      // build SaveCompetencyRequest payload:
       const jobTitles = framework.positions.map((p) => ({
         job_title: p.title,
         job_levels: COMPETENCIES.map((c) => p[camelCaseKey(c)]),
         competencies: COMPETENCIES.map((c) => ({
           name: c,
-          descriptions: {}, // you can fill from key or generated if needed
+          descriptions: {}, // populate as needed
         })),
       }));
-      const res = await fetch("/api/save-competencies", {
+      const res = await fetch(`${API_BASE_URL}/api/save-competencies`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ department: framework.department, jobTitles }),
@@ -169,18 +172,13 @@ const CompetencyFramework = () => {
   };
 
   const downloadCSV = () => {
-    const header = [
-      "Position",
-      ...COMPETENCIES,
-      "Description",
-    ];
+    const header = ["Position", ...COMPETENCIES, "Description"];
     const rows = framework.positions.map((p) => [
       `"${p.title}"`,
       ...COMPETENCIES.map((c) => `"${p[camelCaseKey(c)]}"`),
       `"${p.description}"`,
     ]);
-    const csv =
-      [header.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
+    const csv = [header.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -191,11 +189,11 @@ const CompetencyFramework = () => {
   };
 
   return (
-    <Box maxW="1200px" mx="auto" p="6">
+    <Box maxW="100%" mx="auto" p="6">
       <Heading mb="4">Competency Framework</Heading>
 
       {/* Department Autocomplete */}
-      <Box ref={deptRef} mb="6" position="relative">
+      <Box ref={deptRef} mb="6" position="relative" maxW="400px">
         <Input
           placeholder="Select Department"
           value={deptQuery}
@@ -204,17 +202,22 @@ const CompetencyFramework = () => {
             setDeptQuery(e.target.value);
             setShowDeptDropdown(true);
           }}
+          bg="white"
         />
         {showDeptDropdown && (
           <Box
-            position="absolute" bg="white" w="full" border="1px solid"
-            borderColor="gray.200" maxH="200px" overflowY="auto"
+            position="absolute"
+            bg="white"
+            w="full"
+            border="1px solid"
+            borderColor="gray.200"
+            maxH="200px"
+            overflowY="auto"
+            zIndex={100}
           >
             {departments
               .filter((d) =>
-                (d.department || "")
-                  .toLowerCase()
-                  .includes(deptQuery.toLowerCase())
+                (d.department || "").toLowerCase().includes(deptQuery.toLowerCase())
               )
               .map((d) => (
                 <Box
@@ -235,72 +238,81 @@ const CompetencyFramework = () => {
         )}
       </Box>
 
-      {/* Positions × Competencies Grid */}
-      <Table size="sm" variant="simple" mb="4">
-        <Thead>
-          <Tr>
-            <Th>Position</Th>
-            {COMPETENCIES.map((c) => (
-              <Th key={c} fontSize="sm">
-                {c}
+      {/* Responsive Grid Container */}
+      <Box overflowX="auto" mb="4">
+        <Table size="sm" variant="striped" colorScheme="gray" minW="800px">
+          <Thead>
+            <Tr>
+              <Th
+                position="sticky"
+                top={0}
+                bg="gray.50"
+                zIndex={2}
+              >
+                Position
               </Th>
-            ))}
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
-          {framework.positions.map((pos, i) => (
-            <Tr key={i}>
-              <Td p="1">
-                <Input
-                  size="sm"
-                  placeholder="Title"
-                  value={pos.title}
-                  onChange={(e) =>
-                    updatePosition(i, "title", e.target.value)
-                  }
-                />
-              </Td>
-              {COMPETENCIES.map((c) => {
-                const key = camelCaseKey(c);
-                return (
-                  <Td key={c} p="1">
-                    <Select
-                      size="sm"
-                      placeholder="Level"
-                      value={pos[key]}
-                      onChange={(e) =>
-                        updatePosition(i, key, e.target.value)
-                      }
-                    >
-                      {LEVELS.map((l) => (
-                        <option key={l} value={l}>
-                          {l}
-                        </option>
-                      ))}
-                    </Select>
-                  </Td>
-                );
-              })}
-              <Td p="1">
-                <IconButton
-                  size="sm"
-                  icon={<DeleteIcon />}
-                  aria-label="Remove"
-                  onClick={() => removePosition(i)}
-                />
-              </Td>
+              {COMPETENCIES.map((c) => (
+                <Th
+                  key={c}
+                  fontSize="xs"
+                  position="sticky"
+                  top={0}
+                  bg="gray.50"
+                  zIndex={2}
+                  whiteSpace="nowrap"
+                >
+                  {c}
+                </Th>
+              ))}
+              <Th position="sticky" top={0} bg="gray.50" zIndex={2} />
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {framework.positions.map((pos, i) => (
+              <Tr key={i}>
+                <Td p="1">
+                  <Input
+                    size="xs"
+                    placeholder="Title"
+                    value={pos.title}
+                    onChange={(e) => updatePosition(i, "title", e.target.value)}
+                  />
+                </Td>
+                {COMPETENCIES.map((c) => {
+                  const key = camelCaseKey(c);
+                  return (
+                    <Td key={c} p="1">
+                      <Select
+                        size="xs"
+                        placeholder="Level"
+                        value={pos[key]}
+                        onChange={(e) => updatePosition(i, key, e.target.value)}
+                      >
+                        {LEVELS.map((l) => (
+                          <option key={l} value={l}>
+                            {l}
+                          </option>
+                        ))}
+                      </Select>
+                    </Td>
+                  );
+                })}
+                <Td p="1">
+                  <IconButton
+                    size="xs"
+                    icon={<DeleteIcon />}
+                    aria-label="Remove"
+                    onClick={() => removePosition(i)}
+                  />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Box>
 
       <HStack mb="6">
-        <Button
-          leftIcon={<AddIcon />}
-          onClick={addPosition}
-          size="sm"
-        >
+        <Button leftIcon={<AddIcon />} onClick={addPosition} size="sm">
           Add Position
         </Button>
       </HStack>
