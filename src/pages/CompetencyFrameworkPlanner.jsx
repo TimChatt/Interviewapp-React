@@ -52,10 +52,8 @@ const camelCaseKey = (s) => {
 const emptyPosition = () => {
   const base = {
     title: "",
-    // breakdown will hold the three sentences
     breakdown: { Brave: "", Owners: "", Inclusive: "" },
   };
-  // initialize level fields
   COMPETENCIES.forEach((c) => {
     base[camelCaseKey(c)] = "";
   });
@@ -83,7 +81,7 @@ const CompetencyFramework = () => {
       .catch(() => setError("Failed to load departments."));
   }, []);
 
-  // Close dropdown
+  // Close dropdown when clicking outside
   useEffect(() => {
     const onClick = (e) => {
       if (deptRef.current && !deptRef.current.contains(e.target)) {
@@ -94,13 +92,12 @@ const CompetencyFramework = () => {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const updatePosition = (idx, key, value) => {
+  const updatePosition = (idx, key, value) =>
     setFramework((f) => {
       const ps = [...f.positions];
       ps[idx] = { ...ps[idx], [key]: value };
       return { ...f, positions: ps };
     });
-  };
 
   const addPosition = () =>
     setFramework((f) => ({
@@ -114,12 +111,11 @@ const CompetencyFramework = () => {
     }));
 
   const generateDescriptions = async () => {
-    setError("");
+    setError(""); setSuccess("");
     if (!framework.department) {
       setError("Please select a department.");
       return;
     }
-    // ensure title + all levels filled
     for (let p of framework.positions) {
       if (!p.title || COMPETENCIES.some((c) => !p[camelCaseKey(c)])) {
         setError("Please fill every Title and select all Levels.");
@@ -128,25 +124,20 @@ const CompetencyFramework = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/api/generate-competencies`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(framework),
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/api/generate-competencies`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(framework),
+      });
       const data = await res.json();
-      if (!data.success) throw new Error("API error");
+      if (!data.success) throw new Error();
 
-      // assign breakdown by index
       setFramework((f) => ({
         ...f,
         positions: f.positions.map((p, idx) => ({
           ...p,
           breakdown:
-            data.competencyDescriptions[idx]?.breakdown ||
-            p.breakdown,
+            data.competencyDescriptions[idx]?.breakdown || p.breakdown,
         })),
       }));
       setSuccess("Descriptions generated!");
@@ -157,13 +148,54 @@ const CompetencyFramework = () => {
     }
   };
 
-  // ... saveFramework & downloadCSV unchanged ...
+  const saveFramework = async () => {
+    setError(""); setSuccess(""); setLoading(true);
+    try {
+      const jobTitles = framework.positions.map((p) => ({
+        job_title: p.title,
+        job_levels: COMPETENCIES.map((c) => p[camelCaseKey(c)]),
+        competencies: COMPETENCIES.map((c) => ({
+          name: c,
+          descriptions: p.breakdown, // send the Brave/Owners/Inclusive breakdown
+        })),
+      }));
+      const res = await fetch(`${API_BASE_URL}/api/save-competencies`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ department: framework.department, jobTitles }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error();
+      setSuccess("Framework saved!");
+    } catch {
+      setError("Failed to save framework.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadCSV = () => {
+    const header = ["Position", ...COMPETENCIES, "Brave", "Owners", "Inclusive"];
+    const rows = framework.positions.map((p) => [
+      `"${p.title}"`,
+      ...COMPETENCIES.map((c) => `"${p[camelCaseKey(c)]}"`),
+      `"${p.breakdown.Brave}"`,
+      `"${p.breakdown.Owners}"`,
+      `"${p.breakdown.Inclusive}"`,
+    ]);
+    const csv = [header.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "competency_breakdown.csv";
+    link.click();
+  };
 
   return (
     <Box maxW="100%" mx="auto" p="6">
       <Heading mb="4">Competency Framework</Heading>
 
-      {/* Department selector */}
+      {/* Department Autocomplete */}
       <Box ref={deptRef} mb="6" position="relative" maxW="400px">
         <Input
           placeholder="Select Department"
@@ -187,9 +219,7 @@ const CompetencyFramework = () => {
           >
             {departments
               .filter((d) =>
-                d.department
-                  .toLowerCase()
-                  .includes(deptQuery.toLowerCase())
+                d.department.toLowerCase().includes(deptQuery.toLowerCase())
               )
               .map((d) => (
                 <Box
@@ -198,10 +228,7 @@ const CompetencyFramework = () => {
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   onClick={() => {
-                    setFramework((f) => ({
-                      ...f,
-                      department: d.id,
-                    }));
+                    setFramework((f) => ({ ...f, department: d.id }));
                     setDeptQuery(d.department);
                     setShowDeptDropdown(false);
                   }}
@@ -213,7 +240,7 @@ const CompetencyFramework = () => {
         )}
       </Box>
 
-      {/* Table of Positions × Levels */}
+      {/* Positions × Competencies Table */}
       <Box overflowX="auto" mb="4">
         <Table
           size="sm"
@@ -249,9 +276,7 @@ const CompetencyFramework = () => {
                     size="xs"
                     placeholder="Title"
                     value={pos.title}
-                    onChange={(e) =>
-                      updatePosition(i, "title", e.target.value)
-                    }
+                    onChange={(e) => updatePosition(i, "title", e.target.value)}
                   />
                 </Td>
                 {COMPETENCIES.map((c) => {
@@ -289,8 +314,9 @@ const CompetencyFramework = () => {
         </Table>
       </Box>
 
+      {/* Add Position */}
       <HStack mb="6">
-        <Button leftIcon={<AddIcon />} onClick={addPosition} size="sm">
+        <Button leftIcon={<AddIcon />} size="sm" onClick={addPosition}>
           Add Position
         </Button>
       </HStack>
@@ -304,7 +330,20 @@ const CompetencyFramework = () => {
         >
           Generate Descriptions
         </Button>
-        {/* ... Save + Download buttons ... */}
+        <Button
+          colorScheme="green"
+          onClick={saveFramework}
+          isLoading={loading}
+        >
+          Save Framework
+        </Button>
+        <Button
+          leftIcon={<DownloadIcon />}
+          variant="outline"
+          onClick={downloadCSV}
+        >
+          Download CSV
+        </Button>
       </VStack>
 
       {error && (
@@ -320,44 +359,46 @@ const CompetencyFramework = () => {
         </Alert>
       )}
 
-      {/* Display Brave / Owners / Inclusive */}
+      {/* Generated Brave / Owners / Inclusive */}
       {framework.positions.some((p) =>
         Object.values(p.breakdown).some((v) => v)
       ) && (
         <VStack align="stretch" spacing="4" mt="6">
           <Heading size="md">Generated Descriptions</Heading>
-          {framework.positions.map((p, i) => (
-            <Box
-              key={i}
-              p="3"
-              bg="gray.50"
-              borderWidth="1px"
-              borderRadius="md"
-              shadow="sm"
-            >
-              <Text fontWeight="bold">{p.title}</Text>
-              <VStack align="start" spacing="1" mt="2">
-                <Text>
-                  <Text as="span" fontWeight="semibold">
-                    Brave:
-                  </Text>{" "}
-                  {p.breakdown.Brave}
-                </Text>
-                <Text>
-                  <Text as="span" fontWeight="semibold">
-                    Owners:
-                  </Text>{" "}
-                  {p.breakdown.Owners}
-                </Text>
-                <Text>
-                  <Text as="span" fontWeight="semibold">
-                    Inclusive:
-                  </Text>{" "}
-                  {p.breakdown.Inclusive}
-                </Text>
-              </VStack>
-            </Box>
-          ))}
+          {framework.positions.map((p, i) =>
+            Object.values(p.breakdown).some((v) => v) ? (
+              <Box
+                key={i}
+                p="3"
+                bg="gray.50"
+                borderWidth="1px"
+                borderRadius="md"
+                shadow="sm"
+              >
+                <Text fontWeight="bold">{p.title}</Text>
+                <VStack align="start" spacing="1" mt="2">
+                  <Text>
+                    <Text as="span" fontWeight="semibold">
+                      Brave:
+                    </Text>{" "}
+                    {p.breakdown.Brave}
+                  </Text>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">
+                      Owners:
+                    </Text>{" "}
+                    {p.breakdown.Owners}
+                  </Text>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">
+                      Inclusive:
+                    </Text>{" "}
+                    {p.breakdown.Inclusive}
+                  </Text>
+                </VStack>
+              </Box>
+            ) : null
+          )}
         </VStack>
       )}
     </Box>
