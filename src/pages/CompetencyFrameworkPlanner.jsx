@@ -34,7 +34,7 @@ const COMPETENCIES = [
   "Commercial Awareness",
   "Collaboration & Team Work",
 ];
-const LEVELS = ["Follow", "Assist", "Apply", "Ensure", "Influence"];
+const LEVELS = ["Follow", "Assist", "Apply", "Ensure", "Influence", "Lead"];
 
 // helper to turn "Creative/Operational Thinking" → "creativeOperationalThinking"
 const camelCaseKey = (s) => {
