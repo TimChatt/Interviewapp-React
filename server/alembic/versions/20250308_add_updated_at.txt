@@ -1,0 +1,24 @@
+"""Add updated_at column to candidates table
+
+Revision ID: 20250308_add_updated_at
+Revises: <previous_revision_id>
+Create Date: 2025-03-08 17:10:00.000000
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+# revision identifiers, used by Alembic.
+revision = '20250308_add_updated_at'
+down_revision = None
+branch_labels = None
+depends_on = None
+
+def upgrade():
+    # Add the updated_at column with a default value of now().
+    op.add_column('candidates', sa.Column('updated_at', sa.DateTime(), nullable=True, server_default=sa.func.now()))
+    # Then make it non-nullable.
+    op.alter_column('candidates', 'updated_at', nullable=False)
+
+def downgrade():
+    op.drop_column('candidates', 'updated_at')
