@@ -1,0 +1,11 @@
+node_modules/
+client/node_modules/
+server/__pycache__/
+*.pyc
+.env
+__pycache__/
+
+# Ignore data files
+server/data/
+client/public/assets/login_video
+*.xlsx

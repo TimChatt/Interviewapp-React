@@ -1,0 +1,1535 @@
+from fastapi import FastAPI, HTTPException, Depends, Path, Header, Query, Body
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field, ValidationError
+from typing import List, Optional
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, Column, Integer, String, Text, JSON, ForeignKey, Boolean, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session, relationship
+from models import CompetencyTrend, JobDescription, CompetencyCreate
+from datetime import datetime
+import re
+import bleach
+import os
+import bcrypt
+import jwt
+import logging
+import time
+import json
+from openai import OpenAI
+
+# Load environment variables
+load_dotenv()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
+
+# Fetch DATABASE_URL from Railway variables
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# If DATABASE_URL is not set, manually construct it from individual Railway variables
+if not DATABASE_URL:
+    PGUSER = os.getenv("PGUSER", "postgres")
+    PGPASSWORD = os.getenv("PGPASSWORD")
+    if not PGPASSWORD:
+        raise ValueError("Database password not provided in environment variables.")
+    PGHOST = os.getenv("PGHOST", "postgres.railway.internal")
+    PGPORT = os.getenv("PGPORT", "5432")
+    PGDATABASE = os.getenv("PGDATABASE", "railway")
+    DATABASE_URL = f"postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
+
+# Create SQLAlchemy engine
+engine = create_engine(DATABASE_URL)
+
+# Test Database Connection (For Debugging)
+try:
+    connection = engine.connect()
+    logging.info("✅ Connected to the database successfully!")
+    connection.close()
+except Exception as e:
+    logging.error(f"❌ Failed to connect to the database: {e}")
+
+# Initialize FastAPI app
+app = FastAPI()
+
+# Configure CORS
+origins = [
+    "https://interviewapp-react-production.up.railway.app",
+    "http://localhost:3000"
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize OpenAI client
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    logging.error("OPENAI_API_KEY is missing. Please set it in the environment.")
+    raise ValueError("OPENAI_API_KEY is required.")
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+# JWT secret key
+JWT_SECRET = os.getenv("JWT_SECRET", "your_jwt_secret")
+
+STATIC_CATEGORIES = [
+    "Technical Skills", "Leadership & Management", "Soft Skills",
+    "Process & Delivery", "Domain-Specific Knowledge"
+]
+
+# Database setup
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# -------------------- DATABASE MODELS -------------------- #
+class InterviewQuestion(Base):
+    """
+    Stores AI-generated and custom interview questions.
+    """
+    __tablename__ = "interview_questions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    job_title_id = Column(Integer, ForeignKey("job_titles.id"), nullable=False)
+    question = Column(Text, nullable=False)
+    follow_up = Column(Text, nullable=True)
+    competency = Column(String, nullable=False)  # ✅ Ensure competency is required
+    competencies_covered = Column(JSON, nullable=False, default=[])  # ✅ Default to an empty list
+    created_at = Column(String, default=str(datetime.utcnow()))
+
+
+class AnswerSuggestion(Base):
+    """
+    Stores AI-powered answer suggestions for interview questions.
+    """
+    __tablename__ = "answer_suggestions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    question_id = Column(Integer, ForeignKey("interview_questions.id"), nullable=False)
+    score = Column(Integer, nullable=False)  # 1 (Poor) to 4 (Great)
+    answer = Column(Text, nullable=False)
+
+    # Relationship
+    question = relationship("InterviewQuestion", back_populates="answers")
+
+
+# Establish relationships
+InterviewQuestion.answers = relationship("AnswerSuggestion", back_populates="question")
+
+class JobTitle(Base):
+    __tablename__ = "job_titles"
+    id = Column(Integer, primary_key=True, index=True)
+    department_id = Column(Integer, ForeignKey("frameworks.id"))  # Link to Framework
+    job_title = Column(String, index=True)
+    job_levels = Column(Text)  # Store as comma-separated string
+    competencies = Column(JSON)  # Store as JSON object
+
+    # NEW COLUMNS: Salary min and max
+    salary_min = Column(Integer, nullable=True)
+    salary_max = Column(Integer, nullable=True)
+
+    # Define relationship to Framework
+    framework = relationship("Framework", back_populates="job_titles")
+
+class JobDescription(Base):
+    """
+    Stores job descriptions linked to specific job titles.
+    """
+    __tablename__ = "job_descriptions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    job_title_id = Column(Integer, ForeignKey("job_titles.id"), nullable=False)
+    description = Column(Text, nullable=False)
+    created_at = Column(String, default=str(datetime.utcnow()))
+    updated_at = Column(String, onupdate=str(datetime.utcnow()))
+
+    # Relationship with JobTitle
+    job_title = relationship("JobTitle", back_populates="job_description")
+
+# Add relationship to JobTitle model
+JobTitle.job_description = relationship("JobDescription", uselist=False, back_populates="job_title")
+
+class Framework(Base):
+    __tablename__ = "frameworks"
+    id = Column(Integer, primary_key=True, index=True)
+    department = Column(String, index=True)
+    
+    # Establish relationship with JobTitle
+    job_titles = relationship(
+        "JobTitle",
+        back_populates="framework",
+        cascade="all, delete-orphan"
+    )
+
+# New User model for signups and admin approvals
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    is_approved = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
+
+class CompetencyEvolution(Base):
+    __tablename__ = "competency_evolution"
+
+    id = Column(Integer, primary_key=True, index=True)
+    competency_name = Column(String, index=True)
+    job_title = Column(String)
+    job_level = Column(String)
+    change_type = Column(String)
+    old_value = Column(Text)
+    new_value = Column(Text)
+    date_changed = Column(DateTime)
+    category = Column(String, default="Uncategorized")  # ✅ Added this field
+
+# Create database tables (warning: does not auto-migrate existing tables)
+Base.metadata.create_all(bind=engine)
+
+# -------------------- DEPENDENCY -------------------- #
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Dependency to get current admin from JWT token
+def get_current_admin(authorization: str = Header(...)):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    token = authorization.split(" ")[1]
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    if not payload.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return payload
+
+# -------------------- Pydantic MODELS -------------------- #
+class GenerateRequest(BaseModel):
+    department: str = Field(..., title="Department", description="Department name")
+    jobTitle: str = Field(..., title="Job Title", description="Job title for the framework")
+    jobLevels: List[str] = Field(..., title="Job Levels", description="List of job levels")
+    competencies: List[str] = Field(..., title="Competencies", description="List of competencies")
+
+class SaveCompetencyRequest(BaseModel):
+    department: str
+    jobTitles: List[dict]  # List of job titles with their details (job_title, job_levels, competencies)
+
+# This model will be used to update an existing job title (including optional salaries)
+class UpdateJobTitleRequest(BaseModel):
+    salaryMin: Optional[int] = None
+    salaryMax: Optional[int] = None
+    # If you also want to allow updating competencies fully:
+    competencies: Optional[List[dict]] = None
+
+# Pydantic model for Signup request
+class SignupRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
+# Pydantic model for Login request (new)
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class GenerateJobDescriptionRequest(BaseModel):
+    job_title: str
+    department: str
+    responsibilities: Optional[List[str]] = []
+    requirements: Optional[List[str]] = []
+
+class SaveJobDescriptionRequest(BaseModel):
+    job_title: str
+    department: str
+    description: str
+
+class GenerateQuestionRequest(BaseModel):
+    job_title: str = Field(..., title="Job Title", description="The job title for interview questions.")
+    department: str = Field(..., title="Department", description="Department of the job.")
+    competencies: list[str] = Field(..., title="Competencies", description="List of competencies.")
+
+class SaveQuestionRequest(BaseModel):
+    job_title: str
+    question: str
+    follow_up: str = None
+
+class AnswerAssessmentRequest(BaseModel):
+    question: str
+    candidate_answer: str
+
+# Define structure of a single question
+class InterviewQuestionRequest(BaseModel):
+    question: str
+    follow_up: str
+    competency: str  # ✅ Ensure competency is explicitly defined
+    competencies_covered: List[str]  # ✅ Ensure competencies_covered is always included
+
+# Define structure for the full request
+class SaveInterviewQuestionsRequest(BaseModel):
+    job_title: str
+    questions: List[InterviewQuestionRequest]
+
+class GenerateInterviewQuestionsRequest(BaseModel):
+    job_title: str
+    department: Optional[str] = None  # Some job titles might not have departments
+    competencies: Optional[List[str]] = []
+
+# -------------------- HELPER FUNCTIONS -------------------- #
+def get_competencies_for_job(db: Session, job_title: str):
+    """
+    Retrieves competencies for a given job title.
+    """
+    job = db.query(JobTitle).filter(JobTitle.job_title == job_title).first()
+    
+    if not job or not job.competencies:
+        return []
+
+    return [competency["name"] for competency in job.competencies]  # Extract only competency names
+    
+def parse_generated_text(text, competencies, levels):
+    logging.info("Parsing OpenAI response text...")
+    sections = text.split("Competency:")  # Split text by "Competency:"
+    structured_data = []
+
+    for section in sections[1:]:  # Skip the first split part (it's before the first "Competency:")
+        try:
+            lines = section.strip().split("\n")  # Split section into lines
+            competency_name = lines[0].strip()  # First line is the competency name
+            levels_data = {}
+
+            for line in lines[1:]:  # Process remaining lines
+                if line.strip().startswith("- Level"):
+                    level, description = line.split(":", 1)  # Split line into level and description
+                    levels_data[level.strip()] = description.strip()  # Add level and description to dict
+                else:
+                    logging.debug(f"Ignoring unexpected line: {line.strip()}")
+
+            # Append structured data if valid competency and levels are found
+            if competency_name and levels_data:
+                structured_data.append({
+                    "competency": competency_name,
+                    "levels": levels_data,
+                })
+            else:
+                logging.warning(f"Competency or levels data missing in section: {section}")
+
+        except Exception as parse_error:
+            logging.error(f"Error parsing section: {section}. Error: {parse_error}")
+            continue
+
+    logging.info(f"Parsed competencies: {structured_data}")
+    return structured_data
+
+def log_competency_change(
+    competency_name: str,
+    job_title: str,
+    job_level: str,
+    change_type: str,
+    old_value: Optional[str] = None,
+    new_value: Optional[str] = None,
+    db: Session = None
+):
+    """
+    Logs a competency change in the CompetencyEvolution table.
+    Should be called when competencies are created, modified, or deleted.
+    """
+    try:
+        change_entry = CompetencyEvolution(
+            competency_name=competency_name,
+            job_title=job_title,
+            job_level=job_level,
+            change_type=change_type,
+            old_value=old_value if old_value else "None",
+            new_value=new_value if new_value else "None",
+            date_changed=datetime.utcnow()
+        )
+        db.add(change_entry)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to log competency change: {str(e)}")
+
+def categorize_with_ai(competency_name, competency_description=""):
+    """ Uses GPT-3.5 to categorize a competency into predefined categories. """
+    try:
+        prompt = f"""
+        Categorize the following competency into one of these categories:
+        {', '.join(STATIC_CATEGORIES)}.
+
+        Competency: {competency_name}
+        Description: {competency_description if competency_description else 'No description available'}
+
+        Only return the category name from the list above.
+        """
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=15,
+            temperature=0.3
+        )
+
+        ai_category = response.choices[0].message.content.strip()
+
+        return ai_category if ai_category in STATIC_CATEGORIES else "Uncategorized"
+
+    except Exception as e:
+        return "Uncategorized"  # Fallback in case of error
+
+def categorize_competency(competency_name):
+    """
+    Categorizes a competency using AI first, then falls back to keyword mapping.
+    """
+    try:
+        # 🔥 AI Call for Categorization
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a professional HR expert. Categorize competencies into one of the predefined categories."
+                },
+                {
+                    "role": "user",
+                    "content": f"Which category does the competency '{competency_name}' belong to? Choose from: "
+                               "'Technical Skills', 'Leadership & Management', 'Soft Skills', 'Process & Delivery', "
+                               "'Domain-Specific Knowledge', 'Innovation & Problem-Solving', 'Customer & Business Acumen'."
+                }
+            ]
+        )
+        
+        ai_category = response["choices"][0]["message"]["content"].strip()
+        if ai_category in STATIC_CATEGORIES:
+            return ai_category  # ✅ If AI assigns a valid category, return it
+
+    except Exception as e:
+        logging.warning(f"⚠️ AI categorization failed: {e}. Falling back to keyword mapping.")
+
+    # 🔥 Fallback: Keyword Mapping
+    category_mapping = {
+        "Technical Skills": ["Software Engineering", "Machine Learning", "Data Science"],
+        "Leadership & Management": ["Strategic Thinking", "People Management"],
+        "Soft Skills": ["Communication", "Collaboration", "Empathy"],
+        "Process & Delivery": ["Agile Methodologies", "Project Management"],
+        "Domain-Specific Knowledge": ["Financial Analysis", "Cybersecurity"],
+        "Innovation & Problem-Solving": ["Design Thinking", "Creativity"],
+        "Customer & Business Acumen": ["Sales Strategy", "Market Research"]
+    }
+
+    for category, keywords in category_mapping.items():
+        if any(keyword.lower() in competency_name.lower() for keyword in keywords):
+            return category
+
+    return "Uncategorized"  # ✅ Default if AI + keyword matching fails
+
+# -------------------- ROUTES -------------------- #
+@app.get("/api/get-interview-job-titles")
+async def get_interview_job_titles(department: str, db: Session = Depends(get_db)):
+    """
+    Returns job titles with competencies and job descriptions for the Interview Dashboard.
+    """
+    try:
+        department_framework = db.query(Framework).filter(Framework.department == department).first()
+
+        if not department_framework:
+            logging.error(f"❌ Department '{department}' not found in Framework table.")
+            raise HTTPException(status_code=404, detail=f"Department '{department}' not found.")
+
+        job_titles = db.query(JobTitle).filter(JobTitle.department_id == department_framework.id).all()
+
+        if not job_titles:
+            logging.warning(f"⚠️ No job titles found for department: {department}")
+            return {"job_titles": []}
+
+        return {
+            "job_titles": [
+                {
+                    "job_title": job.job_title,
+                    "competencies": job.competencies if job.competencies else [],
+                    "job_description": (
+                        db.query(JobDescription)
+                        .filter(JobDescription.job_title_id == job.id)
+                        .first()
+                    ).description if db.query(JobDescription).filter(JobDescription.job_title_id == job.id).first() else None,
+                }
+                for job in job_titles
+            ]
+        }
+
+    except Exception as e:
+        logging.error(f"❌ Error fetching interview job titles for department {department}: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching interview job titles.")
+
+
+
+@app.post("/api/generate-interview-questions")
+async def generate_interview_questions(request: GenerateInterviewQuestionsRequest):
+    try:
+        job_title = request.job_title
+        department = request.department or "Unknown"
+        competencies = request.competencies or []
+
+        logging.info(f"🛠️ Generating questions for: {job_title} in {department} with competencies {competencies}")
+
+        # 🔥 AI Prompt - Explicit JSON instruction
+        prompt = f"""
+        You are an expert interview question generator. 
+        Generate structured interview questions for the role of {job_title} in {department}.
+
+        **Focus on these competencies:** {", ".join(competencies) if competencies else "General skills"}.
+        For each competency, generate **at least 2-3 questions**.
+        Each question should have a follow-up question.
+
+        ### **Format output as strict JSON (NO extra text, only JSON response)**:
+        
+        [
+          {{"competency": "Software Engineering", "question": "Primary Question 1", "follow_up": "Follow-up Question 1"}},
+          {{"competency": "Design Thinking", "question": "Primary Question 2", "follow_up": "Follow-up Question 2"}}
+        ]
+        """
+
+        chat_completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an expert interview question generator. Only return valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=2500,
+            temperature=0.7,
+        )
+
+        raw_ai_response = chat_completion.choices[0].message.content.strip()
+
+        logging.info(f"✅ Raw AI Response (Before Parsing): {raw_ai_response}")
+
+        # 🔥 Fix OpenAI Wrapping JSON in Markdown Blocks
+        cleaned_response = raw_ai_response.strip().replace("```json", "").replace("```", "")
+
+        # 🔄 Try Parsing JSON
+        try:
+            generated_questions = json.loads(cleaned_response)
+            logging.info(f"✅ Parsed Questions: {generated_questions}")
+        except json.JSONDecodeError as e:
+            logging.error(f"❌ AI Response is not valid JSON. Error: {e}")
+            generated_questions = []
+
+        return {"questions": generated_questions}
+
+    except Exception as e:
+        logging.error(f"❌ Error generating interview questions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate interview questions")
+
+
+@app.post("/api/save-interview-questions")
+async def save_interview_questions(request: SaveInterviewQuestionsRequest, db: Session = Depends(get_db)):
+    try:
+        job_title = db.query(JobTitle).filter(JobTitle.job_title == request.job_title).first()
+        if not job_title:
+            raise HTTPException(status_code=404, detail="Job title not found.")
+
+        saved_questions = []
+        for q in request.questions:
+            competency_value = q.competency if hasattr(q, "competency") and q.competency else "General Skills"
+            competencies_covered_value = q.competencies_covered if hasattr(q, "competencies_covered") else [competency_value]
+
+            new_question = InterviewQuestion(
+                job_title_id=job_title.id,
+                question=q.question,
+                follow_up=q.follow_up or "",
+                competency=competency_value,
+                competencies_covered=competencies_covered_value,  # ✅ Now properly stored as JSON
+            )
+            db.add(new_question)
+            saved_questions.append(new_question)
+
+        db.commit()
+        return {"success": True, "message": f"Saved {len(saved_questions)} questions successfully."}
+
+    except Exception as e:
+        db.rollback()
+        logging.error(f"❌ Error saving interview questions: {e}")
+        raise HTTPException(status_code=500, detail=f"Error saving interview questions: {e}")
+
+
+@app.post("/api/assess-candidate-answer")
+async def assess_candidate_answer(request: AnswerAssessmentRequest):
+    """
+    AI-powered evaluation of a candidate's interview response.
+    """
+    prompt = f"""
+    Evaluate the candidate's response to the following interview question.
+
+    Question: {request.question}
+    Candidate's Answer: {request.candidate_answer}
+
+    Provide a score from 1 (Poor) to 4 (Great), along with an explanation.
+    Format:
+    - Score: [1-4]
+    - Explanation: [Why the score was given]
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are an experienced interviewer."},
+                  {"role": "user", "content": prompt}],
+        max_tokens=500,
+        temperature=0.6,
+    )
+
+    analysis = response.choices[0].message.content.strip()
+    score_line = next((line for line in analysis.split("\n") if line.startswith("Score:")), "Score: N/A")
+    explanation = next((line for line in analysis.split("\n") if line.startswith("Explanation:")), "Explanation: N/A")
+
+    return {
+        "score": score_line.replace("Score: ", ""),
+        "explanation": explanation.replace("Explanation: ", "")
+    }
+
+
+@app.post("/api/save-custom-question")
+async def save_custom_question(request: SaveQuestionRequest, db: Session = Depends(get_db)):
+    """
+    Saves a custom interview question.
+    """
+    job_title = db.query(JobTitle).filter(JobTitle.job_title == request.job_title).first()
+    if not job_title:
+        raise HTTPException(status_code=404, detail="Job title not found.")
+
+    new_question = InterviewQuestion(
+        job_title_id=job_title.id,
+        question=request.question,
+        follow_up=request.follow_up
+    )
+
+    db.add(new_question)
+    db.commit()
+    db.refresh(new_question)
+
+    return {"success": True, "message": "Question saved successfully."}
+
+
+@app.get("/api/get-interview-questions/{job_title}")
+async def get_interview_questions(job_title: str, db: Session = Depends(get_db)):
+    """
+    Retrieves saved interview questions for a job title.
+    """
+    job = db.query(JobTitle).filter(JobTitle.job_title == job_title).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job title not found.")
+
+    questions = db.query(InterviewQuestion).filter(InterviewQuestion.job_title_id == job.id).all()
+
+    return {
+        "questions": [
+            {
+                "id": q.id,
+                "question": q.question,
+                "follow_up": q.follow_up,
+                "competencies_covered": q.competencies_covered if q.competencies_covered else [],  # ✅ Fix
+            }
+            for q in questions
+        ]
+    }
+
+# New route for user signup
+@app.post("/api/signup")
+async def signup(request: SignupRequest, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(
+        (User.username == request.username) | (User.email == request.email)
+    ).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username or email already exists")
+    
+    hashed_password = bcrypt.hashpw(request.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    
+    new_user = User(
+        username=request.username,
+        email=request.email,
+        hashed_password=hashed_password,
+        is_approved=False  # New users require admin approval
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return {"success": True, "message": "Registration successful. Await admin approval."}
+
+# New route for user login (new)
+@app.post("/api/login")
+async def login_endpoint(request: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == request.username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not bcrypt.checkpw(request.password.encode("utf-8"), user.hashed_password.encode("utf-8")):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not user.is_approved:
+        raise HTTPException(status_code=403, detail="User not approved")
+    
+    payload = {
+        "username": user.username,
+        "is_admin": user.is_admin,
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+    
+    return {"username": user.username, "token": token, "is_admin": user.is_admin}
+
+# New route to get pending users for admin approval
+@app.get("/api/users/pending")
+async def get_pending_users(admin: dict = Depends(get_current_admin), db: Session = Depends(get_db)):
+    pending_users = db.query(User).filter(User.is_approved == False).all()
+    result = [{"username": user.username, "email": user.email} for user in pending_users]
+    return result
+
+# New route to approve a user by username
+@app.put("/api/users/{username}/approve")
+async def approve_user(username: str, admin: dict = Depends(get_current_admin), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.is_approved = True
+    db.commit()
+    db.refresh(user)
+    
+    return {"success": True, "message": f"User {username} has been approved."}
+
+# 1) Generate Competencies
+@app.post("/api/generate-competencies")
+async def generate_competencies(request: GenerateRequest):
+    logging.info(f"Generating competencies for: {request.dict()}")
+    start_time = time.time()
+    try:
+        # Build the prompt
+        prompt = f"""
+        You are tasked with creating a detailed competency framework. Please provide the output strictly in the following format:
+        Competency: [Competency Name]
+        - Level [L1]: Knowledge: [Description], Skills: [Description], Behaviors: [Description]
+        - Level [L2]: Knowledge: [Description], Skills: [Description], Behaviors: [Description]
+        ...
+        Details for this task:
+        - Role: {request.jobTitle}
+        - Department: {request.department}
+        - Job Levels: {', '.join(request.jobLevels)}
+        - Competencies: {', '.join(request.competencies)}
+        """
+
+        chat_completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an expert in creating competency frameworks."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.6,
+        )
+
+        generated_text = chat_completion.choices[0].message.content.strip()
+        logging.info(f"OpenAI response received in {time.time() - start_time:.2f}s: {generated_text}")
+
+        competency_descriptions = parse_generated_text(generated_text, request.competencies, request.jobLevels)
+
+        if len(competency_descriptions) == 0:
+            raise HTTPException(status_code=500, detail="No valid competency descriptions were parsed. Check formatting.")
+
+        logging.info(f"Returning competency descriptions: {competency_descriptions}")
+        return {"success": True, "competencyDescriptions": competency_descriptions}
+
+    except ValidationError as e:
+        logging.error(f"Validation error: {e}")
+        raise HTTPException(status_code=400, detail="Invalid request data.")
+    except Exception as e:
+        logging.error(f"Error generating competencies: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing your request.")
+
+# 2) Save Competencies (Create new frameworks/job titles)
+@app.post("/api/save-competencies")
+async def save_competencies(request: SaveCompetencyRequest, db: Session = Depends(get_db)):
+    """
+    Saves new competencies and logs newly created ones.
+    """
+    try:
+        existing_framework = db.query(Framework).filter(Framework.department == request.department).first()
+
+        if existing_framework:
+            department_id = existing_framework.id
+        else:
+            framework = Framework(department=request.department)
+            db.add(framework)
+            db.commit()
+            db.refresh(framework)
+            department_id = framework.id
+
+        for job_title in request.jobTitles:
+            job_title_entry = JobTitle(
+                department_id=department_id,
+                job_title=job_title["job_title"],
+                job_levels=",".join(job_title["job_levels"]),
+                competencies=job_title["competencies"],
+                salary_min=None,
+                salary_max=None
+            )
+            db.add(job_title_entry)
+
+            # Log competency creation
+            for competency in job_title["competencies"]:
+                log_competency_change(
+                    competency_name=competency["name"],
+                    job_title=job_title["job_title"],
+                    job_level="N/A",  # Since job level might be multiple
+                    change_type="Created",
+                    old_value="None",
+                    new_value=str(competency["descriptions"]),
+                    db=db
+                )
+
+        db.commit()
+        return {"success": True, "message": "Competency framework saved successfully", "department_id": department_id}
+
+    except Exception as e:
+        logging.error(f"Error saving framework: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while saving the framework.")
+        
+# 3) Search Frameworks
+@app.get("/api/search-frameworks")
+async def search_frameworks(query: str = "", db: Session = Depends(get_db)):
+    try:
+        # If the query is empty, return all frameworks
+        if not query.strip():
+            logging.info("No query provided, fetching all frameworks.")
+            frameworks = db.query(Framework).all()
+        else:
+            logging.info(f"Query provided: {query}, searching frameworks by department.")
+            # Now filtering only by department name
+            frameworks = db.query(Framework).filter(
+                Framework.department.ilike(f"%{query}%")
+            ).all()
+
+        if not frameworks:
+            logging.info("No frameworks found for the query.")
+            return {"frameworks": []}
+
+        return {"frameworks": [
+            {key: value for key, value in framework.__dict__.items() if key != "_sa_instance_state"}
+            for framework in frameworks
+        ]}
+
+    except Exception as e:
+        logging.error(f"Error searching frameworks: {e}")
+        raise HTTPException(status_code=500, detail="Error searching frameworks.")
+
+# 4) Get Framework by ID
+@app.get("/api/get-framework/{id}")
+async def get_framework(id: int, db: Session = Depends(get_db)):
+    framework = db.query(Framework).filter(Framework.id == id).first()
+    if not framework:
+        raise HTTPException(status_code=404, detail="Framework not found")
+    return {
+        "id": framework.id,
+        "department": framework.department,
+        "job_titles": [
+            {
+                "job_title": job.job_title,
+                "job_levels": job.job_levels,
+                "competencies": job.competencies,
+                "salary_min": job.salary_min,
+                "salary_max": job.salary_max
+            }
+            for job in framework.job_titles
+        ]
+    }
+
+# 5) Get Job Title Details (by Department & JobTitle)
+@app.get("/api/get-framework/{department}/{jobTitle}")
+async def get_job_title_details(department: str, jobTitle: str, db: Session = Depends(get_db)):
+    try:
+        framework = db.query(Framework).filter(Framework.department == department).first()
+        
+        if not framework:
+            raise HTTPException(status_code=404, detail="Department not found.")
+        
+        job_title = db.query(JobTitle).filter(
+            JobTitle.job_title == jobTitle,
+            JobTitle.department_id == framework.id
+        ).first()
+
+        if not job_title:
+            raise HTTPException(status_code=404, detail="Job title not found.")
+        
+        # Return job title details
+        return {
+            "department": framework.department,
+            "job_title": job_title.job_title,
+            "job_levels": job_title.job_levels,  # can be split in frontend
+            "competencies": job_title.competencies,
+            "salary_min": job_title.salary_min,
+            "salary_max": job_title.salary_max
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 6) Delete a framework by ID
+@app.delete("/api/delete-framework/{id}")
+async def delete_framework(id: int = Path(..., title="Framework ID"), db: Session = Depends(get_db)):
+    try:
+        framework = db.query(Framework).filter(Framework.id == id).first()
+        if not framework:
+            raise HTTPException(status_code=404, detail="Framework not found")
+        
+        # Delete related job titles as well
+        for job in framework.job_titles:
+            db.delete(job)
+        
+        db.delete(framework)
+        db.commit()
+        return {"success": True, "message": f"Framework with id {id} deleted successfully"}
+    except Exception as e:
+        logging.error(f"Error deleting framework: {e}")
+        raise HTTPException(status_code=500, detail="Error deleting framework.")
+
+# 7) Get all job titles for a given department
+@app.get("/api/get-job-titles")
+async def get_job_titles(department: str, db: Session = Depends(get_db)):
+    try:
+        department_framework = db.query(Framework).filter(Framework.department == department).first()
+
+        if not department_framework:
+            raise HTTPException(status_code=404, detail="Department not found")
+
+        job_titles = db.query(JobTitle).filter(JobTitle.department_id == department_framework.id).all()
+
+        return {"job_titles": [
+            {"job_title": job.job_title} for job in job_titles
+        ]}
+    except Exception as e:
+        logging.error(f"Error fetching job titles for department {department}: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching job titles.")
+
+# 8) Get Job Title Details (filtered by specific job_level)
+@app.get("/api/get-job-title-details/{department}/{job_title}/{job_level}")
+async def get_job_title_details(department: str, job_title: str, job_level: str, db: Session = Depends(get_db)):
+    try:
+        framework = db.query(Framework).filter(Framework.department == department).first()
+        if not framework:
+            raise HTTPException(status_code=404, detail="Framework for the department not found")
+
+        job_title_entry = db.query(JobTitle).filter(
+            JobTitle.job_title == job_title,
+            JobTitle.department_id == framework.id
+        ).first()
+        if not job_title_entry:
+            raise HTTPException(status_code=404, detail="Job title not found")
+
+        competencies = job_title_entry.competencies
+
+        # Filter the competencies by the requested job_level
+        competency_for_level = []
+        for competency in competencies:
+            filtered_descriptions = {
+                level: description
+                for level, description in competency['descriptions'].items()
+                if job_level in level
+            }
+            if filtered_descriptions:
+                competency_for_level.append({
+                    "name": competency['name'],
+                    "descriptions": filtered_descriptions
+                })
+
+        if not competency_for_level:
+            raise HTTPException(status_code=404, detail="No competencies found for the selected job level")
+
+        return {
+            "job_title": job_title_entry.job_title,
+            "job_level": job_level,
+            "salary_min": job_title_entry.salary_min,
+            "salary_max": job_title_entry.salary_max,
+            "competencies": competency_for_level
+        }
+    except Exception as e:
+        logging.error(f"Error fetching job title details: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while fetching job title details."
+        )
+
+# 9) **UPDATE** Job Title Details (new)
+@app.put("/api/update-job-title-details/{department}/{job_title}/{job_level}")
+async def update_job_title_details(
+    department: str,
+    job_title: str,
+    job_level: str,
+    updated_data: UpdateJobTitleRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Updates job title details, including salary and competencies.
+    Ensures competency changes are saved in `job_titles` and logged in `competency_evolution`.
+    """
+    framework = db.query(Framework).filter(Framework.department == department).first()
+    if not framework:
+        raise HTTPException(status_code=404, detail="Department not found")
+
+    job_title_entry = db.query(JobTitle).filter(
+        JobTitle.job_title == job_title,
+        JobTitle.department_id == framework.id
+    ).first()
+    if not job_title_entry:
+        raise HTTPException(status_code=404, detail="Job title not found")
+
+    # Track old competencies before update
+    old_competencies = {comp["name"]: comp for comp in job_title_entry.competencies} if job_title_entry.competencies else {}
+
+    if updated_data.competencies is not None:
+        new_competencies = {comp["name"]: comp for comp in updated_data.competencies}
+
+        # Detect added competencies
+        for comp_name, new_comp in new_competencies.items():
+            if comp_name not in old_competencies:
+                log_competency_change(
+                    competency_name=comp_name,
+                    job_title=job_title,
+                    job_level=job_level,
+                    change_type="Created",
+                    old_value="None",
+                    new_value=str(new_comp["descriptions"]),
+                    db=db
+                )
+
+        # Detect modified competencies
+        for comp_name, old_comp in old_competencies.items():
+            if comp_name in new_competencies:
+                old_desc = old_comp["descriptions"]
+                new_desc = new_competencies[comp_name]["descriptions"]
+                if old_desc != new_desc:  # Check if descriptions changed
+                    log_competency_change(
+                        competency_name=comp_name,
+                        job_title=job_title,
+                        job_level=job_level,
+                        change_type="Modified",
+                        old_value=str(old_desc),
+                        new_value=str(new_desc),
+                        db=db
+                    )
+
+        # Detect deleted competencies
+        for comp_name in old_competencies.keys():
+            if comp_name not in new_competencies:
+                log_competency_change(
+                    competency_name=comp_name,
+                    job_title=job_title,
+                    job_level=job_level,
+                    change_type="Deleted",
+                    old_value=str(old_competencies[comp_name]["descriptions"]),
+                    new_value="None",
+                    db=db
+                )
+
+        # ✅ **SAVE updated competencies to `job_titles`**
+        job_title_entry.competencies = updated_data.competencies
+
+    # ✅ **Ensure salaries are also updated**
+    if updated_data.salaryMin is not None:
+        job_title_entry.salary_min = updated_data.salaryMin
+    if updated_data.salaryMax is not None:
+        job_title_entry.salary_max = updated_data.salaryMax
+
+    db.commit()  # ✅ Save changes to `job_titles`
+    db.refresh(job_title_entry)
+
+    return {
+        "success": True,
+        "message": "Job title details updated successfully",
+        "job_title": job_title_entry.job_title,
+        "job_levels": job_title_entry.job_levels,
+        "salary_min": job_title_entry.salary_min,
+        "salary_max": job_title_entry.salary_max,
+        "competencies": job_title_entry.competencies
+    }
+
+def populate_initial_trends(db: Session):
+    """
+    Populates competency_trend table with the latest competency data for tracking.
+    This should only run if no competency trend data exists.
+    """
+    try:
+        existing_trends = db.query(CompetencyTrend).count()
+        logging.info(f"🔍 Checking existing competency trends... Found: {existing_trends}")
+
+        if existing_trends > 0:
+            logging.info("✅ Competency trend data already exists. Skipping population.")
+            return
+
+        job_titles = db.query(JobTitle).all()
+        migrated_count = 0
+
+        for job in job_titles:
+            if not job.competencies:
+                continue
+
+            for competency in job.competencies:
+                logging.info(f"📌 Adding competency to trends: {competency['name']} in {job.framework.department}")
+
+                new_entry = CompetencyTrend(
+                    competency_name=competency["name"],
+                    month=datetime.utcnow().month,
+                    year=datetime.utcnow().year,
+                    average_score=0,  # Set initial score for tracking
+                    department=job.framework.department,
+                )
+                db.add(new_entry)
+                migrated_count += 1
+
+        db.commit()
+        logging.info(f"✅ Populated {migrated_count} competencies into competency_trend.")
+
+    except Exception as e:
+        db.rollback()
+        logging.error(f"❌ Failed to populate competency trends: {e}")
+
+@app.post("/api/generate-job-description")
+async def generate_job_description(request: GenerateJobDescriptionRequest):
+    """
+    Generates a job description using OpenAI.
+    """
+    prompt = f"""
+    Write a professional job description for the role of {request.job_title} in the {request.department} department working for Hawk-Eye Innovations.
+    Responsibilities:
+    {'\\n'.join(request.responsibilities) if request.responsibilities else 'Use standard responsibilities for this role.'}
+    Requirements:
+    {'\\n'.join(request.requirements) if request.requirements else 'Use standard requirements for this role.'}
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1000,
+        temperature=0.7,
+    )
+
+    job_description = response.choices[0].message.content.strip()
+    return {"job_description": job_description}
+
+import bleach
+
+@app.post("/api/save-job-description")
+async def save_job_description(request: SaveJobDescriptionRequest, db: Session = Depends(get_db)):
+    """
+    Saves a job description to the database after sanitizing the HTML.
+    """
+    clean_html = bleach.clean(request.description, tags=["p", "br", "b", "i", "u", "strong", "em", "ul", "ol", "li"])  # ✅ Allows only safe tags
+
+    framework = db.query(Framework).filter(Framework.department == request.department).first()
+    if not framework:
+        raise HTTPException(status_code=404, detail="Department not found.")
+
+    job_title_entry = db.query(JobTitle).filter(
+        JobTitle.job_title == request.job_title, 
+        JobTitle.department_id == framework.id
+    ).first()
+
+    if not job_title_entry:
+        raise HTTPException(status_code=404, detail="Job title not found.")
+
+    existing_description = db.query(JobDescription).filter(JobDescription.job_title_id == job_title_entry.id).first()
+
+    if existing_description:
+        existing_description.description = clean_html  # ✅ Store sanitized HTML
+        existing_description.updated_at = str(datetime.utcnow())
+    else:
+        new_description = JobDescription(
+            job_title_id=job_title_entry.id,
+            description=clean_html,  # ✅ Store sanitized HTML
+        )
+        db.add(new_description)
+
+    db.commit()
+    return {"success": True, "message": "Job description saved successfully"}
+
+@app.get("/api/get-job-description/{department}/{job_title}")
+async def get_job_description(department: str, job_title: str, db: Session = Depends(get_db)):
+    """
+    Retrieves a stored job description by department and job title.
+    """
+    framework = db.query(Framework).filter(Framework.department == department).first()
+    if not framework:
+        raise HTTPException(status_code=404, detail="Department not found.")
+
+    job_title_entry = db.query(JobTitle).filter(
+        JobTitle.job_title == job_title, 
+        JobTitle.department_id == framework.id
+    ).first()
+
+    if not job_title_entry:
+        raise HTTPException(status_code=404, detail="Job title not found.")
+
+    job_description = db.query(JobDescription).filter(JobDescription.job_title_id == job_title_entry.id).first()
+    
+    if not job_description:
+        raise HTTPException(status_code=404, detail="No job description found for this role.")
+
+    return {"job_description": job_description.description}  # ✅ Returns HTML safely
+
+@app.post("/api/analyze-job-description")
+async def analyze_job_description(description: str = Body(..., embed=True)):
+    """
+    Uses AI to analyze job descriptions for biased language and suggests neutral alternatives.
+    """
+    try:
+        sanitized_description = bleach.clean(description)  # ✅ Clean input to prevent script injection
+
+        prompt = f"""
+        Analyze the following job description for gendered or biased language and suggest neutral alternatives.
+
+        Job Description:
+        {sanitized_description}
+
+        Provide the response in this format:
+        - **Biased Terms:** [List the biased words found]
+        - **Suggested Edits:** [Provide neutral alternatives]
+        - **Overall Score:** [1-10, with 10 being fully inclusive]
+        """
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=500,
+            temperature=0.5,
+        )
+
+        analysis = response.choices[0].message.content.strip()
+        return {"analysis": analysis}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to analyze job description: {str(e)}")
+
+@app.post("/api/improve-job-description")
+async def improve_job_description(description: str = Body(..., embed=True)):
+    """
+    Uses AI to refine a job description, making it more structured, engaging, and inclusive.
+    """
+    try:
+        sanitized_description = bleach.clean(description)  # ✅ Clean input
+
+        prompt = f"""
+        Improve the following job description by:
+        - Enhancing clarity and professionalism
+        - Making it more structured and engaging
+        - Ensuring inclusivity by removing biased or exclusionary language
+
+        Job Description:
+        {sanitized_description}
+
+        Provide the improved version only, without extra commentary.
+        """
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=700,
+            temperature=0.7,
+        )
+
+        improved_description = response.choices[0].message.content.strip()
+        return {"improved_description": improved_description}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to improve job description: {str(e)}")
+
+@app.get("/api/get-department-competencies/{department}")
+async def get_department_competencies(department: str, db: Session = Depends(get_db)):
+    """ Retrieves competencies for a department, assigning AI categories if missing. """
+    try:
+        framework = db.query(Framework).filter(Framework.department == department).first()
+        if not framework:
+            raise HTTPException(status_code=404, detail="Department not found")
+
+        job_titles = db.query(JobTitle).filter(JobTitle.department_id == framework.id).all()
+
+        competencies = {}
+        for job in job_titles:
+            for competency in job.competencies:
+                # Use stored category or assign a new one via AI
+                category = competency.get("category") or categorize_with_ai(competency["name"], competency.get("description", ""))
+                
+                # Store AI-assigned category back to DB (so it doesn’t run again)
+                competency["category"] = category
+                db.commit()  # Save category to DB
+
+                # Group by category
+                if category not in competencies:
+                    competencies[category] = []
+
+                competencies[category].append({
+                    "competency": competency["name"],
+                    "description": competency.get("description", "No description available"),
+                })
+
+        return {"competencies": competencies}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# -------------------- FASTAPI STARTUP EVENT -------------------- #
+@app.on_event("startup")
+def startup_event():
+    db = SessionLocal()
+    populate_initial_trends(db)  # ✅ Run only if no trends exist
+    db.close()
+
+@app.get("/api/get-competency-history/{competency_name}")
+async def get_competency_history(
+    competency_name: str,
+    department: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieves historical changes of a specific competency, filtered by department if provided.
+    """
+    try:
+        query = db.query(CompetencyEvolution).filter(
+            CompetencyEvolution.competency_name == competency_name
+        )
+        if department:
+            query = query.filter(CompetencyEvolution.job_title.in_(
+                db.query(JobTitle.job_title).join(Framework).filter(Framework.department == department)
+            ))
+
+        history = query.all()
+
+        return [
+            {
+                "competency_name": record.competency_name,
+                "job_title": record.job_title,
+                "job_level": record.job_level,
+                "change_type": record.change_type,
+                "old_value": record.old_value,
+                "new_value": record.new_value,
+                "date_changed": record.date_changed.isoformat() if isinstance(record.date_changed, datetime) else record.date_changed,
+            }
+            for record in history
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch competency history: {str(e)}")
+
+@app.get("/api/get-trends-over-time")
+async def get_trends_over_time(
+    department: Optional[str] = Query(None), db: Session = Depends(get_db)
+):
+    """
+    Retrieves competency trends over time, filtered by department if provided.
+    """
+    try:
+        query = db.query(CompetencyTrend)
+        if department:
+            query = query.filter(CompetencyTrend.department == department)
+
+        trends = query.all()
+
+        return [
+            {
+                "competency_name": trend.competency_name,
+                "month": trend.month,
+                "year": trend.year,
+                "average_score": trend.average_score,
+                "department": trend.department,
+            }
+            for trend in trends
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch competency trends: {str(e)}")
+
+@app.get("/api/get-departments")
+async def get_departments(db: Session = Depends(get_db)):
+    """
+    Retrieves all unique departments from the Framework table, including department IDs.
+    """
+    try:
+        frameworks = db.query(Framework.id, Framework.department).distinct().all()
+        department_list = [{"id": f.id, "department": f.department} for f in frameworks]
+
+        if not department_list:
+            raise HTTPException(status_code=404, detail="No departments found")
+
+        return {"departments": department_list}
+
+    except Exception as e:
+        logging.error(f"Error fetching departments: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch departments")
+
+
+@app.get("/api/get-department-competencies/{department}")
+async def get_department_competencies(department: str, db: Session = Depends(get_db)):
+    """
+    Fetches all competencies across a department, along with associated job titles.
+    """
+    # Fetch the framework record for the specified department.
+    framework = db.query(Framework).filter(Framework.department == department).first()
+    if not framework:
+        raise HTTPException(status_code=404, detail=f"Department '{department}' not found.")
+
+    # Fetch all job titles for this department.
+    job_titles = db.query(JobTitle).filter(JobTitle.department_id == framework.id).all()
+
+    # Aggregate competencies across all job titles.
+    competency_map = {}
+    for job in job_titles:
+        if job.competencies:  # Ensure competencies exist
+            for comp in job.competencies:  # Loop through the JSON list
+                comp_name = comp.get("name")  # Extract competency name
+                if comp_name:
+                    if comp_name in competency_map:
+                        competency_map[comp_name].add(job.job_title)
+                    else:
+                        competency_map[comp_name] = {job.job_title}
+
+    # Convert set values to lists for JSON response compatibility.
+    competencies_list = [{"competency": comp, "job_titles": list(job_titles)} for comp, job_titles in competency_map.items()]
+
+    return {
+        "department": framework.department,
+        "competencies": competencies_list
+    }
+
+@app.get("/api/get-categorized-framework/{id}")
+async def get_categorized_framework(id: int, db: Session = Depends(get_db)):
+    logging.info(f"🔍 Fetching framework for ID: {id}")
+
+    framework = db.query(Framework).filter(Framework.id == id).first()
+    if not framework:
+        raise HTTPException(status_code=404, detail="Framework not found")
+
+    # Ensure categories exist
+    categorized_competencies = {category: [] for category in STATIC_CATEGORIES}
+
+    for job in framework.job_titles:
+        logging.info(f"🔍 Processing job title: {job.job_title}")
+
+        for competency in job.competencies:
+            competency_name = competency.get("name")
+            logging.info(f"🔎 Looking up competency: {competency_name}")
+
+            competency_record = db.query(CompetencyEvolution).filter(
+                CompetencyEvolution.competency_name == competency_name
+            ).first()
+
+            # Ensure category exists in response
+            if competency_record and competency_record.category:
+                category = competency_record.category.strip()
+            else:
+                logging.warning(f"⚠️ No category found for '{competency_name}', defaulting to 'Uncategorized'.")
+                category = "Uncategorized"
+
+            if category not in categorized_competencies:
+                categorized_competencies[category] = []  # Ensure category exists
+
+            categorized_competencies[category].append(competency)
+
+    # 🚨 **Fix: Ensure a valid response structure is always returned**
+    return {
+        "id": framework.id,
+        "department": framework.department,
+        "competencies_by_category": categorized_competencies or {},  # 🔥 Prevents frontend crash
+    }
+
+
+@app.post("/api/add-competency")
+async def add_competency(competency: CompetencyCreate, db: Session = Depends(get_db)):
+    """
+    Adds a new competency and assigns a category if it doesn't exist.
+    """
+    existing_competency = (
+        db.query(CompetencyEvolution)
+        .filter(CompetencyEvolution.competency_name == competency.name)
+        .first()
+    )
+
+    if existing_competency:
+        raise HTTPException(status_code=400, detail="Competency already exists.")
+
+    # 🔥 Auto-categorize competency
+    assigned_category = categorize_competency(competency.name)
+
+    new_competency = CompetencyEvolution(
+        competency_name=competency.name,
+        job_title=competency.job_title,
+        job_level=competency.job_level,
+        change_type="Created",
+        old_value=None,
+        new_value=competency.name,
+        date_changed=datetime.utcnow(),
+        category=assigned_category,  # ✅ Assign AI-determined category
+    )
+
+    db.add(new_competency)
+    db.commit()
+    db.refresh(new_competency)
+
+    return {"message": "Competency added successfully", "category": assigned_category}
+    
+# -------------------- MIGRATION FUNCTION -------------------- #
+def migrate_existing_competencies(db: Session):
+    """
+    Transfers historical competency data from job_titles to competency_evolution.
+    This ensures we have a record of all existing competencies in the evolution tracking table.
+    """
+    try:
+        # Get all job titles
+        job_titles = db.query(JobTitle).all()
+        migrated_count = 0
+
+        for job in job_titles:
+            if not job.competencies:  # Skip if no competencies
+                continue
+
+            for competency in job.competencies:
+                competency_name = competency["name"]
+                descriptions = str(competency["descriptions"])  # Convert JSON to string for storage
+                
+                # Check if this competency already exists in competency_evolution
+                existing_entry = db.query(CompetencyEvolution).filter(
+                    CompetencyEvolution.competency_name == competency_name,
+                    CompetencyEvolution.job_title == job.job_title,
+                    CompetencyEvolution.job_level == "N/A",  # Since we're bulk importing
+                ).first()
+
+                if not existing_entry:
+                    # Insert into competency_evolution as an "Initial Record"
+                    new_entry = CompetencyEvolution(
+                        competency_name=competency_name,
+                        job_title=job.job_title,
+                        job_level="N/A",
+                        change_type="Initial Record",
+                        old_value="None",
+                        new_value=descriptions,
+                        date_changed=datetime.utcnow()
+                    )
+                    db.add(new_entry)
+                    migrated_count += 1
+
+        db.commit()  # Commit all new entries
+        logging.info(f"✅ Migrated {migrated_count} competency records from job_titles to competency_evolution.")
+
+    except Exception as e:
+        db.rollback()
+        logging.error(f"❌ Failed to migrate competency data: {e}")
+
+# -------------------- RUN MIGRATION AT STARTUP -------------------- #
+with SessionLocal() as db:
+    migrate_existing_competencies(db)
+
+# -------------------- MAIN -------------------- #
+if __name__ == "__main__":
+    import uvicorn
+    logging.info("Starting the FastAPI server...")
+    uvicorn.run("main:app", host="0.0.0.0", port=5000)

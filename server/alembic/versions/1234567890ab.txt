@@ -1,0 +1,151 @@
+"""Alter candidates.id and referencing candidate_id columns to UUID
+
+Revision ID: 20250308_alter_candidates_uuid
+Revises: <previous_revision_id>
+Create Date: 2025-03-08 00:00:00.000000
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+# revision identifiers, used by Alembic.
+revision = '1234567890ab'
+down_revision = None
+branch_labels = None
+depends_on = None
+
+def upgrade():
+    # Drop foreign key constraints from tables that reference candidates.id.
+    op.execute("ALTER TABLE applications DROP CONSTRAINT IF EXISTS applications_candidate_id_fkey")
+    op.execute("ALTER TABLE interviews DROP CONSTRAINT IF EXISTS interviews_candidate_id_fkey")
+    op.execute("ALTER TABLE interview_feedback DROP CONSTRAINT IF EXISTS interview_feedback_candidate_id_fkey")
+    op.execute("ALTER TABLE scorecard_entries DROP CONSTRAINT IF EXISTS scorecard_entries_candidate_id_fkey")
+    
+    # Alter the candidate_id columns in each referencing table from VARCHAR to UUID.
+    op.alter_column(
+        'applications',
+        'candidate_id',
+        existing_type=sa.String(),
+        type_=sa.dialects.postgresql.UUID(as_uuid=True),
+        postgresql_using="candidate_id::uuid"
+    )
+    op.alter_column(
+        'interviews',
+        'candidate_id',
+        existing_type=sa.String(),
+        type_=sa.dialects.postgresql.UUID(as_uuid=True),
+        postgresql_using="candidate_id::uuid"
+    )
+    op.alter_column(
+        'interview_feedback',
+        'candidate_id',
+        existing_type=sa.String(),
+        type_=sa.dialects.postgresql.UUID(as_uuid=True),
+        postgresql_using="candidate_id::uuid"
+    )
+    op.alter_column(
+        'scorecard_entries',
+        'candidate_id',
+        existing_type=sa.String(),
+        type_=sa.dialects.postgresql.UUID(as_uuid=True),
+        postgresql_using="candidate_id::uuid"
+    )
+    
+    # Alter the candidates.id column from VARCHAR to UUID.
+    op.alter_column(
+        'candidates',
+        'id',
+        existing_type=sa.String(),
+        type_=sa.dialects.postgresql.UUID(as_uuid=True),
+        postgresql_using="id::uuid"
+    )
+    
+    # Recreate the foreign key constraints on each referencing table.
+    op.create_foreign_key(
+        'applications_candidate_id_fkey',
+        'applications', 'candidates',
+        ['candidate_id'], ['id']
+    )
+    op.create_foreign_key(
+        'interviews_candidate_id_fkey',
+        'interviews', 'candidates',
+        ['candidate_id'], ['id']
+    )
+    op.create_foreign_key(
+        'interview_feedback_candidate_id_fkey',
+        'interview_feedback', 'candidates',
+        ['candidate_id'], ['id']
+    )
+    op.create_foreign_key(
+        'scorecard_entries_candidate_id_fkey',
+        'scorecard_entries', 'candidates',
+        ['candidate_id'], ['id']
+    )
+
+def downgrade():
+    # Drop the foreign key constraints again.
+    op.execute("ALTER TABLE applications DROP CONSTRAINT IF EXISTS applications_candidate_id_fkey")
+    op.execute("ALTER TABLE interviews DROP CONSTRAINT IF EXISTS interviews_candidate_id_fkey")
+    op.execute("ALTER TABLE interview_feedback DROP CONSTRAINT IF EXISTS interview_feedback_candidate_id_fkey")
+    op.execute("ALTER TABLE scorecard_entries DROP CONSTRAINT IF EXISTS scorecard_entries_candidate_id_fkey")
+    
+    # Revert the candidate_id columns in referencing tables back to VARCHAR.
+    op.alter_column(
+        'applications',
+        'candidate_id',
+        existing_type=sa.dialects.postgresql.UUID(as_uuid=True),
+        type_=sa.String(),
+        postgresql_using="candidate_id::varchar"
+    )
+    op.alter_column(
+        'interviews',
+        'candidate_id',
+        existing_type=sa.dialects.postgresql.UUID(as_uuid=True),
+        type_=sa.String(),
+        postgresql_using="candidate_id::varchar"
+    )
+    op.alter_column(
+        'interview_feedback',
+        'candidate_id',
+        existing_type=sa.dialects.postgresql.UUID(as_uuid=True),
+        type_=sa.String(),
+        postgresql_using="candidate_id::varchar"
+    )
+    op.alter_column(
+        'scorecard_entries',
+        'candidate_id',
+        existing_type=sa.dialects.postgresql.UUID(as_uuid=True),
+        type_=sa.String(),
+        postgresql_using="candidate_id::varchar"
+    )
+    
+    # Revert the candidates.id column back to VARCHAR.
+    op.alter_column(
+        'candidates',
+        'id',
+        existing_type=sa.dialects.postgresql.UUID(as_uuid=True),
+        type_=sa.String(),
+        postgresql_using="id::varchar"
+    )
+    
+    # Recreate the foreign key constraints.
+    op.create_foreign_key(
+        'applications_candidate_id_fkey',
+        'applications', 'candidates',
+        ['candidate_id'], ['id']
+    )
+    op.create_foreign_key(
+        'interviews_candidate_id_fkey',
+        'interviews', 'candidates',
+        ['candidate_id'], ['id']
+    )
+    op.create_foreign_key(
+        'interview_feedback_candidate_id_fkey',
+        'interview_feedback', 'candidates',
+        ['candidate_id'], ['id']
+    )
+    op.create_foreign_key(
+        'scorecard_entries_candidate_id_fkey',
+        'scorecard_entries', 'candidates',
+        ['candidate_id'], ['id']
+    )

@@ -1,0 +1,102 @@
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
+
+# Revision identifiers
+revision = "20250305_migrate_job_titles_id_to_uuid"
+down_revision = None  # Reset history
+branch_labels = None
+depends_on = None
+
+# ✅ Default UUID for missing department references
+DEFAULT_DEPARTMENT_UUID = uuid.UUID("00000000-0000-0000-0000-000000000000")
+
+def upgrade():
+    conn = op.get_bind()
+
+    print("🛠 Ensuring `uuid-ossp` extension is available...")
+    conn.execute(sa.text("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\""))
+    print("✅ `uuid-ossp` extension is set.")
+
+    # ✅ Step 1: Ensure alembic_version can store UUIDs properly
+    print("🛠 Ensuring Alembic can handle full UUIDs...")
+    conn.execute(sa.text("ALTER TABLE alembic_version ALTER COLUMN version_num TYPE VARCHAR(64)"))
+
+    # ✅ Step 2: Add a new UUID column `new_id` in job_titles
+    print("🛠 Adding `new_id` column to `job_titles`...")
+    op.add_column("job_titles", sa.Column("new_id", UUID(as_uuid=True), nullable=True, server_default=sa.text("gen_random_uuid()")))
+
+    # ✅ Step 3: Populate new_id with generated UUIDs
+    print("🛠 Converting `id` (INTEGER) to `new_id` (UUID)...")
+    job_titles = conn.execute(sa.text("SELECT id FROM job_titles")).fetchall()
+    for row in job_titles:
+        old_id = row[0]
+        new_uuid = str(uuid.uuid4())
+        conn.execute(sa.text("UPDATE job_titles SET new_id = :new_uuid WHERE id = :old_id"), {"new_uuid": new_uuid, "old_id": old_id})
+
+    # ✅ Step 4: Ensure `new_id` is NOT NULL
+    print("🛠 Ensuring `job_titles.new_id` is NOT NULL...")
+    op.alter_column("job_titles", "new_id", nullable=False)
+
+    # ✅ Step 5: Assign a default department_id where NULL
+    print("🛠 Assigning default department UUID where NULL...")
+    conn.execute(sa.text("UPDATE job_titles SET department_id = :default_uuid WHERE department_id IS NULL"),
+                 {"default_uuid": str(DEFAULT_DEPARTMENT_UUID)})
+
+    # ✅ Step 6: Fix `job_id` in `candidates` (only if column exists)
+    print("🛠 Updating `candidates.job_id` references...")
+    if conn.execute(sa.text("SELECT 1 FROM information_schema.columns WHERE table_name = 'candidates' AND column_name = 'job_id'")).fetchone():
+        op.add_column("candidates", sa.Column("job_id_new", UUID(as_uuid=True), nullable=True))
+        conn.execute(sa.text("""
+            UPDATE candidates
+            SET job_id_new = (
+                SELECT new_id FROM job_titles WHERE job_titles.id = candidates.job_id
+            )
+            WHERE job_id IS NOT NULL
+        """))
+        
+        op.drop_column("candidates", "job_id")
+        op.alter_column("candidates", "job_id_new", new_column_name="job_id", nullable=True)
+
+    # ✅ Step 7: Fix `interview_questions.job_title_id`
+    print("🛠 Updating `interview_questions.job_title_id` references...")
+    if conn.execute(sa.text("SELECT 1 FROM information_schema.columns WHERE table_name = 'interview_questions' AND column_name = 'job_title_id'")).fetchone():
+        op.add_column("interview_questions", sa.Column("job_title_id_new", UUID(as_uuid=True), nullable=True))
+        conn.execute(sa.text("""
+            UPDATE interview_questions
+            SET job_title_id_new = (
+                SELECT new_id FROM job_titles WHERE job_titles.id = interview_questions.job_title_id
+            )
+            WHERE job_title_id IS NOT NULL
+        """))
+
+        op.drop_column("interview_questions", "job_title_id")
+        op.alter_column("interview_questions", "job_title_id_new", new_column_name="job_title_id", nullable=True)
+
+    # ✅ Step 8: Drop dependent foreign key constraints
+    print("🛠 Dropping foreign key constraints...")
+    conn.execute(sa.text("ALTER TABLE interview_questions DROP CONSTRAINT IF EXISTS interview_questions_job_title_id_fkey"))
+    conn.execute(sa.text("ALTER TABLE candidates DROP CONSTRAINT IF EXISTS candidates_job_id_fkey"))
+
+    # ✅ Step 9: Drop `job_titles` primary key
+    print("🛠 Dropping old primary key on `job_titles`...")
+    conn.execute(sa.text("ALTER TABLE job_titles DROP CONSTRAINT IF EXISTS job_titles_pkey CASCADE"))
+    conn.execute(sa.text("ALTER TABLE job_titles DROP CONSTRAINT IF EXISTS job_titles_department_id_fkey"))
+
+    # ✅ Step 10: Drop `id` and rename `new_id` to `id`
+    print("🛠 Dropping old `job_titles.id` and renaming `new_id`...")
+    op.drop_column("job_titles", "id")
+    op.alter_column("job_titles", "new_id", new_column_name="id")
+
+    # ✅ Step 11: Recreate primary and foreign keys
+    print("🛠 Recreating primary and foreign keys...")
+    op.create_primary_key("job_titles_pkey", "job_titles", ["id"])
+    op.create_foreign_key("job_titles_department_id_fkey", "job_titles", "frameworks", ["department_id"], ["id"], ondelete="CASCADE")
+    op.create_foreign_key("interview_questions_job_title_id_fkey", "interview_questions", "job_titles", ["job_title_id"], ["id"], ondelete="CASCADE")
+    op.create_foreign_key("candidates_job_id_fkey", "candidates", "job_titles", ["job_id"], ["id"], ondelete="SET NULL")
+
+    print("✅ Migration completed successfully!")
+
+def downgrade():
+    raise RuntimeError("❌ Downgrade is not supported due to data type change.")
