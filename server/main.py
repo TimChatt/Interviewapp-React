@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup
 
 from fastapi import FastAPI, HTTPException, Depends, Path, Header, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from alembic import command
@@ -109,6 +111,15 @@ from openai_client import client
 
 app.include_router(users_router)
 app.include_router(policies_router)
+
+# Serve built React frontend if present
+frontend_dir = os.path.join(os.path.dirname(__file__), "client_build")
+if os.path.isdir(frontend_dir):
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa_catchall(full_path: str):
+        return FileResponse(os.path.join(frontend_dir, "index.html"))
 
 # Ashby API Key
 ASHBY_API_KEY = os.getenv("ASHBY_API_KEY")
