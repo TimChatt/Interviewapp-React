@@ -195,7 +195,7 @@ def process_scorecards(db: Session, application_id: str, candidate_id: uuid.UUID
                 entry.comments = item.get("comment")
                 entry.interviewer_id = interviewer_id
                 entry.submitted_at = submitted_at
-                entry.metadata = {"scorecard_name": sc_name}
+                entry.metadata_json = {"scorecard_name": sc_name}
                 db.add(entry)
     db.commit()
 

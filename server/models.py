@@ -140,7 +140,7 @@ class ScorecardEntry(Base):
     comments = Column(Text, nullable=True)
     interviewer_id = Column(String, nullable=True)
     submitted_at = Column(DateTime, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    metadata_json = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
