@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from "react";
 
 // Create AuthContext
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await fetch(
-        "https://interviewappbe-production.up.railway.app/api/login",
+        `${import.meta.env.VITE_API_URL}/api/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
