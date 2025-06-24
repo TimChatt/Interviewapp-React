@@ -1,11 +1,28 @@
+# Node dependencies
 node_modules/
 client/node_modules/
-server/__pycache__/
-*.pyc
-.env
-__pycache__/
 
-# Ignore data files
+# Python cache
+__pycache__/
+*.pyc
+server/__pycache__/
+server/**/*.pyc
+
+# Env and secrets
+.env
+*.env
+
+# Logs and OS clutter
+*.log
+.DS_Store
+
+# Build artifacts
+client/build/
+dist/
+build/
+
+# Ignore unnecessary data/media
 server/data/
-client/public/assets/login_video
+client/public/assets/login_video/
 *.xlsx
+*.csv
