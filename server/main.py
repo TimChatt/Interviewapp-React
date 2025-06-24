@@ -1806,6 +1806,6 @@ if __name__ == "__main__":
         fetch_and_store_data(session)
     finally:
         session.close()
-	    
+
     logging.info("🚀 Starting the FastAPI server...")
-    uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    uvicorn.run("server.main:app", host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
