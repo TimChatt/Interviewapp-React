@@ -44,3 +44,4 @@ RUN chmod +x start.sh
 # Expose and run
 EXPOSE 8000
 CMD ["./start.sh"]
+/
