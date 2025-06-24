@@ -1798,6 +1798,7 @@ with SessionLocal() as db:
 # -------------------- MAIN -------------------- #
 if __name__ == "__main__":
     import uvicorn
+
     logging.info("🔄 Fetching and storing departments & jobs before server start...")
 
     session = SessionLocal()
@@ -1807,4 +1808,6 @@ if __name__ == "__main__":
         session.close()
 
     logging.info("🚀 Starting the FastAPI server...")
-    uvicorn.run("server.main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
+
+    # ✅ This line is the only change:
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
