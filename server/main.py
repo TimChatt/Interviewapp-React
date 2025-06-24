@@ -20,6 +20,9 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from alembic import command
 from alembic.config import Config
+from sqlalchemy import text
+
+from deps import engine, SessionLocal
 
 # --- Model and Schema Imports ---
 # It's cleaner to group these
