@@ -8,20 +8,18 @@ import logging
 import hmac
 import hashlib
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict
 
 import requests
 from requests.auth import HTTPBasicAuth
-from fastapi import FastAPI, HTTPException, APIRouter, Depends, Request, Header
+from fastapi import HTTPException, APIRouter, Depends, Request, Header
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from models import (
-    Candidate, JobTitle, Framework, InterviewFeedback,
-    Offer, ApplicationHistory
+    Candidate, JobTitle, InterviewFeedback,
+    ScorecardEntry, ApplicationHistory
 )
-from sqlalchemy.ext.declarative import declarative_base
-from deps import get_db, SessionLocal, engine
+from deps import get_db
 
 # --- CONFIGURATION & SETUP ---
 
@@ -149,6 +147,64 @@ def upsert_candidate(db: Session, candidate_data: Dict) -> Candidate:
     db.commit()
     return candidate
 
+
+def upsert_job_title(db: Session, job_data: Dict) -> JobTitle:
+    """Create or update a job title record from Ashby job metadata."""
+    job_id = job_data.get("id")
+    if not job_id:
+        return None
+    job_uuid = uuid.UUID(job_id)
+    job = db.query(JobTitle).get(job_uuid)
+    if not job:
+        job = JobTitle(id=job_uuid)
+
+    job.job_title = job_data.get("title")
+    dept_id = job_data.get("departmentId")
+    job.department_id = uuid.UUID(dept_id) if dept_id else None
+    job.status = job_data.get("status")
+    job.employment_type = job_data.get("employmentType")
+    job.location_id = job_data.get("locationId")
+
+    db.merge(job)
+    db.commit()
+    return job
+
+
+def process_scorecards(db: Session, application_id: str, candidate_id: uuid.UUID):
+    """Fetch scorecards for an application and store them."""
+    scorecards = fetch_paginated_results("/scorecard.list", {"applicationId": application_id})
+    if not scorecards:
+        return
+
+    for sc in scorecards:
+        sc_name = sc.get("name")
+        interviewer_id = sc.get("interviewerId")
+        submitted_at_str = sc.get("submittedAt")
+        submitted_at = None
+        if submitted_at_str:
+            submitted_at = datetime.fromisoformat(submitted_at_str.replace("Z", "+00:00"))
+
+        for section in sc.get("sections", []):
+            category = section.get("title")
+            for item in section.get("items", []):
+                entry_id = uuid.uuid4()
+                entry = ScorecardEntry(id=entry_id, candidate_id=candidate_id)
+                entry.category = category
+                entry.skill = item.get("name")
+                entry.score = item.get("score")
+                entry.comments = item.get("comment")
+                entry.interviewer_id = interviewer_id
+                entry.submitted_at = submitted_at
+                entry.metadata = {"scorecard_name": sc_name}
+                db.add(entry)
+    db.commit()
+
+
+def fetch_job_metadata(job_id: str) -> Dict:
+    """Retrieve detailed job information from Ashby."""
+    resp = fetch_ashby_data("/job.info", {"jobId": job_id})
+    return resp.get("results", {})
+
 def process_application_feedback(db: Session, application_id: str, candidate_id: uuid.UUID):
     feedback_list = fetch_paginated_results("/applicationFeedback.list", {"applicationId": application_id})
     if not feedback_list: return
@@ -193,23 +249,56 @@ def process_application_details(db: Session, application_data: Dict):
 
     try:
         candidate = upsert_candidate(db, candidate_data)
-        if not candidate: return
-            
+        if not candidate:
+            return
+
         app_history_id = application_id
         app_history = db.query(ApplicationHistory).get(app_history_id)
         if not app_history:
             app_history = ApplicationHistory(id=app_history_id, candidate_id=candidate.id)
 
         job_id_val = application_data.get("jobId")
+        # Update candidate-level metadata from the application
+        if job_id_val:
+            candidate.job_id = uuid.UUID(job_id_val)
+        candidate.application_stage = application_data.get("currentStage", {}).get("title")
+        candidate.status = application_data.get("status")
+        candidate.archived = candidate.status == "Archived"
+        db.merge(candidate)
+        db.commit()
+
         app_history.job_id = uuid.UUID(job_id_val) if job_id_val else None
         app_history.status = application_data.get("status")
         stage_id_val = application_data.get("currentStageId")
         app_history.current_stage_id = uuid.UUID(stage_id_val) if stage_id_val else None
         app_history.current_stage_name = application_data.get("currentStage", {}).get("title")
+        # Track stage history changes
+        history = app_history.stage_history or []
+        current_time = datetime.utcnow()
+        if not history or history[-1].get("stage") != app_history.current_stage_name:
+            if history:
+                prev = history[-1]
+                try:
+                    entered_prev = datetime.fromisoformat(prev["entered_at"])
+                    prev["duration"] = (current_time - entered_prev).total_seconds()
+                except Exception:
+                    pass
+            history.append({
+                "stage": app_history.current_stage_name,
+                "entered_at": current_time.isoformat()
+            })
+        app_history.stage_history = history
         db.merge(app_history)
         db.commit()
 
+        # Pull job metadata if a job is associated
+        if job_id_val:
+            job_data = fetch_job_metadata(job_id_val)
+            if job_data:
+                upsert_job_title(db, job_data)
+
         process_application_feedback(db, application_id, candidate.id)
+        process_scorecards(db, application_id, candidate.id)
         
         logging.info(f"Successfully processed application {application_id} for candidate {candidate.name}")
 
