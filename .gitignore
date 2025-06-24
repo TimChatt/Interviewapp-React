@@ -18,7 +18,7 @@ server/**/*.pyc
 
 # Build artifacts
 dist/
-build/
+# build/ ← removed this line to allow Docker to include the built frontend
 
 # Ignore unnecessary data/media
 server/data/
