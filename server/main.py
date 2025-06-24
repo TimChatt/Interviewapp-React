@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from deps import engine, SessionLocal
 
