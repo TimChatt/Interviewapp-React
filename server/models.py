@@ -118,9 +118,11 @@ class InterviewFeedback(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     candidate_id = Column(UUID(as_uuid=True), ForeignKey("candidates.id"))
-    interviewer = Column(String)
-    rating = Column(String)
-    comments = Column(String)
+    application_id = Column(UUID(as_uuid=True), nullable=True)
+    interviewer_name = Column(String)
+    interviewer_email = Column(String)
+    feedback_text = Column(String)
+    overall_recommendation = Column(String)
     submitted_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
@@ -132,8 +134,13 @@ class ScorecardEntry(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     candidate_id = Column(UUID(as_uuid=True), ForeignKey("candidates.id"))  # Updated to use UUID
+    category = Column(String, nullable=True)
     skill = Column(String, nullable=False)
     score = Column(Float, nullable=False)
+    comments = Column(Text, nullable=True)
+    interviewer_id = Column(String, nullable=True)
+    submitted_at = Column(DateTime, nullable=True)
+    metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
@@ -161,6 +168,9 @@ class ApplicationHistory(Base):
     candidate_id = Column(UUID(as_uuid=True), ForeignKey("candidates.id"), nullable=False)
     job_id = Column(UUID(as_uuid=True), nullable=True)
     status = Column(String, nullable=True)
+    current_stage_id = Column(UUID(as_uuid=True), nullable=True)
+    current_stage_name = Column(String, nullable=True)
+    stage_history = Column(JSON, nullable=True)
     applied_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=True)
 
