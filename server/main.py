@@ -23,7 +23,7 @@ from alembic.config import Config
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from deps import engine, SessionLocal
+from deps import engine, SessionLocal, get_db
 
 # --- Model and Schema Imports ---
 # It's cleaner to group these
