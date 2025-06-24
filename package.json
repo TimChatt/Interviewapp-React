@@ -1,0 +1,17 @@
+{
+  "name": "interview-analysis-app",
+  "version": "1.0.0",
+  "description": "Interview Analysis App with React frontend and Express backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'Use Docker for full build'",
+    "test": "echo 'No tests at root level'"
+  },
+  "author": "Tim",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "path": "^0.12.7"
+  }
+}
