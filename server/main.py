@@ -16,7 +16,16 @@ from fastapi import FastAPI, HTTPException, Depends, Path, Header, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 from dotenv import load_dotenv
 from alembic import command
 from alembic.config import Config
