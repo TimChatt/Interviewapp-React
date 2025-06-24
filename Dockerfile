@@ -2,24 +2,28 @@
 FROM node:18 AS client-build
 WORKDIR /client
 
-# Install dependencies
+# Copy the client package.json + lock file
 COPY client/package*.json ./
+
+# Install client dependencies
 RUN npm install
 
-# Copy the rest of the client code and build it
+# Copy rest of client code
 COPY client/ ./
+
+# Build React app
 RUN npm run build
 
-# 🟢 Build Python backend and final image
+# 🟢 Backend
 FROM python:3.11-slim
 
-# Install system dependencies for psycopg2 and other packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Python env setup
+# Environment
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -30,15 +34,13 @@ RUN pip install -r requirements.txt
 # Copy backend code
 COPY server/ ./
 
-# Copy built frontend into backend folder
-# ✅ Make sure comment is ABOVE the instruction
-# Copies the full built React client into the backend's /client_build
+# Mount static frontend
 COPY --from=client-build /client/build ./client_build
 
-# Copy start script
+# Start script
 COPY start.sh ./
 RUN chmod +x start.sh
 
-# Expose port and run app
+# Expose and run
 EXPOSE 8000
 CMD ["./start.sh"]
