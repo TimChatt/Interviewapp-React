@@ -18,6 +18,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from dotenv import load_dotenv
+from alembic import command
+from alembic.config import Config
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from deps import engine, SessionLocal, get_db
+
+# --- FastAPI setup ---
 app = FastAPI()
 
 app.add_middleware(
@@ -27,16 +36,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-from dotenv import load_dotenv
-from alembic import command
-from alembic.config import Config
-from sqlalchemy import text
-from sqlalchemy.orm import Session
 
-from deps import engine, SessionLocal, get_db
+# ✅ Serve React frontend
+app.mount("/", StaticFiles(directory="client_build", html=True), name="static")
 
 # --- Model and Schema Imports ---
-# It's cleaner to group these
 from models import (
     Base, CompetencyTrend, JobTitle, JobDescription, Framework, Candidate,
     InterviewFeedback, ScorecardEntry, Offer, ApplicationHistory, User,
