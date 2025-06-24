@@ -142,42 +142,53 @@ STATIC_CATEGORIES = [
 # Database setup comes from deps (SessionLocal)
 
 # ─── LOAD YOUR EXCEL KEY ──────────────────────────────────────────────
-KEY_FILE = "data/Competency Key.xlsx"
+# Allow overriding the path via environment variable
+KEY_FILE = os.getenv("KEY_FILE", "data/Competency Key.xlsx")
 SHEET_NAME = "Sheet1"
 
-# Read into a DataFrame
-key_df = pd.read_excel(KEY_FILE, sheet_name=SHEET_NAME)
-
-# ─── Normalize headers: strip whitespace and lowercase ─────────────────────
-key_df.columns = key_df.columns.str.strip().str.lower()
-
-# If there's no 'level' column, but the first column is unnamed, rename it
-if "level" not in key_df.columns:
-    first_col = key_df.columns[0]
-    if first_col.startswith("unnamed"):
-        key_df = key_df.rename(columns={first_col: "level"})
-    else:
-        raise RuntimeError(
-            f"Competency Key sheet must have a 'level' column; got: {list(key_df.columns)}"
-        )
-
-# Build the lookup dict
-levels = key_df["level"].tolist()
 competency_key: Dict[str, Dict[str, str]] = {}
-for comp in key_df.columns.drop("level"):
-    competency_key[comp] = {
-        row["level"]: str(row[comp]).strip().replace("\n", " ")
-        for _, row in key_df.iterrows()
-    }
+levels: List[str] = []
+KEY_MD = ""
 
-# Serialize once into a big Markdown lookup block
-_md = ["## Competency Key"]
-for comp, lvl_map in competency_key.items():
-    _md.append(f"### {comp}")
-    for lvl in levels:
-        _md.append(f"- **{lvl}**: {lvl_map[lvl]}")
-    _md.append("")
-KEY_MD = "\n".join(_md)
+if os.path.exists(KEY_FILE):
+    try:
+        # Read into a DataFrame
+        key_df = pd.read_excel(KEY_FILE, sheet_name=SHEET_NAME)
+
+        # ─── Normalize headers: strip whitespace and lowercase ──────────
+        key_df.columns = key_df.columns.str.strip().str.lower()
+
+        # If there's no 'level' column, but the first column is unnamed, rename it
+        if "level" not in key_df.columns:
+            first_col = key_df.columns[0]
+            if first_col.startswith("unnamed"):
+                key_df = key_df.rename(columns={first_col: "level"})
+            else:
+                raise RuntimeError(
+                    f"Competency Key sheet must have a 'level' column; got: {list(key_df.columns)}"
+                )
+
+        # Build the lookup dict
+        levels = key_df["level"].tolist()
+        for comp in key_df.columns.drop("level"):
+            competency_key[comp] = {
+                row["level"]: str(row[comp]).strip().replace("\n", " ")
+                for _, row in key_df.iterrows()
+            }
+
+        # Serialize once into a big Markdown lookup block
+        _md = ["## Competency Key"]
+        for comp, lvl_map in competency_key.items():
+            _md.append(f"### {comp}")
+            for lvl in levels:
+                _md.append(f"- **{lvl}**: {lvl_map[lvl]}")
+            _md.append("")
+        KEY_MD = "\n".join(_md)
+        logging.info(f"✅ Loaded competency key from {KEY_FILE}")
+    except Exception as e:
+        logging.error(f"❌ Failed to load competency key: {e}")
+else:
+    logging.warning(f"⚠️ Competency key file not found: {KEY_FILE}. Continuing without it.")
 
 # ─────────────────────────────────────────────────────────────────────
 
