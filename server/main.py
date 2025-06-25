@@ -26,19 +26,6 @@ from sqlalchemy.orm import Session
 
 from deps import engine, SessionLocal, get_db
 
-# --- FastAPI setup ---
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# ✅ Serve React frontend
-app.mount("/", StaticFiles(directory="client_build", html=True), name="static")
 
 # --- Model and Schema Imports ---
 from models import (
