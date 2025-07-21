@@ -92,11 +92,15 @@ reset_alembic_history()
 # ✅ Step 2: Run migrations
 run_migrations()
 
-# Initialize FastAPI app
 app = FastAPI()
-app.mount("/", StaticFiles(directory="server/client_build", html=True), name="client")
+# Safe conditional mount for React frontend (avoids Railway crash)
+frontend_dir = os.path.join(os.path.dirname(__file__), "client_build")
+if os.path.isdir(frontend_dir):
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
 
-
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa_catchall(full_path: str):
+        return FileResponse(os.path.join(frontend_dir, "index.html"))
 
 # Configure CORS before including any routers or endpoints
 origins = [
