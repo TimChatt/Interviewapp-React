@@ -26,6 +26,8 @@ from sqlalchemy.orm import Session
 
 from deps import engine, SessionLocal, get_db
 
+# Load environment variables from .env
+load_dotenv()
 
 # --- Model and Schema Imports ---
 from models import (
