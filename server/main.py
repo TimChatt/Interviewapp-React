@@ -24,7 +24,7 @@ from alembic.config import Config
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from deps import engine, SessionLocal, get_db
+from server.deps import engine, SessionLocal, get_db
 
 # Load environment variables from .env
 load_dotenv()
