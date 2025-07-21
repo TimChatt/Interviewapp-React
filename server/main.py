@@ -43,7 +43,6 @@ from schemas import CompetencyCreate, UserUpdateRequest, IPWhitelistRequest
 # The sync functions will be triggered via API endpoints defined within the router.
 from ashbyapi import router as ashby_router
 # Functions used during startup and periodic updates
-from ashbyapi import full_sync_applications, sync_candidates
 
 import subprocess
 
