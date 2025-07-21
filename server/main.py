@@ -92,6 +92,8 @@ run_migrations()
 
 # Initialize FastAPI app
 app = FastAPI()
+app.mount("/", StaticFiles(directory="server/client_build", html=True), name="client")
+
 
 
 # Configure CORS before including any routers or endpoints
@@ -117,19 +119,14 @@ from openai_client import client
 app.include_router(users_router)
 app.include_router(policies_router)
 
-
-# ✅ Serve built React frontend (corrected for /client/build directory)
-client_build_path = os.path.join(os.path.dirname(__file__), "../client/build")
-
-if os.path.exists(os.path.join(client_build_path, "index.html")):
-    app.mount("/", StaticFiles(directory=client_build_path, html=True), name="frontend")
+# Serve built React frontend if present
+frontend_dir = os.path.join(os.path.dirname(__file__), "client_build")
+if os.path.isdir(frontend_dir):
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
 
     @app.get("/{full_path:path}", include_in_schema=False)
-    async def serve_react_app(full_path: str):
-        return FileResponse(os.path.join(client_build_path, "index.html"))
-else:
-    logging.warning(f"⚠️ React build directory not found at: {client_build_path}")
-
+    async def spa_catchall(full_path: str):
+        return FileResponse(os.path.join(frontend_dir, "index.html"))
 
 # Ashby API Key
 ASHBY_API_KEY = os.getenv("ASHBY_API_KEY")
