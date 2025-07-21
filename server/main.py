@@ -41,8 +41,7 @@ from schemas import CompetencyCreate, UserUpdateRequest, IPWhitelistRequest
 # --- Ashby Integration Import ---
 # CORRECT: We only need the router from our new ashbyapi module.
 # The sync functions will be triggered via API endpoints defined within the router.
-from server.ashbyapi import router as ashby_router
-from server.ashbyapi import full_sync_applications, sync_candidates
+from ashbyapi import router as ashby_router
 # Functions used during startup and periodic updates
 
 import subprocess
